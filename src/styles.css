@@ -180,7 +180,7 @@ html { scroll-behavior: smooth; }
 .carousel-actions { display: flex; gap: 10px; }
 .arrow-control { border: 1px solid var(--border); background: var(--background); border-radius: 50%; width: 44px; height: 44px; color: var(--primary); }
 .arrow-control svg { width: 22px; height: 22px; }
-.service-track { display: flex; gap: 24px; overflow-x: auto; padding: 2px 5% 18px; scrollbar-width: none; scroll-snap-type: x mandatory; }
+.service-track { display: flex; gap: 24px; overflow-x: auto; padding: 2px 5% 18px; scrollbar-width: none; scroll-snap-type: x mandatory; scroll-padding-inline: 5%; }
 .service-track::-webkit-scrollbar,.client-track::-webkit-scrollbar { display: none; }
 .service-card { flex: 0 0 340px; min-width: 0; border: 1px solid var(--border); padding: 27px; border-radius: 8px; background: var(--background); scroll-snap-align: start; transition: border-color .2s, box-shadow .2s; }
 .service-card:hover { border-color: var(--primary); box-shadow: var(--card-hover-shadow); }

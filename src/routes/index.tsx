@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ArrowRight, ChevronLeft, ChevronRight, Globe2, Menu, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Globe2, Menu, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { services } from "@/lib/showcase-data";
 import logo from "@/assets/logo.png.asset.json";
 import whiteLogo from "@/assets/logo-white.png.asset.json";
 import hero from "@/assets/hero.mp4.asset.json";
+import heroWebm from "@/assets/hero.webm.asset.json";
 import poster from "@/assets/poster.jpg.asset.json";
 import p0 from "@/assets/portfolio-0.jpg.asset.json";
 import p1 from "@/assets/portfolio-1.jpg.asset.json";
@@ -106,7 +107,10 @@ function Index() {
       <main>
         <section className="video-section" aria-label={t("Viral Zoom showreel", "فيديو فايرال زوم")}>
           <h1 className="sr-only">Viral Zoom — {t("Creative & Digital Marketing", "الإبداع والتسويق الرقمي")}</h1>
-          <video ref={videoRef} className="hero-video" autoPlay muted={muted} loop playsInline poster={poster.url} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} src={hero.url} />
+          <video ref={videoRef} className="hero-video" autoPlay muted={muted} loop playsInline poster={poster.url} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}>
+            <source src={heroWebm.url} type="video/webm" />
+            <source src={hero.url} type="video/mp4" />
+          </video>
           <img src={whiteLogo.url} className="video-brand" alt="Viral Zoom" />
           <div className="video-controls">
             <Button variant="ghost" size="icon" className="video-control" aria-label={muted ? t("Unmute video","تشغيل الصوت") : t("Mute video","كتم الصوت")} title={muted ? t("Unmute","تشغيل الصوت") : t("Mute","كتم الصوت")} onClick={() => setMuted(!muted)}>{muted ? <VolumeX /> : <Volume2 />}</Button>
