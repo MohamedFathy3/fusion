@@ -128,6 +128,11 @@ function Index() {
             <source src={heroWebm.url} type="video/webm" />
             <source src={hero.url} type="video/mp4" />
           </video>
+          <svg className="video-waves" viewBox="0 0 1440 180" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path className="video-wave-soft" d="M0 20 C300 60 460 150 720 120 C1020 95 1190 30 1440 10 L1440 180 L0 180 Z" />
+            <path className="video-wave-brand" d="M0 42 C310 82 470 166 740 145 C1030 125 1200 48 1440 32 L1440 180 L0 180 Z" />
+            <path className="video-wave-base" d="M0 60 C320 100 480 180 750 156 C1040 133 1210 65 1440 58 L1440 180 L0 180 Z" />
+          </svg>
           <img src={whiteLogo.url} className="video-brand" alt="Viral Zoom" />
           <div className="video-controls">
             <Button variant="ghost" size="icon" className="video-control" aria-label={muted ? t("Unmute video","تشغيل الصوت") : t("Mute video","كتم الصوت")} title={muted ? t("Unmute","تشغيل الصوت") : t("Mute","كتم الصوت")} onClick={() => setMuted(!muted)}>{muted ? <VolumeX /> : <Volume2 />}</Button>
