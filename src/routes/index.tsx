@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ChevronLeft, ChevronRight, Globe2, Menu, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Globe2, Menu, Moon, Sun, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { services } from "@/lib/showcase-data";
 import logo from "@/assets/logo.png.asset.json";
@@ -44,6 +44,7 @@ const clients = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9];
 
 function Index() {
   const [language, setLanguage] = useState<Language>("en");
+  const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [muted, setMuted] = useState(true);
@@ -56,6 +57,21 @@ function Index() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const ar = language === "ar";
   const t = (en: string, arabic: string) => ar ? arabic : en;
+
+  useEffect(() => {
+    try { setDarkMode(localStorage.getItem("viral-zoom-theme") === "dark"); } catch { /* Keep light mode when storage is unavailable. */ }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    return () => document.documentElement.classList.remove("dark");
+  }, [darkMode]);
+
+  const toggleTheme = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    try { localStorage.setItem("viral-zoom-theme", next ? "dark" : "light"); } catch { /* The switch still works without storage. */ }
+  };
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -92,11 +108,12 @@ function Index() {
     <div className="site" dir={ar ? "rtl" : "ltr"}>
       <header className="site-header" id="home">
         <div className="header-inner">
-          <Button variant="ghost" className="h-auto p-0 justify-start" aria-label="Viral Zoom home" onClick={() => goTo("home")}><img className="brand-logo" src={logo.url} alt="Viral Zoom" /></Button>
+          <Button variant="ghost" className="h-auto p-0 justify-start" aria-label="Viral Zoom home" onClick={() => goTo("home")}><img className="brand-logo" src={darkMode ? whiteLogo.url : logo.url} alt="Viral Zoom" /></Button>
           <nav className="desktop-nav" aria-label={t("Main navigation","القائمة الرئيسية")}>
             {nav.map(item => <Button variant="ghost" key={item.id} className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`} onClick={() => goTo(item.id)}>{item[language]}</Button>)}
           </nav>
           <div className="header-actions">
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={toggleTheme} aria-label={darkMode ? t("Switch to light mode", "تفعيل الوضع الفاتح") : t("Switch to dark mode", "تفعيل الوضع الداكن")} title={darkMode ? t("Light mode", "الوضع الفاتح") : t("Dark mode", "الوضع الداكن")} aria-pressed={darkMode}>{darkMode ? <Sun /> : <Moon />}</Button>
             <Button variant="ghost" className="language-button" aria-label={ar ? "Switch to English" : "التبديل إلى العربية"} onClick={() => setLanguage(ar ? "en" : "ar")}><Globe2 className="text-primary" />{ar ? "English" : "العربية"}</Button>
             <Button variant="ghost" size="icon" className="mobile-menu-toggle" aria-label={t("Open menu","فتح القائمة")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</Button>
           </div>
@@ -149,7 +166,7 @@ function Index() {
           </div>
         </section>
       </main>
-      <footer className="site-footer"><div className="section-inner footer-inner"><img className="footer-logo" src={logo.url} alt="Viral Zoom" /><span>© 2026 Viral Zoom. {t("All rights reserved.","جميع الحقوق محفوظة.")}</span><Button variant="link" className="text-xs gap-3" onClick={() => goTo("home")}>{t("Back to top","إلى أعلى")}<ArrowUpRight /></Button></div></footer>
+      <footer className="site-footer"><div className="section-inner footer-inner"><img className="footer-logo" src={darkMode ? whiteLogo.url : logo.url} alt="Viral Zoom" /><span>© 2026 Viral Zoom. {t("All rights reserved.","جميع الحقوق محفوظة.")}</span><Button variant="link" className="text-xs gap-3" onClick={() => goTo("home")}>{t("Back to top","إلى أعلى")}<ArrowUpRight /></Button></div></footer>
       <dialog ref={dialogRef} className="detail-dialog" onClose={() => setDetail(null)} onClick={event => { if (event.target === event.currentTarget) setDetail(null); }}>
         <Button variant="ghost" size="icon" className="dialog-close" aria-label={t("Close details","إغلاق التفاصيل")} onClick={() => setDetail(null)}><X /></Button>
         {detail?.image && <img className="detail-image" src={detail.image} alt={detail.title} />}
