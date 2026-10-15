@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Globe2, Menu, Moon, Sun, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png.asset.json";
 import whiteLogo from "@/assets/logo-white.png.asset.json";
@@ -9,16 +10,18 @@ import { translate } from "./types";
 type Props = {
   language: Language;
   darkMode: boolean;
-  activeSection: SectionId;
+  activeSection: SectionId | "about" | "contact";
   onNavigate: (id: SectionId) => void;
   onToggleTheme: () => void;
   onLanguageChange: () => void;
 };
 
-const navigation: { id: SectionId; en: string; ar: string }[] = [
+const navigation: { id: SectionId | "about"; en: string; ar: string }[] = [
   { id: "home", en: "HOME", ar: "الرئيسية" },
+  { id: "about", en: "ABOUT", ar: "من نحن" },
+  { id: "contact", en: "CONTACT", ar: "تواصل معنا" },
   { id: "services", en: "SERVICES", ar: "خدماتنا" },
-  { id: "portfolio", en: "PORTFOLIO", ar: "أعمالنا" },
+  { id: "portfolio", en: "PROJECTS", ar: "مشاريعنا" },
   { id: "clients", en: "OUR CLIENTS", ar: "عملاؤنا" },
 ];
 
@@ -51,16 +54,34 @@ export function ShowcaseHeader({
           <img className="brand-logo" src={darkMode ? whiteLogo.url : logo.url} alt="Viral Zoom" />
         </Button>
         <nav className="desktop-nav" aria-label={t("Main navigation", "القائمة الرئيسية")}>
-          {navigation.map((item) => (
-            <Button
-              variant="ghost"
-              key={item.id}
-              className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`}
-              onClick={() => navigate(item.id)}
-            >
-              {item[language]}
-            </Button>
-          ))}
+          {navigation.map((item) =>
+            item.id === "about" || item.id === "contact" || item.id === "services" || item.id === "portfolio" ? (
+              <Link
+                to={
+                  item.id === "about"
+                    ? "/about"
+                    : item.id === "contact"
+                      ? "/contact"
+                      : item.id === "services"
+                        ? "/services"
+                        : "/projects"
+                }
+                key={item.id}
+                className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`}
+              >
+                {item[language]}
+              </Link>
+            ) : (
+              <Button
+                variant="ghost"
+                key={item.id}
+                className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`}
+                onClick={() => navigate(item.id)}
+              >
+                {item[language]}
+              </Button>
+            ),
+          )}
         </nav>
         <div className="header-actions">
           <Button
@@ -99,11 +120,30 @@ export function ShowcaseHeader({
       </div>
       {menuOpen && (
         <nav className="mobile-nav">
-          {navigation.map((item) => (
-            <Button key={item.id} variant="ghost" onClick={() => navigate(item.id)}>
-              {item[language]}
-            </Button>
-          ))}
+          {navigation.map((item) =>
+            item.id === "about" || item.id === "contact" || item.id === "services" || item.id === "portfolio" ? (
+              <Link
+                to={
+                  item.id === "about"
+                    ? "/about"
+                    : item.id === "contact"
+                      ? "/contact"
+                      : item.id === "services"
+                        ? "/services"
+                        : "/projects"
+                }
+                key={item.id}
+                className="mobile-nav-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                {item[language]}
+              </Link>
+            ) : (
+              <Button key={item.id} variant="ghost" onClick={() => navigate(item.id)}>
+                {item[language]}
+              </Button>
+            ),
+          )}
         </nav>
       )}
     </header>

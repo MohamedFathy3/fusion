@@ -1,5 +1,6 @@
 import { Phone } from "lucide-react";
 import type { FormEvent } from "react";
+import worldMap from "@/assets/bg-2-e496b57f-842e-4cf1-8733-ba70e093aea4.png";
 import type { Language } from "./types";
 import { translate } from "./types";
 
@@ -13,6 +14,7 @@ export function ShowcaseContact({ language }: { language: Language }) {
     <section className="contact-section" id="contact" aria-labelledby="contact-title">
       <div className="section-inner contact-layout">
         <aside className="contact-info-card" aria-label={t("Contact details", "بيانات التواصل")}>
+          <img className="contact-world-map" src={worldMap} alt="" aria-hidden="true" />
           <div className="contact-phone-icon">
             <Phone aria-hidden="true" />
           </div>

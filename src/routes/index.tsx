@@ -4,7 +4,6 @@ import {
   ShowcaseClients,
   ShowcaseBanner,
   ShowcaseContact,
-  ShowcaseDetailDialog,
   ShowcaseFooter,
   ShowcaseHeader,
   ShowcaseHero,
@@ -12,7 +11,7 @@ import {
   ShowcaseProcess,
   ShowcaseServices,
 } from "@/components/showcase";
-import type { Detail, Language, SectionId } from "@/components/showcase/types";
+import type { Language, SectionId } from "@/components/showcase/types";
 import logo from "@/assets/logo.png.asset.json";
 import whiteLogo from "@/assets/logo-white.png.asset.json";
 
@@ -40,15 +39,15 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(false);
-  const [detail, setDetail] = useState<Detail | null>(null);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
   const ar = language === "ar";
 
   useEffect(() => {
     try {
       setDarkMode(localStorage.getItem("viral-zoom-theme") === "dark");
+      setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
     } catch {
-      // Keep light mode when storage is unavailable.
+      // Keep the default language and light mode when storage is unavailable.
     }
   }, []);
 
@@ -87,12 +86,20 @@ function Index() {
         activeSection={activeSection}
         onNavigate={goTo}
         onToggleTheme={toggleTheme}
-        onLanguageChange={() => setLanguage(ar ? "en" : "ar")}
+        onLanguageChange={() => {
+          const next = ar ? "en" : "ar";
+          setLanguage(next);
+          try {
+            localStorage.setItem("viral-zoom-language", next);
+          } catch {
+            // The switch still works without storage.
+          }
+        }}
       />
       <main>
         <ShowcaseHero language={language} />
-        <ShowcaseServices language={language} onSelectDetail={setDetail} />
-        <ShowcasePortfolio language={language} onSelectDetail={setDetail} />
+        <ShowcaseServices language={language} />
+        <ShowcasePortfolio language={language} />
         <ShowcaseClients language={language} />
         <ShowcaseProcess language={language} />
         <ShowcaseBanner language={language} />
@@ -103,7 +110,6 @@ function Index() {
         logo={darkMode ? whiteLogo.url : logo.url}
         onBackToTop={() => goTo("home")}
       />
-      <ShowcaseDetailDialog language={language} detail={detail} onClose={() => setDetail(null)} />
     </div>
   );
 }

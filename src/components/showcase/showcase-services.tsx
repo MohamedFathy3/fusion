@@ -1,19 +1,20 @@
-import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import website from "@/assets/website.jpg.asset.json";
 import { services } from "@/lib/showcase-data";
-import type { Detail, Language } from "./types";
+import type { Language } from "./types";
 import { translate } from "./types";
 
-type Props = {
-  language: Language;
-  onSelectDetail: (detail: Detail) => void;
-};
-
-export function ShowcaseServices({ language, onSelectDetail }: Props) {
+export function ShowcaseServices({ language }: { language: Language }) {
   const servicesRef = useRef<HTMLDivElement>(null);
   const autoNextRef = useRef(true);
+  const pointerStartRef = useRef<{ x: number; y: number; scrollLeft: number; pointerId: number } | null>(null);
+  const isDraggingRef = useRef(false);
+  const suppressClickRef = useRef(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const ar = language === "ar";
   const t = (english: string, arabic: string) => translate(language, english, arabic);
 
@@ -31,6 +32,48 @@ export function ShowcaseServices({ language, onSelectDetail }: Props) {
       left: (next ? 1 : -1) * (ar ? -1 : 1) * getStep(track),
       behavior: "smooth",
     });
+  };
+
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    pointerStartRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+      scrollLeft: event.currentTarget.scrollLeft,
+      pointerId: event.pointerId,
+    };
+    isDraggingRef.current = false;
+    suppressClickRef.current = false;
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const start = pointerStartRef.current;
+    if (!start || start.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - start.x;
+    const deltaY = event.clientY - start.y;
+    if (!isDraggingRef.current && Math.abs(deltaX) > 6 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      isDraggingRef.current = true;
+      suppressClickRef.current = true;
+      setIsDragging(true);
+      setIsPaused(true);
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+
+    if (!isDraggingRef.current) return;
+    event.preventDefault();
+    event.currentTarget.scrollLeft = start.scrollLeft + deltaX * (ar ? 1 : -1);
+  };
+
+  const endPointerDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (pointerStartRef.current?.pointerId !== event.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    pointerStartRef.current = null;
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    if (event.pointerType !== "mouse") setIsPaused(false);
   };
 
   useEffect(() => {
@@ -57,10 +100,64 @@ export function ShowcaseServices({ language, onSelectDetail }: Props) {
   }, [ar, isPaused]);
 
   return (
-    <section className="section" id="services">
+    <section className="section services-section" id="services" aria-labelledby="services-title">
+      <div className="section-inner">
+        <div className="services-intro">
+          <div className="services-intro-copy">
+            <p className="services-intro-eyebrow">
+              <span className="services-intro-dot" aria-hidden="true" />
+              {t("Creative services, made for growth", "خدمات إبداعية تنمّي شغلك")}
+            </p>
+            <h2>
+              {t("Big ideas.", "أفكار كبيرة.")}
+              <br />
+              <span>{t("Real impact.", "وتأثير حقيقي.")}</span>
+            </h2>
+            <p className="services-intro-description">
+              {t(
+                "From the first spark to the final detail, we bring strategy, creativity and technology together to move your brand forward.",
+                "من أول فكرة لآخر تفصيلة، بنجمع بين الاستراتيجية والإبداع والتكنولوجيا عشان نحرّك علامتك التجارية لقدّام.",
+              )}
+            </p>
+            <div className="services-intro-actions">
+              <a className="services-intro-cta" href="#service-cards">
+                {t("Explore our services", "اكتشف خدماتنا")}
+                <ArrowDown aria-hidden="true" />
+              </a>
+              <span className="services-intro-count">
+                <strong>{String(services.length).padStart(2, "0")}</strong>
+                {t("ways to grow your brand", "خدمات لتنمية علامتك")}
+              </span>
+            </div>
+          </div>
+          <div className="services-intro-visual">
+            <div className="services-intro-image-wrap">
+              <img
+                className="services-intro-image"
+                src={website.url}
+                alt={t("Creative digital experience designed by Viral Zoom", "تجربة رقمية إبداعية من فايرال زوم")}
+              />
+              <span className="services-image-caption">
+                {t("Strategy meets creativity", "الاستراتيجية تلتقي بالإبداع")}
+              </span>
+            </div>
+            <div className="services-image-stamp" aria-hidden="true">
+              <span>VZ</span>
+              <span>CREATIVE<br />STUDIO</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="section-inner">
         <div className="section-heading">
-          <h2>{t("Our Services", "خدماتنا")}</h2>
+          <div>
+            <p className="section-eyebrow">{t("WHAT WE DO", "ماذا نقدم")}</p>
+            <h2 id="services-title">{t("Our Services", "خدماتنا")}</h2>
+            <Link className="services-full-page-link" to="/services">
+              {t("View all services", "شوف كل خدماتنا")}
+              {ar ? <ChevronLeft aria-hidden="true" /> : <ChevronRight aria-hidden="true" />}
+            </Link>
+          </div>
           <div className="carousel-actions" dir="ltr">
             <Button
               variant="ghost"
@@ -84,9 +181,20 @@ export function ShowcaseServices({ language, onSelectDetail }: Props) {
         </div>
       </div>
       <div
-        className="service-track"
+        className={`service-track${isDragging ? " is-dragging" : ""}`}
+        id="service-cards"
         ref={servicesRef}
         aria-label={t("Services", "الخدمات")}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endPointerDrag}
+        onPointerCancel={endPointerDrag}
+        onClickCapture={(event) => {
+          if (!suppressClickRef.current) return;
+          event.preventDefault();
+          event.stopPropagation();
+          suppressClickRef.current = false;
+        }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onFocusCapture={() => setIsPaused(true)}
@@ -105,19 +213,11 @@ export function ShowcaseServices({ language, onSelectDetail }: Props) {
             <div className="service-number">{String(index + 1).padStart(2, "0")} / VIRAL ZOOM</div>
             <h3>{service.title[language]}</h3>
             <p>{service.description[language]}</p>
-            <Button
-              variant="link"
-              className="service-more"
-              onClick={() =>
-                onSelectDetail({
-                  title: service.title[language],
-                  description: service.description[language],
-                  image: service.image,
-                })
-              }
-            >
-              {t("Read More", "اقرأ المزيد")}
-              <ArrowUpRight />
+            <Button variant="link" className="service-more" asChild>
+              <Link to="/services/$slug" params={{ slug: service.slug }}>
+                {t("Read More", "اقرأ المزيد")}
+                <ArrowUpRight />
+              </Link>
             </Button>
           </article>
         ))}
