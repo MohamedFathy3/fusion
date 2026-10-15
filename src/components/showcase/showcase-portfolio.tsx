@@ -1,10 +1,12 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { projects } from "@/lib/projects";
+import { useCMS } from "@/lib/cms";
 import type { Language } from "./types";
 import { translate } from "./types";
 
 export function ShowcasePortfolio({ language }: { language: Language }) {
+  const { config } = useCMS();
+  const projects = config.portfolio.filter((project) => project.enabled);
   const t = (english: string, arabic: string) => translate(language, english, arabic);
 
   return (
@@ -19,38 +21,13 @@ export function ShowcasePortfolio({ language }: { language: Language }) {
           </Link>
         </div>
         <div className="portfolio-grid">
-          {projects.slice(0, 3).map((project) => {
-            const projectContent = (
-              <>
-                <img src={project.image} alt={project.name} loading="lazy" />
-                <span className="portfolio-label">{project.name}</span>
-                {project.kind === "external" && <ArrowUpRight className="portfolio-external-icon" aria-hidden="true" />}
-              </>
-            );
-
-            return project.kind === "external" ? (
-              <a
-                className="portfolio-item"
-                href={project.url}
-                key={project.slug}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={t(`Visit ${project.name}`, `زيارة ${project.name}`)}
-              >
-                {projectContent}
-              </a>
-            ) : (
-              <Link
-                className="portfolio-item"
-                to="/projects/$slug"
-                params={{ slug: project.slug }}
-                key={project.slug}
-                aria-label={t(`View ${project.name}`, `عرض ${project.name}`)}
-              >
-                {projectContent}
-              </Link>
-            );
-          })}
+          {projects.slice(0, 3).map((project) => (
+            <a className="portfolio-item" href={project.link || `/projects/${project.id}`} key={project.id} aria-label={t(`View ${project.name.en}`, `عرض ${project.name.ar}`)}>
+              <img src={project.image} alt={project.name[language]} loading="lazy" />
+              <span className="portfolio-label">{project.name[language]}</span>
+              {project.link?.startsWith("http") && <ArrowUpRight className="portfolio-external-icon" aria-hidden="true" />}
+            </a>
+          ))}
         </div>
       </div>
     </section>

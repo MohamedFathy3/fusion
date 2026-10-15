@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Globe2, Menu, Moon, Sun, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/logo.png.asset.json";
-import whiteLogo from "@/assets/logo-white.png.asset.json";
+import { useCMS } from "@/lib/cms";
 import type { Language, SectionId } from "./types";
 import { translate } from "./types";
 
@@ -33,6 +32,7 @@ export function ShowcaseHeader({
   onToggleTheme,
   onLanguageChange,
 }: Props) {
+  const { config } = useCMS();
   const [menuOpen, setMenuOpen] = useState(false);
   const ar = language === "ar";
   const t = (english: string, arabic: string) => translate(language, english, arabic);
@@ -51,7 +51,7 @@ export function ShowcaseHeader({
           aria-label="Viral Zoom home"
           onClick={() => navigate("home")}
         >
-          <img className="brand-logo" src={darkMode ? whiteLogo.url : logo.url} alt="Viral Zoom" />
+          <img className="brand-logo" src={darkMode ? config.brand.whiteLogo : config.brand.logo} alt={config.brand.name} />
         </Button>
         <nav className="desktop-nav" aria-label={t("Main navigation", "القائمة الرئيسية")}>
           {navigation.map((item) =>
@@ -76,7 +76,7 @@ export function ShowcaseHeader({
                 variant="ghost"
                 key={item.id}
                 className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`}
-                onClick={() => navigate(item.id)}
+                onClick={() => navigate(item.id as SectionId)}
               >
                 {item[language]}
               </Button>
@@ -139,7 +139,7 @@ export function ShowcaseHeader({
                 {item[language]}
               </Link>
             ) : (
-              <Button key={item.id} variant="ghost" onClick={() => navigate(item.id)}>
+              <Button key={item.id} variant="ghost" onClick={() => navigate(item.id as SectionId)}>
                 {item[language]}
               </Button>
             ),

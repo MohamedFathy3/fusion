@@ -3,11 +3,13 @@ import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import website from "@/assets/website.jpg.asset.json";
-import { services } from "@/lib/showcase-data";
+import { useCMS } from "@/lib/cms";
 import type { Language } from "./types";
 import { translate } from "./types";
 
 export function ShowcaseServices({ language }: { language: Language }) {
+  const { config } = useCMS();
+  const services = config.services.filter((service) => service.enabled);
   const servicesRef = useRef<HTMLDivElement>(null);
   const autoNextRef = useRef(true);
   const pointerStartRef = useRef<{ x: number; y: number; scrollLeft: number; pointerId: number } | null>(null);
@@ -152,7 +154,7 @@ export function ShowcaseServices({ language }: { language: Language }) {
         <div className="section-heading">
           <div>
             <p className="section-eyebrow">{t("WHAT WE DO", "ماذا نقدم")}</p>
-            <h2 id="services-title">{t("Our Services", "خدماتنا")}</h2>
+          <h2 id="services-title">{t("Our Services", "خدماتنا")}</h2>
             <Link className="services-full-page-link" to="/services">
               {t("View all services", "شوف كل خدماتنا")}
               {ar ? <ChevronLeft aria-hidden="true" /> : <ChevronRight aria-hidden="true" />}
@@ -203,18 +205,18 @@ export function ShowcaseServices({ language }: { language: Language }) {
         }}
       >
         {services.map((service, index) => (
-          <article className="service-card" key={service.title.en}>
+          <article className="service-card" key={service.id}>
             <img
               className="service-image"
               src={service.image}
-              alt={service.title[language]}
+              alt={service.name[language]}
               loading="lazy"
             />
             <div className="service-number">{String(index + 1).padStart(2, "0")} / VIRAL ZOOM</div>
-            <h3>{service.title[language]}</h3>
+            <h3>{service.name[language]}</h3>
             <p>{service.description[language]}</p>
             <Button variant="link" className="service-more" asChild>
-              <Link to="/services/$slug" params={{ slug: service.slug }}>
+              <Link to="/services/$slug" params={{ slug: service.id }}>
                 {t("Read More", "اقرأ المزيد")}
                 <ArrowUpRight />
               </Link>

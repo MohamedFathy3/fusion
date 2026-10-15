@@ -12,8 +12,7 @@ import {
   ShowcaseServices,
 } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
-import logo from "@/assets/logo.png.asset.json";
-import whiteLogo from "@/assets/logo-white.png.asset.json";
+import { useCMS } from "@/lib/cms";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -37,6 +36,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { config } = useCMS();
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
@@ -98,16 +98,16 @@ function Index() {
       />
       <main>
         <ShowcaseHero language={language} />
-        <ShowcaseServices language={language} />
-        <ShowcasePortfolio language={language} />
-        <ShowcaseClients language={language} />
-        <ShowcaseProcess language={language} />
-        <ShowcaseBanner language={language} />
-        <ShowcaseContact language={language} />
+        {config.sections.services && <ShowcaseServices language={language} />}
+        {config.sections.portfolio && <ShowcasePortfolio language={language} />}
+        {config.sections.clients && <ShowcaseClients language={language} />}
+        {config.sections.process && <ShowcaseProcess language={language} />}
+        {config.sections.banner && <ShowcaseBanner language={language} />}
+        {config.sections.contact && <ShowcaseContact language={language} />}
       </main>
       <ShowcaseFooter
         language={language}
-        logo={darkMode ? whiteLogo.url : logo.url}
+        logo={darkMode ? config.brand.whiteLogo : config.brand.logo}
         onBackToTop={() => goTo("home")}
       />
     </div>

@@ -6,9 +6,11 @@ import heroWebm from "@/assets/hero.webm.asset.json";
 import whiteLogo from "@/assets/logo-white.png.asset.json";
 import poster from "@/assets/poster.jpg.asset.json";
 import type { Language } from "./types";
+import { useCMS } from "@/lib/cms";
 import { translate } from "./types";
 
 export function ShowcaseHero({ language }: { language: Language }) {
+  const { config } = useCMS();
   const [playing, setPlaying] = useState(true);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -30,7 +32,7 @@ export function ShowcaseHero({ language }: { language: Language }) {
 
   return (
     <section className="video-section" aria-label={t("Viral Zoom showreel", "فيديو فايرال زوم")}>
-      <h1 className="sr-only">Viral Zoom — {t("Creative & Digital Marketing", "الإبداع والتسويق الرقمي")}</h1>
+      <h1 className="sr-only">{config.brand.name} — {config.hero.title[language]}</h1>
       <video
         ref={videoRef}
         className="hero-video"
@@ -38,12 +40,12 @@ export function ShowcaseHero({ language }: { language: Language }) {
         muted={muted}
         loop
         playsInline
-        poster={poster.url}
+        poster={config.hero.poster || poster.url}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
       >
-        <source src={heroWebm.url} type="video/webm" />
-        <source src={hero.url} type="video/mp4" />
+        {config.hero.video === hero.url ? <source src={heroWebm.url} type="video/webm" /> : null}
+        <source src={config.hero.video || hero.url} type="video/mp4" />
       </video>
       <svg
         className="video-waves"
@@ -65,7 +67,8 @@ export function ShowcaseHero({ language }: { language: Language }) {
           d="M0 60 C320 100 480 180 750 156 C1040 133 1210 65 1440 58 L1440 180 L0 180 Z"
         />
       </svg>
-      <img src={whiteLogo.url} className="video-brand" alt="Viral Zoom" />
+      <div className="hero-copy-overlay"><strong>{config.hero.title[language]}</strong><span>{config.hero.subtitle[language]}</span></div>
+      <img src={config.brand.whiteLogo || whiteLogo.url} className="video-brand" alt={config.brand.name} />
     </section>
   );
 }

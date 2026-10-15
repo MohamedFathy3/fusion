@@ -9,6 +9,11 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 process.env.LOVABLE_PREVIEW_HOST ??= "id-preview--0687453c-ae9b-4bd8-ae57-adc33c0944a1.lovable.app";
 
 export default defineConfig({
+  vite: {
+    server: {
+      allowedHosts: ["5173-ik400mn25rkan5lxxqbfr-05aa740c.sg2.manus.computer"],
+    },
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

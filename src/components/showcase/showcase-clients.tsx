@@ -1,22 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import c0 from "@/assets/client-0.jpg.asset.json";
-import c1 from "@/assets/client-1.jpg.asset.json";
-import c2 from "@/assets/client-2.jpg.asset.json";
-import c3 from "@/assets/client-3.jpg.asset.json";
-import c4 from "@/assets/client-4.jpg.asset.json";
-import c5 from "@/assets/client-5.jpg.asset.json";
-import c6 from "@/assets/client-6.jpg.asset.json";
-import c7 from "@/assets/client-7.jpg.asset.json";
-import c8 from "@/assets/client-8.jpg.asset.json";
-import c9 from "@/assets/client-9.jpg.asset.json";
 import type { Language } from "./types";
 import { translate } from "./types";
-
-const clients = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9];
+import { useCMS } from "@/lib/cms";
 
 export function ShowcaseClients({ language }: { language: Language }) {
+  const { config } = useCMS();
+  const clients = config.clients.filter((client) => client.enabled);
   const [showAllClients, setShowAllClients] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const clientsRef = useRef<HTMLDivElement>(null);
@@ -75,10 +66,10 @@ export function ShowcaseClients({ language }: { language: Language }) {
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             {clients.map((client, index) => (
               <img
-                key={client.asset_id}
-                src={client.url}
+              key={client.id}
+              src={client.image}
                 className="w-full rounded-sm"
-                alt={t(`Client brand ${index + 1}`, `العلامة التجارية ${index + 1}`)}
+                alt={client.name[language] || t(`Client brand ${index + 1}`, `العلامة التجارية ${index + 1}`)}
                 loading="lazy"
               />
             ))}
@@ -106,10 +97,10 @@ export function ShowcaseClients({ language }: { language: Language }) {
             <div className="client-track" ref={clientsRef} dir={ar ? "rtl" : "ltr"}>
               {clients.map((client, index) => (
                 <img
-                  key={client.asset_id}
+              key={client.id}
                   className="client-logo"
-                  src={client.url}
-                  alt={t(`Client brand ${index + 1}`, `العلامة التجارية ${index + 1}`)}
+                  src={client.image}
+                  alt={client.name[language] || t(`Client brand ${index + 1}`, `العلامة التجارية ${index + 1}`)}
                   loading="lazy"
                 />
               ))}

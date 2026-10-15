@@ -3,10 +3,11 @@ import type { FormEvent } from "react";
 import worldMap from "@/assets/bg-2-e496b57f-842e-4cf1-8733-ba70e093aea4.png";
 import type { Language } from "./types";
 import { translate } from "./types";
-
-const contactPhone = "01064621943";
+import { useCMS } from "@/lib/cms";
 
 export function ShowcaseContact({ language }: { language: Language }) {
+  const { config } = useCMS();
+  const contactPhone = config.contact.phone || "01064621943";
   const t = (english: string, arabic: string) => translate(language, english, arabic);
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => event.preventDefault();
 
@@ -22,7 +23,7 @@ export function ShowcaseContact({ language }: { language: Language }) {
             {contactPhone}
           </a>
           <div className="contact-info-copy">
-            <h3>{t("Let's connect", "خلّينا نتواصل")}</h3>
+            <h3>{config.contact.address[language] || t("Let's connect", "خلّينا نتواصل")}</h3>
             <p>
               {t(
                 "Have a project in mind? Tell us what you are looking to create.",
@@ -31,7 +32,8 @@ export function ShowcaseContact({ language }: { language: Language }) {
             </p>
           </div>
           <div className="contact-info-note">
-            {t("Call us to talk through your next idea.", "اتصل بينا واحكيلنا عن فكرتك الجديدة.")}
+            {config.contact.email ? <a href={`mailto:${config.contact.email}`}>{config.contact.email}</a> : t("Call us to talk through your next idea.", "اتصل بينا واحكيلنا عن فكرتك الجديدة.")}
+            {config.contact.whatsapp && <> · <a href={config.contact.whatsapp} target="_blank" rel="noreferrer">WhatsApp</a></>}
           </div>
         </aside>
 

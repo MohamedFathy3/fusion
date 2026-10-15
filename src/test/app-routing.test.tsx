@@ -16,6 +16,12 @@ describe("App routing", () => {
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
 
+  it("matches the administrator dashboard route", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    expect(router.matchRoutes("/admin").at(-1)?.routeId).toBe("/admin");
+  });
+
   it("matches the about, contact, services and projects indexes and their server-renderable detail routes", () => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
 
@@ -35,7 +41,9 @@ describe("App routing", () => {
     if (!concept) throw new Error("Expected the social campaign concept to exist");
     expect(projectHasCategory(concept, "social-media")).toBe(true);
     expect(projectHasCategory(concept, "branding")).toBe(true);
-    expect(existingBrandProject && projectHasCategory(existingBrandProject, "social-media")).toBe(false);
+    expect(existingBrandProject && projectHasCategory(existingBrandProject, "social-media")).toBe(
+      false,
+    );
   });
 
   it("provides a second social project with exactly eight gallery images", () => {
