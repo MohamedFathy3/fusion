@@ -1,6 +1,19 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { services as baseServices } from "@/lib/showcase-data";
-import { projects as baseProjects } from "@/lib/projects";
+import {
+  projects as baseProjects,
+  type Project,
+  type ProjectCategoryId,
+  type SocialMediaShowcase,
+} from "@/lib/projects";
 import c0 from "@/assets/client-0.jpg.asset.json";
 import c1 from "@/assets/client-1.jpg.asset.json";
 import c2 from "@/assets/client-2.jpg.asset.json";
@@ -23,6 +36,12 @@ export type EditableItem = {
   image: string;
   link?: string;
   enabled: boolean;
+  projectCategory?: ProjectCategoryId;
+  additionalCategories?: ProjectCategoryId[];
+  projectKind?: "case-study" | "external";
+  projectUrl?: string;
+  imageGallery?: string[];
+  socialMediaShowcase?: SocialMediaShowcase;
 };
 export type SiteConfig = {
   brand: { name: string; accent: string; logo: string; whiteLogo: string };
@@ -49,7 +68,7 @@ export const initialConfig: SiteConfig = {
     poster: "",
   },
   sections: {
-    services: true,
+    services: false,
     portfolio: true,
     clients: true,
     process: true,
@@ -71,6 +90,14 @@ export const initialConfig: SiteConfig = {
     image: item.image,
     link: item.kind === "external" ? item.url : `/projects/${item.slug}`,
     enabled: true,
+    projectCategory: item.category,
+    ...(item.additionalCategories ? { additionalCategories: item.additionalCategories } : {}),
+    projectKind: item.kind,
+    ...(item.kind === "external" ? { projectUrl: item.url } : {}),
+    ...(item.kind === "case-study" && item.imageGallery ? { imageGallery: item.imageGallery } : {}),
+    ...(item.kind === "case-study" && item.socialMediaShowcase
+      ? { socialMediaShowcase: item.socialMediaShowcase }
+      : {}),
   })),
   clients: [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9].map((item, i) => ({
     id: `client-${i + 1}`,
@@ -87,11 +114,52 @@ export const initialConfig: SiteConfig = {
   },
 };
 
-const STORAGE_KEY = "viral-zoom-cms-v1";
+export function projectItemsFromConfig(items: EditableItem[]): Project[] {
+  return items.map((item) => {
+    const original = baseProjects.find((project) => project.slug === item.id);
+    const category = item.projectCategory ?? original?.category ?? "branding";
+    const extra = item.additionalCategories ?? original?.additionalCategories;
+    if (item.projectKind === "external" || original?.kind === "external") {
+      const originalExternal = original?.kind === "external" ? original : undefined;
+      return {
+        ...(originalExternal ?? {}),
+        slug: item.id,
+        name: item.name.en,
+        localizedName: item.name,
+        category,
+        ...(extra ? { additionalCategories: extra } : {}),
+        kind: "external" as const,
+        projectType: originalExternal?.projectType ?? ("website" as const),
+        url: item.projectUrl ?? item.link ?? originalExternal?.url ?? "/",
+        image: item.image,
+        description: item.description,
+      };
+    }
+    const originalCase = original?.kind === "case-study" ? original : undefined;
+    const gallery = item.imageGallery ?? originalCase?.imageGallery;
+    const showcase = item.socialMediaShowcase ?? originalCase?.socialMediaShowcase;
+    return {
+      ...(originalCase ?? {}),
+      slug: item.id,
+      name: item.name.en,
+      localizedName: item.name,
+      category,
+      ...(extra ? { additionalCategories: extra } : {}),
+      kind: "case-study" as const,
+      image: item.image,
+      description: item.description,
+      ...(gallery ? { imageGallery: gallery } : {}),
+      ...(showcase ? { socialMediaShowcase: showcase } : {}),
+    };
+  });
+}
+
 type CMSContextValue = {
   config: SiteConfig;
-  setConfig: (next: SiteConfig) => void;
-  reset: () => void;
+  ready: boolean;
+  refresh: () => Promise<void>;
+  setConfig: (next: SiteConfig) => Promise<void>;
+  reset: () => Promise<void>;
 };
 const CMSContext = createContext<CMSContextValue | null>(null);
 
@@ -119,38 +187,58 @@ function mergeConfig(saved: Partial<SiteConfig> | null): SiteConfig {
   };
 }
 
+async function persistConfig(config: SiteConfig) {
+  const response = await fetch("/api/site", {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(config),
+  });
+  if (!response.ok) {
+    const result = (await response.json().catch(() => ({}))) as { error?: string };
+    throw new Error(result.error || "Could not save site content.");
+  }
+}
+
 export function CMSProvider({ children }: { children: ReactNode }) {
   const [config, setConfigState] = useState<SiteConfig>(initialConfig);
-  useEffect(() => {
-    try {
-      setConfigState(mergeConfig(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null")));
-    } catch {
-      setConfigState(initialConfig);
-    }
+  const [ready, setReady] = useState(false);
+  const refresh = useCallback(async () => {
+    const response = await fetch("/api/site", { credentials: "same-origin" });
+    if (!response.ok) throw new Error(`Content API returned ${response.status}`);
+    const saved = (await response.json()) as Partial<SiteConfig>;
+    setConfigState(mergeConfig(saved));
   }, []);
+  useEffect(() => {
+    refresh()
+      .catch((error) => {
+        console.error(
+          "Could not load content from the Node API; showing the packaged defaults.",
+          error,
+        );
+      })
+      .finally(() => {
+        setReady(true);
+      });
+  }, [refresh]);
   useEffect(() => {
     document.documentElement.style.setProperty("--primary", config.brand.accent);
   }, [config.brand.accent]);
   const value = useMemo<CMSContextValue>(
     () => ({
       config,
-      setConfig(next) {
-        setConfigState(next);
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        } catch (error) {
-          console.warn(
-            "The browser could not save the CMS data. Large media files should be hosted and added by URL.",
-            error,
-          );
-        }
+      ready,
+      refresh,
+      async setConfig(next) {
+        await persistConfig(next);
+        setConfigState(mergeConfig(next));
       },
-      reset() {
-        localStorage.removeItem(STORAGE_KEY);
+      async reset() {
+        await persistConfig(initialConfig);
         setConfigState(initialConfig);
       },
     }),
-    [config],
+    [config, ready, refresh],
   );
   return <CMSContext.Provider value={value}>{children}</CMSContext.Provider>;
 }
@@ -160,5 +248,3 @@ export function useCMS() {
   if (!value) throw new Error("useCMS must be used within CMSProvider");
   return value;
 }
-
-export const CMS_STORAGE_KEY = STORAGE_KEY;

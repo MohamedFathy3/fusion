@@ -1,0 +1,425 @@
+import { createHmac, randomBytes, timingSafeEqual, randomUUID } from "node:crypto";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { extname, resolve, sep } from "node:path";
+import { env } from "node:process";
+import { initialConfig, type EditableItem, type SiteConfig } from "@/lib/cms";
+
+const DATA_DIR = resolve(env["DATA_DIR"] || "data");
+const CONTENT_FILE = resolve(DATA_DIR, "site-content.json");
+const UPLOADS_DIR = resolve(DATA_DIR, "uploads");
+const COOKIE_NAME = "vz_admin";
+const SESSION_TTL_SECONDS = 60 * 60 * 12;
+const sessionSecret = env["SESSION_SECRET"] || randomBytes(32).toString("hex");
+const DEFAULT_ADMIN_EMAIL = "admin@admin.com";
+const collections = {
+  services: "services",
+  projects: "portfolio",
+  clients: "clients",
+} as const;
+type CollectionName = keyof typeof collections;
+type ContentDocument = { config: SiteConfig };
+
+function json(data: unknown, status = 200, headers?: HeadersInit) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      ...Object.fromEntries(new Headers(headers)),
+    },
+  });
+}
+
+function equalSecret(left: string, right: string) {
+  const a = Buffer.from(left);
+  const b = Buffer.from(right);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+function sign(payload: string) {
+  return createHmac("sha256", sessionSecret).update(payload).digest("base64url");
+}
+
+function createSessionCookie(secure: boolean) {
+  const payload = Buffer.from(
+    JSON.stringify({ exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS }),
+  ).toString("base64url");
+  const token = `${payload}.${sign(payload)}`;
+  return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${SESSION_TTL_SECONDS}${secure ? "; Secure" : ""}`;
+}
+
+function hasSession(request: Request) {
+  const cookie = request.headers.get("cookie") ?? "";
+  const token = cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${COOKIE_NAME}=`))
+    ?.slice(COOKIE_NAME.length + 1);
+  if (!token) return false;
+  const [payload, signature] = token.split(".");
+  if (!payload || !signature || !equalSecret(signature, sign(payload))) return false;
+  try {
+    const data = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as { exp?: number };
+    return typeof data.exp === "number" && data.exp > Date.now() / 1000;
+  } catch {
+    return false;
+  }
+}
+
+function sameOrigin(request: Request) {
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+  try {
+    return new URL(origin).origin === new URL(request.url).origin;
+  } catch {
+    return false;
+  }
+}
+
+function requireAdmin(request: Request) {
+  return sameOrigin(request) && hasSession(request);
+}
+
+async function ensureStore(): Promise<ContentDocument> {
+  await mkdir(DATA_DIR, { recursive: true });
+  await mkdir(UPLOADS_DIR, { recursive: true });
+  try {
+    const parsed = JSON.parse(await readFile(CONTENT_FILE, "utf8")) as ContentDocument;
+    if (!parsed || typeof parsed !== "object" || !parsed.config)
+      throw new Error("Invalid content document");
+    return parsed;
+  } catch (error) {
+    if ((error as { code?: string }).code !== "ENOENT") throw error;
+    const seeded = { config: initialConfig };
+    await persistStore(seeded);
+    return seeded;
+  }
+}
+
+async function persistStore(document: ContentDocument) {
+  await mkdir(DATA_DIR, { recursive: true });
+  const temporary = `${CONTENT_FILE}.${randomUUID()}.tmp`;
+  await writeFile(temporary, `${JSON.stringify(document, null, 2)}\n`, { mode: 0o600 });
+  await rename(temporary, CONTENT_FILE);
+}
+
+async function readJson(request: Request, limit = 4 * 1024 * 1024): Promise<unknown> {
+  const declaredLength = Number(request.headers.get("content-length") || 0);
+  if (declaredLength > limit) throw new Error("PAYLOAD_TOO_LARGE");
+  const bytes = new Uint8Array(await request.arrayBuffer());
+  if (bytes.byteLength > limit) throw new Error("PAYLOAD_TOO_LARGE");
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+function validConfig(candidate: unknown): candidate is SiteConfig {
+  if (!candidate || typeof candidate !== "object") return false;
+  const config = candidate as Partial<SiteConfig>;
+  if (!config.brand || !config.hero || !config.sections || !config.contact) return false;
+  if (
+    !Array.isArray(config.services) ||
+    !Array.isArray(config.portfolio) ||
+    !Array.isArray(config.clients)
+  )
+    return false;
+  const allItems = [...config.services, ...config.portfolio, ...config.clients] as EditableItem[];
+  if (allItems.length > 2000) return false;
+  return allItems.every(
+    (item) =>
+      typeof item.id === "string" &&
+      item.id.length > 0 &&
+      typeof item.name?.en === "string" &&
+      typeof item.name?.ar === "string" &&
+      typeof item.description?.en === "string" &&
+      typeof item.description?.ar === "string" &&
+      typeof item.image === "string" &&
+      typeof item.enabled === "boolean" &&
+      !item.image.startsWith("data:"),
+  );
+}
+
+function publicConfig(config: SiteConfig): SiteConfig {
+  return {
+    ...config,
+    services: config.services.filter((item) => item.enabled),
+    portfolio: config.portfolio.filter((item) => item.enabled),
+    clients: config.clients.filter((item) => item.enabled),
+  };
+}
+
+function mimeExtension(type: string) {
+  const extensions: Record<string, string> = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+    "video/mp4": ".mp4",
+    "video/webm": ".webm",
+  };
+  return extensions[type];
+}
+
+const uploadCache = new Map<string, { type: string; size: number }>();
+const failedLogins = new Map<string, { count: number; expires: number }>();
+const typeByExtension: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".gif": "image/gif",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
+};
+
+function publicOrigin() {
+  const configured = env["PUBLIC_SITE_URL"]?.trim();
+  if (!configured) return null;
+  try {
+    const url = new URL(configured);
+    return url.protocol === "https:" && url.pathname === "/" && !url.username && !url.password
+      ? url.origin
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function escapeXml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
+export async function handleApiRequest(request: Request): Promise<Response | null> {
+  const url = new URL(request.url);
+  const method = request.method.toUpperCase();
+  const origin = publicOrigin();
+  if (origin && method === "GET" && url.pathname === "/robots.txt") {
+    return new Response(
+      `User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${origin}/sitemap.xml\n`,
+      {
+        headers: {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "public, max-age=3600",
+        },
+      },
+    );
+  }
+  if (origin && method === "GET" && url.pathname === "/sitemap.xml") {
+    const { config } = await ensureStore();
+    const paths = [
+      "/",
+      "/about",
+      "/contact",
+      "/services",
+      "/projects",
+      ...config.services.filter((item) => item.enabled).map((item) => `/services/${item.id}`),
+      ...config.portfolio
+        .filter((item) => item.enabled && item.projectKind !== "external")
+        .map((item) => `/projects/${item.id}`),
+    ];
+    const uniquePaths = [...new Set(paths)];
+    const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${uniquePaths
+      .map((path) => `  <url><loc>${escapeXml(`${origin}${path}`)}</loc></url>`)
+      .join("\n")}\n</urlset>\n`;
+    return new Response(body, {
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=3600",
+      },
+    });
+  }
+  if (url.pathname === "/api/health" && method === "GET") {
+    return json({ ok: true, runtime: "node", storage: "file-system" });
+  }
+
+  if (url.pathname.startsWith("/uploads/")) {
+    if (method !== "GET") return json({ error: "Method not allowed" }, 405, { Allow: "GET" });
+    const name = url.pathname.slice("/uploads/".length);
+    if (!/^[0-9a-f-]+\.(jpg|png|webp|gif|mp4|webm)$/i.test(name))
+      return json({ error: "Not found" }, 404);
+    const filePath = resolve(UPLOADS_DIR, name);
+    if (!filePath.startsWith(`${UPLOADS_DIR}${sep}`)) return json({ error: "Not found" }, 404);
+    try {
+      const data = await readFile(filePath);
+      const meta = uploadCache.get(name);
+      const type =
+        meta?.type || typeByExtension[extname(name).toLowerCase()] || "application/octet-stream";
+      return new Response(data, {
+        headers: {
+          "content-type": type,
+          "content-length": String(data.byteLength),
+          "cache-control": "public, max-age=31536000, immutable",
+          "x-content-type-options": "nosniff",
+        },
+      });
+    } catch {
+      return json({ error: "Not found" }, 404);
+    }
+  }
+
+  if (!url.pathname.startsWith("/api/")) return null;
+
+  if (url.pathname === "/api/auth/session" && method === "GET") {
+    return json({ authenticated: hasSession(request) });
+  }
+
+  if (url.pathname === "/api/auth/login" && method === "POST") {
+    if (!sameOrigin(request)) return json({ error: "Invalid origin" }, 403);
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const recent = failedLogins.get(ip);
+    if (recent && recent.expires > Date.now() && recent.count >= 8) {
+      return json({ error: "Too many attempts. Try again later." }, 429);
+    }
+    try {
+      const body = (await readJson(request, 8192)) as { email?: string; password?: string };
+      const expectedEmail = env["ADMIN_EMAIL"] || DEFAULT_ADMIN_EMAIL;
+      const expectedPassword = env["ADMIN_PASSWORD"];
+      if (!expectedPassword)
+        return json({ error: "Admin password is not configured on the server." }, 503);
+      if (
+        equalSecret((body.email || "").trim().toLowerCase(), expectedEmail.toLowerCase()) &&
+        equalSecret(body.password || "", expectedPassword)
+      ) {
+        failedLogins.delete(ip);
+        return json({ authenticated: true }, 200, {
+          "set-cookie": createSessionCookie(url.protocol === "https:"),
+        });
+      }
+      const next =
+        recent && recent.expires > Date.now()
+          ? { ...recent, count: recent.count + 1 }
+          : { count: 1, expires: Date.now() + 10 * 60 * 1000 };
+      failedLogins.set(ip, next);
+      return json({ error: "Invalid email or password." }, 401);
+    } catch (error) {
+      return json(
+        {
+          error:
+            error instanceof Error && error.message === "PAYLOAD_TOO_LARGE"
+              ? "Request too large"
+              : "Invalid request",
+        },
+        400,
+      );
+    }
+  }
+
+  if (url.pathname === "/api/auth/logout" && method === "POST") {
+    if (!sameOrigin(request)) return json({ error: "Invalid origin" }, 403);
+    return json({ authenticated: false }, 200, {
+      "set-cookie": `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${url.protocol === "https:" ? "; Secure" : ""}`,
+    });
+  }
+
+  if (url.pathname === "/api/uploads" && method === "POST") {
+    if (!requireAdmin(request)) return json({ error: "Unauthorized" }, 401);
+    const declaredLength = Number(request.headers.get("content-length") || 0);
+    if (declaredLength > 100 * 1024 * 1024) return json({ error: "Upload is too large" }, 413);
+    try {
+      const form = await request.formData();
+      const file = form.get("file");
+      if (!(file instanceof File)) return json({ error: "Missing file" }, 400);
+      const extension = mimeExtension(file.type);
+      if (!extension)
+        return json({ error: "Unsupported file type. Use JPG, PNG, WebP, GIF, MP4 or WebM." }, 415);
+      const maxSize = file.type.startsWith("video/") ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+      if (file.size <= 0 || file.size > maxSize)
+        return json({ error: "File exceeds the allowed size." }, 413);
+      const name = `${randomUUID()}${extension}`;
+      await mkdir(UPLOADS_DIR, { recursive: true });
+      await writeFile(resolve(UPLOADS_DIR, name), Buffer.from(await file.arrayBuffer()), {
+        flag: "wx",
+        mode: 0o644,
+      });
+      uploadCache.set(name, { type: file.type, size: file.size });
+      return json({ url: `/uploads/${name}`, name, type: file.type, size: file.size }, 201);
+    } catch {
+      return json({ error: "Upload could not be processed." }, 400);
+    }
+  }
+
+  const resource = url.pathname.match(/^\/api\/(services|projects|clients)(?:\/([^/]+))?$/);
+  if (resource) {
+    const collectionName = resource[1] as CollectionName;
+    const field = collections[collectionName];
+    const id = resource[2] ? decodeURIComponent(resource[2]) : undefined;
+    const store = await ensureStore();
+    const allCurrent = store.config[field] as EditableItem[];
+    const current = hasSession(request) ? allCurrent : allCurrent.filter((item) => item.enabled);
+    if (method === "GET") {
+      const item = id ? current.find((record) => record.id === id) : current;
+      return item ? json(item) : json({ error: "Not found" }, 404);
+    }
+    if (!requireAdmin(request)) return json({ error: "Unauthorized" }, 401);
+    if (method === "POST" && !id) {
+      try {
+        const body = (await readJson(request)) as Partial<EditableItem>;
+        const item = {
+          ...body,
+          id: typeof body.id === "string" && body.id ? body.id : randomUUID(),
+          name: body.name || { en: "New item", ar: "عنصر جديد" },
+          description: body.description || { en: "", ar: "" },
+          image: typeof body.image === "string" ? body.image : "",
+          enabled: body.enabled !== false,
+        } as EditableItem;
+        const next = { ...store, config: { ...store.config, [field]: [item, ...current] } };
+        await persistStore(next);
+        return json(item, 201);
+      } catch {
+        return json({ error: "Invalid content item" }, 400);
+      }
+    }
+    if (method === "PUT" && id) {
+      try {
+        const patch = (await readJson(request)) as Partial<EditableItem>;
+        const index = current.findIndex((record) => record.id === id);
+        if (index < 0) return json({ error: "Not found" }, 404);
+        const updated = { ...current[index], ...patch, id } as EditableItem;
+        const nextItems = [...current];
+        nextItems[index] = updated;
+        await persistStore({ ...store, config: { ...store.config, [field]: nextItems } });
+        return json(updated);
+      } catch {
+        return json({ error: "Invalid content item" }, 400);
+      }
+    }
+    if (method === "DELETE" && id) {
+      const nextItems = current.filter((record) => record.id !== id);
+      if (nextItems.length === current.length) return json({ error: "Not found" }, 404);
+      await persistStore({ ...store, config: { ...store.config, [field]: nextItems } });
+      return json({ deleted: id });
+    }
+    return json({ error: "Method not allowed" }, 405);
+  }
+
+  if (url.pathname === "/api/site" || url.pathname === "/api/content") {
+    if (method === "GET") {
+      const { config } = await ensureStore();
+      return json(hasSession(request) ? config : publicConfig(config));
+    }
+    if (method === "PUT") {
+      if (!requireAdmin(request)) return json({ error: "Unauthorized" }, 401);
+      try {
+        const body = (await readJson(request)) as { config?: unknown };
+        const candidate = body && typeof body === "object" && "config" in body ? body.config : body;
+        if (!validConfig(candidate)) return json({ error: "Invalid site content structure" }, 422);
+        await persistStore({ config: candidate });
+        return json({ saved: true });
+      } catch (error) {
+        return json(
+          {
+            error:
+              error instanceof Error && error.message === "PAYLOAD_TOO_LARGE"
+                ? "Content exceeds the allowed size"
+                : "Invalid JSON",
+          },
+          400,
+        );
+      }
+    }
+    return json({ error: "Method not allowed" }, 405);
+  }
+
+  return json({ error: "Not found" }, 404);
+}

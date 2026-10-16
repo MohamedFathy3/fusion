@@ -45,12 +45,11 @@ import adminCss from "@/admin.css?url";
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
   head: () => ({
-    meta: [{ title: "Admin Studio — Viral Zoom" }],
+    meta: [{ title: "Admin Studio — Viral Zoom" }, { name: "robots", content: "noindex,nofollow" }],
     links: [{ rel: "stylesheet", href: adminCss }],
   }),
 });
 const ADMIN_EMAIL = "admin@admin.com";
-const ADMIN_PASSWORD_SHA256 = "798072346d8b1ad67a2d8787644096969098861e9d72f973fb13b465c56680f3";
 type Lang = "en" | "ar";
 type Section = "overview" | "home" | "services" | "portfolio" | "clients" | "settings";
 const labels: Record<
@@ -174,7 +173,7 @@ const labels: Record<
     sites: "SITE MANAGEMENT",
     quickActions: "Quick actions",
     recent: "Recently updated",
-    saveHint: "Changes save to this browser and show on this device.",
+    saveHint: "Changes are saved on the server and shown to every visitor.",
     reset: "Reset all content",
     saved: "Saved",
     media: "Media & visuals",
@@ -197,10 +196,8 @@ const labels: Record<
     newItem: "New item",
     logo: "Primary logo URL",
     accent: "Brand accent color",
-    sectionsHint:
-      "Turn homepage blocks on or off. Changes reflect on the public-facing pages in this browser.",
-    secureNote:
-      "This demo sign-in is front-end only. Connect a server-side authentication provider before publishing publicly.",
+    sectionsHint: "Turn homepage blocks on or off. Changes are saved on the server for everyone.",
+    secureNote: "Sign-in and permission checks are handled by the server.",
     signingIn: "Checking…",
     invalidLogin: "Check the email and password and try again.",
     chooseItem: "Choose a record to edit.",
@@ -258,7 +255,7 @@ const labels: Record<
     sites: "إدارة الموقع",
     quickActions: "إجراءات سريعة",
     recent: "آخر التعديلات",
-    saveHint: "تُحفظ التعديلات في هذا المتصفح وتظهر على هذا الجهاز.",
+    saveHint: "تُحفظ التعديلات على الخادم وتظهر لكل زوار الموقع.",
     reset: "استعادة المحتوى الأصلي",
     saved: "محفوظ",
     media: "الوسائط والصور",
@@ -281,9 +278,8 @@ const labels: Record<
     newItem: "عنصر جديد",
     logo: "رابط الشعار الأساسي",
     accent: "اللون المميز للعلامة",
-    sectionsHint: "أظهر أو أخفِ أقسام الصفحة الرئيسية. تظهر التعديلات على الموقع في هذا المتصفح.",
-    secureNote:
-      "تسجيل الدخول في هذه النسخة تجريبي من جهة الواجهة فقط. أضف مصادقة آمنة على الخادم قبل النشر العام.",
+    sectionsHint: "أظهر أو أخفِ أقسام الصفحة الرئيسية. التغييرات محفوظة للجميع على الخادم.",
+    secureNote: "تسجيل الدخول والتحقق من الصلاحيات يتمان على الخادم.",
     signingIn: "جارٍ التحقق…",
     invalidLogin: "تحقق من البريد الإلكتروني وكلمة المرور.",
     chooseItem: "اختر عنصرًا لتعديله.",
@@ -317,9 +313,7 @@ function AdminPage() {
   const [lang, setLang] = useState<Lang>("ar");
   const t = labels[lang];
   const rtl = lang === "ar";
-  const [authed, setAuthed] = useState(
-    () => typeof window !== "undefined" && sessionStorage.getItem("vz-admin-session") === "ok",
-  );
+  const [authed, setAuthed] = useState(false);
   const [loginEmail, setLoginEmail] = useState(ADMIN_EMAIL);
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -331,6 +325,20 @@ function AdminPage() {
   const [saved, setSaved] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => setDraft(cms.config), [cms.config]);
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/auth/session", { credentials: "same-origin" })
+      .then((response) => response.json())
+      .then((result: { authenticated?: boolean }) => {
+        if (mounted) setAuthed(result.authenticated === true);
+      })
+      .catch(() => {
+        if (mounted) setAuthed(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
   const sectionTitle = t[section];
   const count = useMemo(
     () => ({
@@ -347,24 +355,35 @@ function AdminPage() {
     setBusy(true);
     setLoginError("");
     try {
-      const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(loginPassword));
-      const digest = Array.from(new Uint8Array(bytes))
-        .map((x) => x.toString(16).padStart(2, "0"))
-        .join("");
-      if (loginEmail.trim().toLowerCase() === ADMIN_EMAIL && digest === ADMIN_PASSWORD_SHA256) {
-        sessionStorage.setItem("vz-admin-session", "ok");
-        setAuthed(true);
-      } else setLoginError(t.invalidLogin);
-    } catch {
-      setLoginError(t.invalidLogin);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      const result = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        authenticated?: boolean;
+      };
+      if (!response.ok || result.authenticated !== true)
+        throw new Error(result.error || t.invalidLogin);
+      await cms.refresh();
+      setAuthed(true);
+      setLoginPassword("");
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : t.invalidLogin);
     } finally {
       setBusy(false);
     }
   };
-  const save = () => {
-    cms.setConfig(draft);
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 2600);
+  const save = async () => {
+    try {
+      await cms.setConfig(draft);
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 2600);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Could not save site content.");
+    }
   };
   const updateRecord = (
     group: "services" | "portfolio" | "clients",
@@ -383,6 +402,13 @@ function AdminPage() {
       description: { en: "", ar: "" },
       image: "",
       enabled: true,
+      ...(group === "portfolio"
+        ? {
+            projectCategory: "social-media" as const,
+            projectKind: "case-study" as const,
+            imageGallery: [] as string[],
+          }
+        : {}),
     };
     update(group, [fresh, ...draft[group]]);
     setSelectedId(id);
@@ -395,26 +421,42 @@ function AdminPage() {
     );
     if (selectedId === id) setSelectedId("");
   };
-  const uploadImage = (event: ChangeEvent<HTMLInputElement>, done: (url: string) => void) => {
+  const uploadImage = async (event: ChangeEvent<HTMLInputElement>, done: (url: string) => void) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > 2_000_000) {
+    if (file.size > (file.type.startsWith("video/") ? 100_000_000 : 10_000_000)) {
       window.alert(
         lang === "ar"
-          ? "الحد الأقصى للصورة 2 ميجابايت. استخدم رابط صورة مستضافة للملفات الأكبر."
-          : "Images must be under 2 MB. Use a hosted image URL for larger files.",
+          ? "الحد الأقصى للصورة 10 ميجابايت والفيديو 100 ميجابايت."
+          : "Images are limited to 10 MB and videos to 100 MB.",
       );
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => done(String(reader.result));
-    reader.readAsDataURL(file);
-    event.target.value = "";
+    try {
+      const body = new FormData();
+      body.set("file", file);
+      const response = await fetch("/api/uploads", {
+        method: "POST",
+        credentials: "same-origin",
+        body,
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string; url?: string };
+      if (!response.ok || !result.url) throw new Error(result.error || "Upload failed");
+      done(result.url);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      event.target.value = "";
+    }
   };
-  const doReset = () => {
+  const doReset = async () => {
     if (!window.confirm(t.confirmReset)) return;
-    cms.reset();
-    setDraft(initialConfig);
+    try {
+      await cms.reset();
+      setDraft(initialConfig);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Could not reset site content.");
+    }
   };
 
   if (!authed)
@@ -556,8 +598,8 @@ function AdminPage() {
           <button
             aria-label={t.logout}
             title={t.logout}
-            onClick={() => {
-              sessionStorage.removeItem("vz-admin-session");
+            onClick={async () => {
+              await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
               setAuthed(false);
             }}
           >
@@ -608,19 +650,24 @@ function AdminPage() {
       </div>
     </div>
   );
-  const mediaInput = (label: string, value: string, onChange: (v: string) => void) => (
+  const mediaInput = (
+    label: string,
+    value: string,
+    onChange: (v: string) => void,
+    accept = "image/*",
+  ) => (
     <div className="vz-field">
       <span>{label}</span>
       <div className="vz-media-input">
         <input value={value} onChange={(e) => onChange(e.target.value)} placeholder="https://…" />
         <label title={t.upload}>
           <Upload size={16} />
-          <input type="file" accept="image/*" onChange={(e) => uploadImage(e, onChange)} />
+          <input type="file" accept={accept} onChange={(e) => uploadImage(e, onChange)} />
         </label>
       </div>
       {value && (
         <div className="vz-image-preview">
-          <img src={value} alt="" />
+          {accept.startsWith("video") ? <video src={value} controls /> : <img src={value} alt="" />}
           <button onClick={() => onChange("")}>
             <X size={14} />
           </button>
@@ -735,6 +782,185 @@ function AdminPage() {
               )}
               {mediaInput(t.imageUrl, selected.image, (v) =>
                 updateRecord(group, selected.id, { image: v }),
+              )}
+              {group === "portfolio" && (
+                <label className="vz-field">
+                  <span>{lang === "ar" ? "تصنيف المشروع" : "Project category"}</span>
+                  <select
+                    value={selected.projectCategory ?? "branding"}
+                    onChange={(event) =>
+                      updateRecord(group, selected.id, {
+                        projectCategory: event.target.value as NonNullable<
+                          EditableItem["projectCategory"]
+                        >,
+                      })
+                    }
+                  >
+                    <option value="social-media">
+                      {lang === "ar" ? "السوشيال ميديا" : "Social media"}
+                    </option>
+                    <option value="websites">{lang === "ar" ? "المواقع" : "Websites"}</option>
+                    <option value="mobile-apps">
+                      {lang === "ar" ? "التطبيقات والمنصات" : "Apps & platforms"}
+                    </option>
+                    <option value="branding">
+                      {lang === "ar" ? "الهوية وUI/UX" : "Branding & UI/UX"}
+                    </option>
+                  </select>
+                </label>
+              )}
+              {group === "portfolio" && (
+                <div className="vz-form-stack">
+                  <b>
+                    {lang === "ar"
+                      ? `صور معرض المشروع (${selected.imageGallery?.length ?? 0})`
+                      : `Project gallery (${selected.imageGallery?.length ?? 0})`}
+                  </b>
+                  {(selected.imageGallery ?? []).map((image, index) =>
+                    mediaInput(
+                      `${lang === "ar" ? "صورة المعرض" : "Gallery image"} ${index + 1}`,
+                      image,
+                      (value) => {
+                        const gallery = [...(selected.imageGallery ?? [])];
+                        gallery[index] = value;
+                        updateRecord(group, selected.id, { imageGallery: gallery });
+                      },
+                    ),
+                  )}
+                  <button
+                    className="vz-small-add"
+                    type="button"
+                    onClick={() =>
+                      updateRecord(group, selected.id, {
+                        imageGallery: [...(selected.imageGallery ?? []), ""],
+                      })
+                    }
+                  >
+                    <Plus size={15} />
+                    {lang === "ar" ? "إضافة صورة للمعرض" : "Add gallery image"}
+                  </button>
+                </div>
+              )}
+              {group === "portfolio" && selected.socialMediaShowcase && (
+                <div className="vz-form-stack">
+                  <b>{lang === "ar" ? "منشورات السوشيال ميديا" : "Social media posts"}</b>
+                  {selected.socialMediaShowcase.posts.map((post, index) => (
+                    <div className="vz-panel" key={`${post.platform}-${index}`}>
+                      <b>{`${post.platform} · ${index + 1}`}</b>
+                      {bilingualFields(
+                        lang === "ar" ? "عنوان المنشور" : "Post title",
+                        post.title,
+                        (title) => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          const posts = [...showcase.posts];
+                          posts[index] = { ...post, title };
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: { ...showcase, posts },
+                          });
+                        },
+                      )}
+                      {field(
+                        lang === "ar" ? "الوصول/التفاعل المعروض" : "Displayed reach",
+                        post.reach,
+                        (reach) => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          const posts = [...showcase.posts];
+                          posts[index] = { ...post, reach };
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: { ...showcase, posts },
+                          });
+                        },
+                      )}
+                      {mediaInput(
+                        lang === "ar" ? "صورة المنشور" : "Post image",
+                        post.image,
+                        (image) => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          const posts = [...showcase.posts];
+                          posts[index] = { ...post, image };
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: { ...showcase, posts },
+                          });
+                        },
+                      )}
+                    </div>
+                  ))}
+                  <b>
+                    {lang === "ar" ? "صور نتائج Meta / الأداء" : "Meta / performance screenshots"}
+                  </b>
+                  {selected.socialMediaShowcase.performanceImages.map((image, index) =>
+                    mediaInput(
+                      `${lang === "ar" ? "لقطة أداء" : "Performance screenshot"} ${index + 1}`,
+                      image,
+                      (url) => {
+                        const showcase = selected.socialMediaShowcase;
+                        if (!showcase) return;
+                        const performanceImages = [...showcase.performanceImages];
+                        performanceImages[index] = url;
+                        updateRecord(group, selected.id, {
+                          socialMediaShowcase: { ...showcase, performanceImages },
+                        });
+                      },
+                    ),
+                  )}
+                  <b>{lang === "ar" ? "أرقام نمو الجمهور" : "Audience growth metrics"}</b>
+                  {selected.socialMediaShowcase.communityGrowth.map((metric, index) => (
+                    <div className="vz-form-stack" key={`${metric.platform}-${index}`}>
+                      {field(
+                        `${metric.platform} ${lang === "ar" ? "العدد" : "count"}`,
+                        metric.followers,
+                        (followers) => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          const communityGrowth = [...showcase.communityGrowth];
+                          communityGrowth[index] = { ...metric, followers };
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: { ...showcase, communityGrowth },
+                          });
+                        },
+                      )}
+                      {bilingualFields(
+                        `${metric.platform} ${lang === "ar" ? "وصف الرقم" : "metric label"}`,
+                        metric.label,
+                        (label) => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          const communityGrowth = [...showcase.communityGrowth];
+                          communityGrowth[index] = { ...metric, label };
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: { ...showcase, communityGrowth },
+                          });
+                        },
+                      )}
+                    </div>
+                  ))}
+                  {mediaInput(
+                    lang === "ar" ? "فيديو الحملة" : "Campaign video",
+                    selected.socialMediaShowcase.video ?? "",
+                    (video) => {
+                      const showcase = selected.socialMediaShowcase;
+                      if (!showcase) return;
+                      updateRecord(group, selected.id, {
+                        socialMediaShowcase: { ...showcase, video },
+                      });
+                    },
+                    "video/*",
+                  )}
+                  {mediaInput(
+                    lang === "ar" ? "صورة غلاف الفيديو" : "Video poster",
+                    selected.socialMediaShowcase.videoPoster ?? "",
+                    (videoPoster) => {
+                      const showcase = selected.socialMediaShowcase;
+                      if (!showcase) return;
+                      updateRecord(group, selected.id, {
+                        socialMediaShowcase: { ...showcase, videoPoster },
+                      });
+                    },
+                  )}
+                </div>
               )}
               {field(
                 lang === "ar" ? "الرابط" : "Link",
@@ -903,17 +1129,16 @@ function AdminPage() {
                 (v) => update("hero", { ...draft.hero, subtitle: v }),
                 true,
               )}
-              {field(
+              {mediaInput(
                 t.videoUrl,
                 draft.hero.video,
                 (v) => update("hero", { ...draft.hero, video: v }),
-                "https://…/showreel.mp4",
+                "video/*",
               )}
-              {field(
+              {mediaInput(
                 lang === "ar" ? "رابط صورة الغلاف" : "Poster image URL",
                 draft.hero.poster,
                 (v) => update("hero", { ...draft.hero, poster: v }),
-                "https://…",
               )}
             </div>
             <p className="vz-field-hint">

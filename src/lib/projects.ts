@@ -6,6 +6,8 @@ import p4 from "@/assets/portfolio-4.jpg.asset.json";
 import p5 from "@/assets/portfolio-5.jpg.asset.json";
 import socialImage from "@/assets/social.jpg.asset.json";
 import eventsImage from "@/assets/events.jpg.asset.json";
+import heroVideo from "@/assets/hero.mp4.asset.json";
+import posterImage from "@/assets/poster.jpg.asset.json";
 import { starPlusProjects } from "@/lib/starplus-projects";
 
 export type ProjectCategoryId =
@@ -38,6 +40,8 @@ export type SocialMediaShowcase = {
     image: string;
   }[];
   performanceImages: string[];
+  video?: string;
+  videoPoster?: string;
   communityGrowth: {
     platform: SocialPlatform;
     followers: string;
@@ -140,18 +144,74 @@ export const projects: Project[] = [
     },
     socialMediaShowcase: {
       posts: [
-        { platform: "Instagram", title: { en: "Signature moments", ar: "لحظات مميزة" }, reach: "12.4K", image: p0.url },
-        { platform: "TikTok", title: { en: "Behind the scenes", ar: "من كواليس العمل" }, reach: "85K", image: p1.url },
-        { platform: "Facebook", title: { en: "A fresh perspective", ar: "نظرة مختلفة" }, reach: "4.2K", image: p2.url },
-        { platform: "Snapchat", title: { en: "New collection", ar: "تشكيلة جديدة" }, reach: "8.9K", image: p3.url },
-        { platform: "Instagram", title: { en: "Brand essentials", ar: "تفاصيل العلامة" }, reach: "3.7K", image: p4.url },
-        { platform: "TikTok", title: { en: "The daily edit", ar: "اختيارات اليوم" }, reach: "1.2M", image: p5.url },
+        {
+          platform: "Instagram",
+          title: { en: "Signature moments", ar: "لحظات مميزة" },
+          reach: "12.4K",
+          image: p0.url,
+        },
+        {
+          platform: "TikTok",
+          title: { en: "Behind the scenes", ar: "من كواليس العمل" },
+          reach: "85K",
+          image: p1.url,
+        },
+        {
+          platform: "Facebook",
+          title: { en: "A fresh perspective", ar: "نظرة مختلفة" },
+          reach: "4.2K",
+          image: p2.url,
+        },
+        {
+          platform: "Snapchat",
+          title: { en: "New collection", ar: "تشكيلة جديدة" },
+          reach: "8.9K",
+          image: p3.url,
+        },
+        {
+          platform: "Instagram",
+          title: { en: "Brand essentials", ar: "تفاصيل العلامة" },
+          reach: "3.7K",
+          image: p4.url,
+        },
+        {
+          platform: "TikTok",
+          title: { en: "The daily edit", ar: "اختيارات اليوم" },
+          reach: "1.2M",
+          image: p5.url,
+        },
+        {
+          platform: "Facebook",
+          title: { en: "A closer look", ar: "تفاصيل أقرب" },
+          reach: "6.8K",
+          image: socialImage.url,
+        },
+        {
+          platform: "Instagram",
+          title: { en: "Made to be shared", ar: "تصميم يستحق المشاركة" },
+          reach: "9.1K",
+          image: eventsImage.url,
+        },
       ],
       performanceImages: [p0.url, p1.url, p2.url],
+      video: heroVideo.url,
+      videoPoster: posterImage.url,
       communityGrowth: [
-        { platform: "TikTok", followers: "+125K", label: { en: "new followers", ar: "متابع جديد" } },
-        { platform: "Instagram", followers: "+98K", label: { en: "new followers", ar: "متابع جديد" } },
-        { platform: "Snapchat", followers: "+72K", label: { en: "new followers", ar: "متابع جديد" } },
+        {
+          platform: "TikTok",
+          followers: "+125K",
+          label: { en: "new followers", ar: "متابع جديد" },
+        },
+        {
+          platform: "Instagram",
+          followers: "+98K",
+          label: { en: "new followers", ar: "متابع جديد" },
+        },
+        {
+          platform: "Snapchat",
+          followers: "+72K",
+          label: { en: "new followers", ar: "متابع جديد" },
+        },
       ],
     },
   },
@@ -182,17 +242,34 @@ export const projects: Project[] = [
 ];
 
 export function projectHasCategory(project: Project, categoryId: ProjectCategoryId | "all") {
-  return project.category === categoryId || project.additionalCategories?.includes(categoryId) === true;
+  if (categoryId === "all") return true;
+  if (categoryId === "mobile-apps") {
+    return (
+      project.category === "mobile-apps" ||
+      project.category === "platforms-apps" ||
+      project.additionalCategories?.some(
+        (category) => category === "mobile-apps" || category === "platforms-apps",
+      ) === true
+    );
+  }
+  if (categoryId === "branding") {
+    return (
+      project.category === "branding" ||
+      project.category === "ui-ux" ||
+      project.additionalCategories?.some(
+        (category) => category === "branding" || category === "ui-ux",
+      ) === true
+    );
+  }
+  return (
+    project.category === categoryId || project.additionalCategories?.includes(categoryId) === true
+  );
 }
 
 export const projectCategories = [
   { id: "all", en: "All", ar: "الكل" },
   { id: "social-media", en: "Social media", ar: "السوشيال ميديا" },
-  { id: "email-marketing", en: "Email marketing", ar: "التسويق بالبريد" },
-  { id: "video", en: "Video", ar: "الفيديو" },
   { id: "websites", en: "Websites", ar: "المواقع" },
-  { id: "mobile-apps", en: "Mobile apps", ar: "تطبيقات الموبايل" },
-  { id: "ui-ux", en: "UI/UX designs", ar: "تصميمات UI/UX" },
-  { id: "platforms-apps", en: "Platforms & apps", ar: "المنصات والتطبيقات" },
-  { id: "branding", en: "Branding", ar: "الهوية البصرية" },
+  { id: "mobile-apps", en: "Apps & platforms", ar: "التطبيقات والمنصات" },
+  { id: "branding", en: "Branding & UI/UX", ar: "الهوية وتصميم UI/UX" },
 ] as const;

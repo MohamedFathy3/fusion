@@ -13,30 +13,51 @@ import {
 } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { useCMS } from "@/lib/cms";
+import logo from "@/assets/logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Viral Zoom — Creative & Digital Marketing | فايرال زوم" },
+      { title: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
       {
         name: "description",
         content:
-          "Explore Viral Zoom's creative and digital services, from brand identity and video production to websites and social media. اكتشف خدمات فايرال زوم الإبداعية والتسويقية.",
+          "نصمم مواقع ومتاجر إلكترونية ونقدم حلول التسويق الرقمي وتطوير البرمجيات لمساعدة الشركات على النمو. Viral Zoom — فايرال زوم.",
       },
-      { property: "og:title", content: "Viral Zoom — Creative & Digital Marketing" },
+      { property: "og:title", content: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
       {
         property: "og:description",
-        content: "Discover our creative services, selected work and brands. اكتشف خدماتنا وأعمالنا وعملاءنا.",
+        content:
+          "نصمم مواقع ومتاجر إلكترونية ونقدم حلول التسويق الرقمي وتطوير البرمجيات لمساعدة الشركات على النمو.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
+      {
+        name: "twitter:description",
+        content: "تصميم مواقع ومتاجر إلكترونية، تسويق رقمي، وتطوير برمجيات لنمو أعمالك.",
+      },
+      { name: "twitter:image", content: logo.url },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Viral Zoom",
+          email: "info@viralzoom.com",
+          logo: logo.url,
+          description: "شركة تصميم مواقع وتسويق إلكتروني وتطوير برمجيات.",
+        }),
+      },
     ],
   }),
 });
 
 function Index() {
-  const { config } = useCMS();
+  const { config, ready } = useCMS();
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
@@ -73,7 +94,9 @@ function Index() {
 
   const goTo = (id: SectionId) => {
     document.getElementById(id)?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
     });
     setActiveSection(id);
   };
@@ -98,12 +121,12 @@ function Index() {
       />
       <main>
         <ShowcaseHero language={language} />
-        {config.sections.services && <ShowcaseServices language={language} />}
-        {config.sections.portfolio && <ShowcasePortfolio language={language} />}
-        {config.sections.clients && <ShowcaseClients language={language} />}
-        {config.sections.process && <ShowcaseProcess language={language} />}
-        {config.sections.banner && <ShowcaseBanner language={language} />}
-        {config.sections.contact && <ShowcaseContact language={language} />}
+        {ready && config.sections.services && <ShowcaseServices language={language} />}
+        {ready && config.sections.portfolio && <ShowcasePortfolio language={language} />}
+        {ready && config.sections.clients && <ShowcaseClients language={language} />}
+        {ready && config.sections.process && <ShowcaseProcess language={language} />}
+        {ready && config.sections.banner && <ShowcaseBanner language={language} />}
+        {ready && config.sections.contact && <ShowcaseContact language={language} />}
       </main>
       <ShowcaseFooter
         language={language}

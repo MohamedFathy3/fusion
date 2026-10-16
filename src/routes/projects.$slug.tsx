@@ -10,51 +10,76 @@ import {
   TrendingUp,
   X,
 } from "lucide-react";
-import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import logo from "@/assets/logo.png.asset.json";
 import whiteLogo from "@/assets/logo-white.png.asset.json";
 import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
-import { projectCategories, projects } from "@/lib/projects";
+import { projectCategories, projects, type CaseStudyProject } from "@/lib/projects";
+import { projectItemsFromConfig, useCMS } from "@/lib/cms";
 import { translate } from "@/components/showcase/types";
 
 export const Route = createFileRoute("/projects/$slug")({
   loader: ({ params }) => {
     const project = projects.find((item) => item.slug === params.slug);
-    if (!project || project.kind !== "case-study") throw notFound();
-    return { project };
+    return { slug: params.slug, project: project?.kind === "case-study" ? project : null };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData.project.name} — Viral Zoom Projects` },
-      { name: "description", content: loaderData.project.description.en },
-      { property: "og:title", content: `${loaderData.project.name} — Viral Zoom` },
-      { property: "og:description", content: loaderData.project.description.en },
-      { property: "og:image", content: loaderData.project.image },
-      { property: "og:type", content: "article" },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "CreativeWork",
-          name: loaderData.project.name,
-          description: loaderData.project.description.en,
-          image: loaderData.project.image,
-          creator: {
-            "@type": "Organization",
-            name: "Viral Zoom",
-          },
-        }),
-      },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const data = loaderData ?? { slug: "project", project: null };
+    const title = data.project?.name ?? data.slug.replaceAll("-", " ");
+    const descriptionEn =
+      data.project?.description.en ?? "Creative and digital marketing project by Viral Zoom.";
+    const descriptionAr = data.project?.description.ar ?? "مشروع إبداعي وتسويقي من فايرال زوم.";
+    return {
+      meta: [
+        { title: `${title} — Viral Zoom Projects` },
+        { name: "description", content: descriptionAr.slice(0, 160) },
+        { property: "og:title", content: `${title} — Viral Zoom` },
+        { property: "og:description", content: descriptionEn.slice(0, 160) },
+        ...(data.project ? [{ property: "og:image", content: data.project.image }] : []),
+        { property: "og:type", content: "article" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: `${title} — Viral Zoom` },
+        { name: "twitter:description", content: descriptionEn.slice(0, 160) },
+        ...(data.project ? [{ name: "twitter:image", content: data.project.image }] : []),
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            name: title,
+            description: descriptionEn,
+            ...(data.project ? { image: data.project.image } : {}),
+            creator: { "@type": "Organization", name: "Viral Zoom" },
+          }),
+        },
+      ],
+    };
+  },
   component: ProjectDetailPage,
 });
 
 function ProjectDetailPage() {
-  const { project } = Route.useLoaderData();
+  const routeData = Route.useLoaderData();
+  const { config, ready } = useCMS();
+  const liveProject = ready
+    ? projectItemsFromConfig(config.portfolio).find(
+        (item): item is CaseStudyProject =>
+          item.slug === routeData.slug && item.kind === "case-study",
+      )
+    : undefined;
+  const project: CaseStudyProject = liveProject ??
+    routeData.project ?? {
+      slug: routeData.slug,
+      name: routeData.slug.replaceAll("-", " "),
+      kind: "case-study",
+      category: "branding",
+      image: "",
+      description: { en: "", ar: "" },
+    };
+  const projectExists = ready ? Boolean(liveProject) : Boolean(routeData.project);
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(false);
   const [animateCommunityGrowth, setAnimateCommunityGrowth] = useState(false);
@@ -68,7 +93,15 @@ function ProjectDetailPage() {
   const ar = language === "ar";
   const t = (english: string, arabic: string) => translate(language, english, arabic);
   const projectName = project.localizedName?.[language] ?? project.name;
-  const categoryLabel = projectCategories.find((category) => category.id === project.category)?.[language];
+  const visibleCategoryId =
+    project.category === "platforms-apps"
+      ? "mobile-apps"
+      : project.category === "ui-ux"
+        ? "branding"
+        : project.category;
+  const categoryLabel = projectCategories.find((category) => category.id === visibleCategoryId)?.[
+    language
+  ];
 
   useEffect(() => {
     const section = socialCreativeRef.current;
@@ -105,7 +138,7 @@ function ProjectDetailPage() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
+        if (!entry?.isIntersecting) return;
         setAnimateCommunityGrowth(true);
         observer.disconnect();
       },
@@ -125,7 +158,7 @@ function ProjectDetailPage() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
+        if (!entry?.isIntersecting) return;
         setAnimatePerformance(true);
         observer.disconnect();
       },
@@ -154,6 +187,19 @@ function ProjectDetailPage() {
     document.documentElement.dir = ar ? "rtl" : "ltr";
   }, [language, ar]);
 
+  useEffect(() => {
+    document.title = `${projectName} — Viral Zoom Projects`;
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute("content", project.description[language].slice(0, 160));
+    document
+      .querySelector('meta[property="og:title"]')
+      ?.setAttribute("content", `${projectName} — Viral Zoom`);
+    document
+      .querySelector('meta[property="og:description"]')
+      ?.setAttribute("content", project.description[language].slice(0, 160));
+  }, [projectName, project.description, language]);
+
   const toggleTheme = () => {
     const next = !darkMode;
     setDarkMode(next);
@@ -177,6 +223,15 @@ function ProjectDetailPage() {
       // The switch still works without storage.
     }
   };
+
+  if (ready && !projectExists) {
+    return (
+      <main className="section-inner" style={{ paddingBlock: 120 }}>
+        <h1>{t("Project not found", "المشروع غير موجود")}</h1>
+        <Link to="/projects">{t("Browse projects", "تصفح الأعمال")}</Link>
+      </main>
+    );
+  }
 
   return (
     <div className="site project-detail-page" dir={ar ? "rtl" : "ltr"}>
@@ -205,16 +260,18 @@ function ProjectDetailPage() {
           </div>
         </section>
 
-        <section className="project-detail-showcase section" aria-label={t("Project artwork", "تصميم المشروع")}>
+        <section
+          className="project-detail-showcase section"
+          aria-label={t("Project artwork", "تصميم المشروع")}
+        >
           <div className="section-inner">
             {project.socialMediaShowcase ? (
-              <div
-                className="social-case-study"
-                ref={socialCreativeRef}
-              >
+              <div className="social-case-study" ref={socialCreativeRef}>
                 <div className="social-case-study-heading">
                   <div>
-                    <span className="section-eyebrow">{t("CONTENT THAT CONNECTS", "محتوى يقرّب علامتك من جمهورها")}</span>
+                    <span className="section-eyebrow">
+                      {t("CONTENT THAT CONNECTS", "محتوى يقرّب علامتك من جمهورها")}
+                    </span>
                     <h2>{t("Our social media creative", "بصمتنا على السوشيال ميديا")}</h2>
                   </div>
                   <span className="social-sample-note">
@@ -254,8 +311,12 @@ function ProjectDetailPage() {
 
                 <div className="social-performance">
                   <div className="social-performance-copy">
-                    <span className="section-eyebrow">{t("CAMPAIGN SNAPSHOT", "ملخص أداء الحملة")}</span>
-                    <h2>{t("Creative work, measurable growth.", "إبداع يصنع فرقًا قابلًا للقياس.")}</h2>
+                    <span className="section-eyebrow">
+                      {t("CAMPAIGN SNAPSHOT", "ملخص أداء الحملة")}
+                    </span>
+                    <h2>
+                      {t("Creative work, measurable growth.", "إبداع يصنع فرقًا قابلًا للقياس.")}
+                    </h2>
                     <p>
                       {t(
                         "A sample view of reach and audience growth across the campaign.",
@@ -277,14 +338,13 @@ function ProjectDetailPage() {
                         className="social-performance-card"
                         key={image}
                         type="button"
-                        aria-label={t(`Enlarge campaign image ${index + 1}`, `تكبير صورة الحملة ${index + 1}`)}
+                        aria-label={t(
+                          `Enlarge campaign image ${index + 1}`,
+                          `تكبير صورة الحملة ${index + 1}`,
+                        )}
                         onClick={() => setLightboxImage(image)}
                       >
-                        <img
-                          src={image}
-                          alt=""
-                          loading="lazy"
-                        />
+                        <img src={image} alt="" loading="lazy" />
                       </button>
                     ))}
                   </div>
@@ -305,19 +365,54 @@ function ProjectDetailPage() {
                           {item.platform === "Snapchat" && <Camera aria-hidden="true" />}
                           {item.platform}
                         </span>
-                        <AnimatedFollowerCount value={item.followers} start={animateCommunityGrowth} />
+                        <AnimatedFollowerCount
+                          value={item.followers}
+                          start={animateCommunityGrowth}
+                        />
                         <span>{item.label[language]}</span>
                       </div>
                     ))}
                   </div>
                 </div>
+                {project.socialMediaShowcase.video && (
+                  <section
+                    className="social-case-study-video"
+                    aria-label={t("Campaign video", "فيديو الحملة")}
+                  >
+                    <div>
+                      <span className="section-eyebrow">{t("CAMPAIGN FILM", "فيديو الحملة")}</span>
+                      <h2>{t("The story, in motion.", "الحكاية وهي بتتحرك.")}</h2>
+                    </div>
+                    <video
+                      controls
+                      playsInline
+                      preload="metadata"
+                      poster={project.socialMediaShowcase.videoPoster}
+                    >
+                      <source src={project.socialMediaShowcase.video} type="video/mp4" />
+                    </video>
+                  </section>
+                )}
               </div>
             ) : project.imageGallery ? (
-              <div className="social-image-gallery" aria-label={t("Social media image gallery", "معرض صور السوشيال ميديا")}>
+              <div
+                className="social-image-gallery"
+                aria-label={t("Social media image gallery", "معرض صور السوشيال ميديا")}
+              >
                 <div className="social-image-gallery-heading">
                   <span className="section-eyebrow">{t("CAMPAIGN GALLERY", "معرض الحملة")}</span>
-                  <h2>{t("Eight creative pieces. One visual identity.", "8 تصميمات إبداعية.. بهوية واحدة.")}</h2>
-                  <p>{t("Select any image to view it larger.", "اضغط على أي صورة لمشاهدتها بحجم أكبر.")}</p>
+                  <h2>
+                    {t(
+                      "Eight creative pieces. One visual identity.",
+                      "8 تصميمات إبداعية.. بهوية واحدة.",
+                    )}
+                  </h2>
+                  <p>
+                    {t(
+                      "Select any image to view it larger.",
+                      "اضغط على أي صورة لمشاهدتها بحجم أكبر.",
+                    )}
+                  </p>
                 </div>
                 <div className="social-image-gallery-grid">
                   {project.imageGallery.map((image, index) => (
@@ -325,7 +420,10 @@ function ProjectDetailPage() {
                       className="social-image-gallery-item"
                       key={`${image}-${index}`}
                       type="button"
-                      aria-label={t(`Enlarge campaign image ${index + 1}`, `تكبير صورة الحملة ${index + 1}`)}
+                      aria-label={t(
+                        `Enlarge campaign image ${index + 1}`,
+                        `تكبير صورة الحملة ${index + 1}`,
+                      )}
                       onClick={() => setLightboxImage(image)}
                     >
                       <img
@@ -354,8 +452,12 @@ function ProjectDetailPage() {
         <section className="project-detail-contact section">
           <div className="section-inner project-detail-contact-inner">
             <div>
-              <p className="section-eyebrow">{t("HAVE A PROJECT IN MIND?", "عندك مشروع في بالك؟")}</p>
-              <h2>{t("Let's create something worth remembering.", "يلا نعمل حاجة تفضل في الذاكرة.")}</h2>
+              <p className="section-eyebrow">
+                {t("HAVE A PROJECT IN MIND?", "عندك مشروع في بالك؟")}
+              </p>
+              <h2>
+                {t("Let's create something worth remembering.", "يلا نعمل حاجة تفضل في الذاكرة.")}
+              </h2>
             </div>
             <Link to="/" hash="contact" className="project-detail-contact-link">
               {t("Start a project", "ابدأ مشروعك")}
@@ -386,7 +488,9 @@ function ProjectDetailPage() {
         >
           <X aria-hidden="true" />
         </button>
-        {lightboxImage && <img src={lightboxImage} alt={t("Expanded project artwork", "تصميم المشروع بحجم مكبر")} />}
+        {lightboxImage && (
+          <img src={lightboxImage} alt={t("Expanded project artwork", "تصميم المشروع بحجم مكبر")} />
+        )}
       </dialog>
     </div>
   );

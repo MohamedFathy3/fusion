@@ -8,6 +8,7 @@ import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import { services } from "@/lib/showcase-data";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { translate } from "@/components/showcase/types";
+import { useCMS } from "@/lib/cms";
 
 export const Route = createFileRoute("/services/")({
   component: ServicesPage,
@@ -19,16 +20,40 @@ export const Route = createFileRoute("/services/")({
         content:
           "Explore the creative, digital marketing and production services offered by Viral Zoom. اكتشف خدمات فايرال زوم الإبداعية والتسويقية.",
       },
+      { property: "og:title", content: "خدمات التسويق الرقمي وتصميم المواقع | Viral Zoom" },
+      {
+        property: "og:description",
+        content:
+          "اكتشف خدمات تصميم المواقع والتسويق الرقمي وإدارة السوشيال ميديا والإنتاج الإبداعي من Viral Zoom.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "خدمات Viral Zoom الرقمية والإبداعية" },
+      {
+        name: "twitter:description",
+        content: "تصميم مواقع وتسويق رقمي وإنتاج محتوى لخدمة نمو الأعمال.",
+      },
     ],
   }),
 });
 
 function ServicesPage() {
+  const { config, ready } = useCMS();
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   const ar = language === "ar";
   const t = (english: string, arabic: string) => translate(language, english, arabic);
+  const serviceItems = ready
+    ? config.services
+        .filter((item) => item.enabled)
+        .map((item) => ({
+          slug: item.id,
+          title: item.name,
+          description: item.description,
+          image: item.image,
+        }))
+    : services;
 
   useEffect(() => {
     try {
@@ -66,7 +91,9 @@ function ServicesPage() {
   const backToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
     });
   };
 
@@ -97,7 +124,9 @@ function ServicesPage() {
           />
           <div className="services-page-hero-shade" />
           <div className="services-page-hero-content">
-            <p className="services-page-hero-eyebrow">{t("IDEAS INTO IMPACT", "من الفكرة للتأثير")}</p>
+            <p className="services-page-hero-eyebrow">
+              {t("IDEAS INTO IMPACT", "من الفكرة للتأثير")}
+            </p>
             <h1 id="services-page-title">
               {t("Services that", "خدمات")}
               <br />
@@ -115,11 +144,15 @@ function ServicesPage() {
             </a>
           </div>
           <div className="services-page-hero-index" aria-hidden="true">
-            01 — {String(services.length).padStart(2, "0")}
+            01 — {String(serviceItems.length).padStart(2, "0")}
           </div>
         </section>
 
-        <section className="services-page-list section" id="services-list" aria-labelledby="services-list-title">
+        <section
+          className="services-page-list section"
+          id="services-list"
+          aria-labelledby="services-list-title"
+        >
           <div className="section-inner">
             <div className="section-heading services-page-list-heading">
               <div>
@@ -133,11 +166,11 @@ function ServicesPage() {
                 </p>
               </div>
               <span className="services-page-total">
-                {String(services.length).padStart(2, "0")} {t("SERVICES", "خدمة")}
+                {String(serviceItems.length).padStart(2, "0")} {t("SERVICES", "خدمة")}
               </span>
             </div>
             <div className="services-page-grid">
-              {services.map((service, index) => (
+              {serviceItems.map((service, index) => (
                 <article className="services-page-card" key={service.slug}>
                   <div className="services-page-card-image-wrap">
                     <img
@@ -146,7 +179,9 @@ function ServicesPage() {
                       alt={service.title[language]}
                       loading="lazy"
                     />
-                    <span className="services-page-card-number">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="services-page-card-number">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
                   </div>
                   <div className="services-page-card-copy">
                     <h3>

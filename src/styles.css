@@ -684,6 +684,9 @@ html { scroll-behavior: auto; }
 .social-performance-list.is-visible .social-performance-card:nth-child(2) { animation-delay: .16s; }
 .social-performance-list.is-visible .social-performance-card:nth-child(3) { animation-delay: .32s; }
 @keyframes social-performance-card-in { from { opacity: 0; transform: translateY(28px) scale(.9) rotate(var(--social-card-rotation)); } to { opacity: 1; transform: rotate(var(--social-card-rotation)); } }
+.social-case-study-video { display: grid; gap: 18px; }
+.social-case-study-video h2 { margin-top: 8px; font-size: clamp(24px, 3vw, 36px); line-height: 1.2; font-weight: 800; }
+.social-case-study-video video { display: block; width: 100%; max-height: 680px; border: 1px solid var(--border); border-radius: 14px; background: #0b0810; object-fit: contain; }
 .social-image-gallery { display: grid; gap: 24px; }
 .social-image-gallery-heading h2 { margin-top: 8px; font-size: clamp(24px, 3vw, 36px); line-height: 1.2; font-weight: 800; }
 .social-image-gallery-heading p { margin-top: 8px; color: var(--muted-foreground); font-size: 13px; }
