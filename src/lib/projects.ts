@@ -193,7 +193,11 @@ export const projects: Project[] = [
           image: eventsImage.url,
         },
       ],
-      performanceImages: [p0.url, p1.url, p2.url],
+      performanceImages: [
+        "/media/campaign/meta-sample-01.webp",
+        "/media/campaign/meta-sample-02.webp",
+        "/media/campaign/meta-sample-03.webp",
+      ],
       video: heroVideo.url,
       videoPoster: posterImage.url,
       communityGrowth: [

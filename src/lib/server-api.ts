@@ -1,6 +1,6 @@
 import { createHmac, randomBytes, timingSafeEqual, randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
-import { extname, resolve, sep } from "node:path";
+import { basename, extname, resolve, sep } from "node:path";
 import { env } from "node:process";
 import { initialConfig, type EditableItem, type SiteConfig } from "@/lib/cms";
 
@@ -79,6 +79,107 @@ function requireAdmin(request: Request) {
   return sameOrigin(request) && hasSession(request);
 }
 
+function localAssetPath(filename: string): string | null {
+  if (filename === "viral-zoom-logo.png") return "/media/viral-zoom-logo.svg";
+  if (filename === "viral-zoom-logo-white.png") return "/media/viral-zoom-logo-white.svg";
+  if (filename === "viral-zoom-hero.mp4") return "/media/video/social-campaign-reel.mp4";
+  if (filename === "viral-zoom-hero.webm") return "/media/video/social-campaign-reel.webm";
+  if (filename === "viral-zoom-poster.jpg") return "/media/video/social-campaign-poster.jpg";
+  const client = /^client-(\d+)\.jpg$/.exec(filename);
+  if (client) return `/media/clients/client-${client[1]}.svg`;
+  const portfolio = /^portfolio-(\d+)\.jpg$/.exec(filename);
+  if (portfolio) {
+    const index = Number(portfolio[1]);
+    if (index >= 0 && index < 6)
+      return `/media/campaign/social-${String(index + 1).padStart(2, "0")}.webp`;
+  }
+  const staticAssets: Record<string, string> = {
+    "social.jpg": "/media/campaign/social-07.webp",
+    "events.jpg": "/media/campaign/social-08.webp",
+    "animation.jpg": "/media/campaign/social-03.webp",
+    "printing.jpg": "/media/campaign/social-05.webp",
+    "seo.jpg": "/media/campaign/meta-sample-01.webp",
+    "video.jpg": "/media/video/social-campaign-poster.jpg",
+    "website.jpg": "/media/campaign/social-02.webp",
+  };
+  return staticAssets[filename] ?? null;
+}
+
+function rewriteLegacyMedia(value: unknown): { value: unknown; changed: boolean } {
+  if (typeof value === "string") {
+    const legacy = value.startsWith("/__l5e/assets-v1/") ? localAssetPath(basename(value)) : null;
+    if (legacy) return { value: legacy, changed: true };
+    const starPlus = /^https:\/\/starplus\.agency\/storage\/images\/portfolios\/([\w.-]+)$/.exec(
+      value,
+    );
+    if (starPlus) return { value: `/media/portfolio/${starPlus[1]}`, changed: true };
+    return { value, changed: false };
+  }
+  if (Array.isArray(value)) {
+    let changed = false;
+    const result = value.map((entry) => {
+      const rewritten = rewriteLegacyMedia(entry);
+      changed ||= rewritten.changed;
+      return rewritten.value;
+    });
+    return { value: result, changed };
+  }
+  if (value && typeof value === "object") {
+    let changed = false;
+    const result: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(value)) {
+      const rewritten = rewriteLegacyMedia(entry);
+      changed ||= rewritten.changed;
+      result[key] = rewritten.value;
+    }
+    return { value: result, changed };
+  }
+  return { value, changed: false };
+}
+
+function migrateStoredMedia(document: ContentDocument): {
+  document: ContentDocument;
+  changed: boolean;
+} {
+  const rewritten = rewriteLegacyMedia(document) as { value: ContentDocument; changed: boolean };
+  const config = rewritten.value.config as unknown as Record<string, unknown>;
+  const portfolio = config["portfolio"];
+  let changed = rewritten.changed;
+  if (Array.isArray(portfolio)) {
+    const defaultSocialImages = [
+      "/media/campaign/social-01.webp",
+      "/media/campaign/social-02.webp",
+      "/media/campaign/social-03.webp",
+    ];
+    for (const entry of portfolio) {
+      if (!entry || typeof entry !== "object") continue;
+      const project = entry as Record<string, unknown>;
+      if (
+        project["slug"] !== "social-media-growth-concept" &&
+        project["id"] !== "social-media-growth-concept"
+      )
+        continue;
+      const showcase = project["socialMediaShowcase"];
+      if (!showcase || typeof showcase !== "object") continue;
+      const media = showcase as Record<string, unknown>;
+      const performanceImages = media["performanceImages"];
+      if (
+        Array.isArray(performanceImages) &&
+        performanceImages.length === defaultSocialImages.length &&
+        performanceImages.every((image, index) => image === defaultSocialImages[index])
+      ) {
+        media["performanceImages"] = [
+          "/media/campaign/meta-sample-01.webp",
+          "/media/campaign/meta-sample-02.webp",
+          "/media/campaign/meta-sample-03.webp",
+        ];
+        changed = true;
+      }
+    }
+  }
+  return { document: rewritten.value, changed };
+}
+
 async function ensureStore(): Promise<ContentDocument> {
   await mkdir(DATA_DIR, { recursive: true });
   await mkdir(UPLOADS_DIR, { recursive: true });
@@ -86,7 +187,9 @@ async function ensureStore(): Promise<ContentDocument> {
     const parsed = JSON.parse(await readFile(CONTENT_FILE, "utf8")) as ContentDocument;
     if (!parsed || typeof parsed !== "object" || !parsed.config)
       throw new Error("Invalid content document");
-    return parsed;
+    const migrated = migrateStoredMedia(parsed);
+    if (migrated.changed) await persistStore(migrated.document);
+    return migrated.document;
   } catch (error) {
     if ((error as { code?: string }).code !== "ENOENT") throw error;
     const seeded = { config: initialConfig };
