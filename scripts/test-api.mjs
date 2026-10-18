@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { access, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "node:net";
@@ -17,6 +17,7 @@ const port = await new Promise((resolve, reject) => {
   });
 });
 const password = `integration-${randomUUID()}-Strong!`;
+const databaseFile = join(dataDir, "site-content.sqlite");
 const server = spawn(process.execPath, [".output/server/index.mjs"], {
   cwd: root,
   env: {
@@ -63,6 +64,8 @@ try {
   const health = await fetch(`${base}/api/health`).then((response) => response.json());
   assert.equal(health.ok, true);
   assert.equal(health.runtime, "node");
+  assert.equal(health.storage, "sqlite");
+  await access(databaseFile);
 
   const publicConfig = await fetch(`${base}/api/site`).then((response) => response.json());
   assert.equal(
@@ -81,11 +84,24 @@ try {
 
   const login = await fetch(`${base}/api/auth/login`, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      origin: "https://attacker.invalid",
+    },
     body: JSON.stringify({ email: "admin@admin.com", password }),
   });
-  await expectStatus(login, 200, "Admin login");
-  const setCookie = login.headers.get("set-cookie");
+  await expectStatus(login, 403, "Cross-origin admin login");
+
+  const trustedLogin = await fetch(`${base}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      origin: "https://viralzoom-test.invalid",
+    },
+    body: JSON.stringify({ email: "admin@admin.com", password }),
+  });
+  await expectStatus(trustedLogin, 200, "Admin login through configured public origin");
+  const setCookie = trustedLogin.headers.get("set-cookie");
   assert.ok(setCookie?.includes("HttpOnly"), "Session cookie should be HttpOnly");
   const cookie = setCookie.split(";")[0];
   const adminConfig = await fetch(`${base}/api/site`, { headers: { cookie } }).then((response) =>
@@ -100,7 +116,11 @@ try {
   savedConfig.sections.services = true;
   const save = await fetch(`${base}/api/site`, {
     method: "PUT",
-    headers: { "content-type": "application/json", cookie },
+    headers: {
+      "content-type": "application/json",
+      cookie,
+      origin: "https://viralzoom-test.invalid",
+    },
     body: JSON.stringify({ config: savedConfig }),
   });
   await expectStatus(save, 200, "Authenticated content save");
@@ -151,7 +171,7 @@ try {
   assert.ok(robots.includes("Disallow: /admin"));
 
   console.log(
-    "API integration passed: health, guest write protection, admin session, persisted CMS edits, project CRUD, media upload, dynamic sitemap and robots rules.",
+    "API integration passed: SQLite persistence, health, guest write protection, admin session, persisted CMS edits, project CRUD, media upload, dynamic sitemap and robots rules.",
   );
 } finally {
   server.kill("SIGTERM");

@@ -1,11 +1,13 @@
 import { createHmac, randomBytes, timingSafeEqual, randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { DatabaseSync } from "node:sqlite";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, extname, resolve, sep } from "node:path";
 import { env } from "node:process";
 import { initialConfig, type EditableItem, type SiteConfig } from "@/lib/cms";
 
 const DATA_DIR = resolve(env["DATA_DIR"] || "data");
-const CONTENT_FILE = resolve(DATA_DIR, "site-content.json");
+const DATABASE_FILE = resolve(DATA_DIR, "site-content.sqlite");
+const LEGACY_CONTENT_FILE = resolve(DATA_DIR, "site-content.json");
 const UPLOADS_DIR = resolve(DATA_DIR, "uploads");
 const COOKIE_NAME = "vz_admin";
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
@@ -18,6 +20,8 @@ const collections = {
 } as const;
 type CollectionName = keyof typeof collections;
 type ContentDocument = { config: SiteConfig };
+let database: DatabaseSync | undefined;
+let storeInitialization: Promise<void> | undefined;
 
 function json(data: unknown, status = 200, headers?: HeadersInit) {
   return new Response(JSON.stringify(data), {
@@ -69,7 +73,9 @@ function sameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   if (!origin) return true;
   try {
-    return new URL(origin).origin === new URL(request.url).origin;
+    const requestOrigin = new URL(request.url).origin;
+    const configuredOrigin = publicOrigin();
+    return new URL(origin).origin === requestOrigin || new URL(origin).origin === configuredOrigin;
   } catch {
     return false;
   }
@@ -180,29 +186,137 @@ function migrateStoredMedia(document: ContentDocument): {
   return { document: rewritten.value, changed };
 }
 
-async function ensureStore(): Promise<ContentDocument> {
-  await mkdir(DATA_DIR, { recursive: true });
-  await mkdir(UPLOADS_DIR, { recursive: true });
+function loadConfigFromDatabase(): SiteConfig {
+  const db = database;
+  if (!db) throw new Error("SQLite database is not initialized");
+  const settings = db
+    .prepare("SELECT brand, hero, sections, contact FROM site_settings WHERE id = 1")
+    .get();
+  if (!settings) throw new Error("SQLite site settings are missing");
+  const { brand, hero, sections, contact } = settings;
+  if (
+    typeof brand !== "string" ||
+    typeof hero !== "string" ||
+    typeof sections !== "string" ||
+    typeof contact !== "string"
+  ) {
+    throw new Error("SQLite site settings have invalid values");
+  }
+  const items = db
+    .prepare("SELECT collection, content FROM content_items ORDER BY collection, position, rowid")
+    .all();
+  const config: SiteConfig = {
+    brand: JSON.parse(brand),
+    hero: JSON.parse(hero),
+    sections: JSON.parse(sections),
+    contact: JSON.parse(contact),
+    services: [],
+    portfolio: [],
+    clients: [],
+  };
+  for (const item of items) {
+    const collectionName = item["collection"];
+    const content = item["content"];
+    if (typeof collectionName !== "string" || typeof content !== "string")
+      throw new Error("SQLite content item has invalid values");
+    const collection = collections[collectionName as CollectionName];
+    if (!collection) throw new Error(`Unknown SQLite content collection: ${collectionName}`);
+    (config[collection] as EditableItem[]).push(JSON.parse(content) as EditableItem);
+  }
+  if (!validConfig(config)) throw new Error("SQLite site content is invalid");
+  return config;
+}
+
+function persistStore(document: ContentDocument) {
+  const db = database;
+  if (!db) throw new Error("SQLite database is not initialized");
+  const config = document.config;
+  db.exec("BEGIN IMMEDIATE");
   try {
-    const parsed = JSON.parse(await readFile(CONTENT_FILE, "utf8")) as ContentDocument;
-    if (!parsed || typeof parsed !== "object" || !parsed.config)
-      throw new Error("Invalid content document");
-    const migrated = migrateStoredMedia(parsed);
-    if (migrated.changed) await persistStore(migrated.document);
-    return migrated.document;
+    db.prepare(
+      `INSERT INTO site_settings (id, brand, hero, sections, contact)
+       VALUES (1, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         brand = excluded.brand,
+         hero = excluded.hero,
+         sections = excluded.sections,
+         contact = excluded.contact`,
+    ).run(
+      JSON.stringify(config.brand),
+      JSON.stringify(config.hero),
+      JSON.stringify(config.sections),
+      JSON.stringify(config.contact),
+    );
+    db.prepare("DELETE FROM content_items").run();
+    const insertItem = db.prepare(
+      "INSERT INTO content_items (collection, item_id, position, content) VALUES (?, ?, ?, ?)",
+    );
+    for (const collection of Object.keys(collections) as CollectionName[]) {
+      const field = collections[collection];
+      config[field].forEach((item, position) => {
+        insertItem.run(collection, item.id, position, JSON.stringify(item));
+      });
+    }
+    db.exec("COMMIT");
   } catch (error) {
-    if ((error as { code?: string }).code !== "ENOENT") throw error;
-    const seeded = { config: initialConfig };
-    await persistStore(seeded);
-    return seeded;
+    db.exec("ROLLBACK");
+    throw error;
   }
 }
 
-async function persistStore(document: ContentDocument) {
+async function initializeStore() {
   await mkdir(DATA_DIR, { recursive: true });
-  const temporary = `${CONTENT_FILE}.${randomUUID()}.tmp`;
-  await writeFile(temporary, `${JSON.stringify(document, null, 2)}\n`, { mode: 0o600 });
-  await rename(temporary, CONTENT_FILE);
+  await mkdir(UPLOADS_DIR, { recursive: true });
+  database = new DatabaseSync(DATABASE_FILE);
+  database.exec(`
+    PRAGMA journal_mode = WAL;
+    PRAGMA synchronous = NORMAL;
+    PRAGMA busy_timeout = 5000;
+    CREATE TABLE IF NOT EXISTS site_settings (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      brand TEXT NOT NULL,
+      hero TEXT NOT NULL,
+      sections TEXT NOT NULL,
+      contact TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS content_items (
+      collection TEXT NOT NULL CHECK (collection IN ('services', 'projects', 'clients')),
+      item_id TEXT NOT NULL,
+      position INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      PRIMARY KEY (collection, item_id)
+    );
+    CREATE INDEX IF NOT EXISTS content_items_order
+      ON content_items (collection, position);
+  `);
+  const hasSettings = database
+    .prepare("SELECT 1 AS present FROM site_settings WHERE id = 1")
+    .get();
+  if (hasSettings) return;
+
+  let document: ContentDocument;
+  try {
+    const parsed = JSON.parse(await readFile(LEGACY_CONTENT_FILE, "utf8")) as ContentDocument;
+    if (!parsed || typeof parsed !== "object" || !validConfig(parsed.config))
+      throw new Error("Invalid content document");
+    const migrated = migrateStoredMedia(parsed);
+    document = migrated.document;
+  } catch (error) {
+    if ((error as { code?: string }).code !== "ENOENT") throw error;
+    document = { config: initialConfig };
+  }
+  persistStore(document);
+}
+
+async function ensureStore(): Promise<ContentDocument> {
+  if (!storeInitialization) {
+    storeInitialization = initializeStore().catch((error) => {
+      storeInitialization = undefined;
+      throw error;
+    });
+  }
+  await storeInitialization;
+  return { config: loadConfigFromDatabase() };
 }
 
 async function readJson(request: Request, limit = 4 * 1024 * 1024): Promise<unknown> {
@@ -333,7 +447,7 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
     });
   }
   if (url.pathname === "/api/health" && method === "GET") {
-    return json({ ok: true, runtime: "node", storage: "file-system" });
+    return json({ ok: true, runtime: "node", storage: "sqlite" });
   }
 
   if (url.pathname.startsWith("/uploads/")) {
