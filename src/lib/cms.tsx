@@ -157,14 +157,52 @@ export function projectItemsFromConfig(items: EditableItem[]): Project[] {
 type CMSContextValue = {
   config: SiteConfig;
   ready: boolean;
+  loadError: string | null;
   refresh: () => Promise<void>;
   setConfig: (next: SiteConfig) => Promise<void>;
   reset: () => Promise<void>;
 };
 const CMSContext = createContext<CMSContextValue | null>(null);
 
-function mergeConfig(saved: Partial<SiteConfig> | null): SiteConfig {
-  if (!saved || typeof saved !== "object") return initialConfig;
+function isBilingual(value: unknown): value is Bilingual {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as Record<string, unknown>).en === "string" &&
+    typeof (value as Record<string, unknown>).ar === "string"
+  );
+}
+
+export function isSiteConfig(value: unknown): value is SiteConfig {
+  if (!value || typeof value !== "object") return false;
+  const config = value as Partial<SiteConfig>;
+  return (
+    !!config.brand &&
+    typeof config.brand.name === "string" &&
+    typeof config.brand.accent === "string" &&
+    typeof config.brand.logo === "string" &&
+    typeof config.brand.whiteLogo === "string" &&
+    !!config.hero &&
+    isBilingual(config.hero.title) &&
+    isBilingual(config.hero.subtitle) &&
+    typeof config.hero.video === "string" &&
+    typeof config.hero.poster === "string" &&
+    !!config.sections &&
+    ["services", "portfolio", "clients", "process", "banner", "contact"].every(
+      (key) => typeof config.sections?.[key as keyof SiteConfig["sections"]] === "boolean",
+    ) &&
+    !!config.contact &&
+    typeof config.contact.email === "string" &&
+    typeof config.contact.phone === "string" &&
+    typeof config.contact.whatsapp === "string" &&
+    isBilingual(config.contact.address) &&
+    Array.isArray(config.services) &&
+    Array.isArray(config.portfolio) &&
+    Array.isArray(config.clients)
+  );
+}
+
+function mergeConfig(saved: SiteConfig): SiteConfig {
   return {
     ...initialConfig,
     ...saved,
@@ -200,27 +238,41 @@ async function persistConfig(config: SiteConfig) {
   }
 }
 
-export function CMSProvider({ children }: { children: ReactNode }) {
-  const [config, setConfigState] = useState<SiteConfig>(initialConfig);
-  const [ready, setReady] = useState(false);
+export function CMSProvider({
+  children,
+  serverConfig,
+}: {
+  children: ReactNode;
+  serverConfig?: SiteConfig;
+}) {
+  const [config, setConfigState] = useState<SiteConfig>(
+    () => (serverConfig ? mergeConfig(serverConfig) : initialConfig),
+  );
+  const [ready, setReady] = useState(Boolean(serverConfig));
+  const [loadError, setLoadError] = useState<string | null>(null);
   const refresh = useCallback(async () => {
-    const response = await fetch("/api/site", { credentials: "same-origin" });
-    if (!response.ok) throw new Error(`Content API returned ${response.status}`);
-    const saved = (await response.json()) as Partial<SiteConfig>;
-    setConfigState(mergeConfig(saved));
+    setLoadError(null);
+    try {
+      const response = await fetch("/api/site", { credentials: "same-origin" });
+      if (!response.ok) throw new Error(`Content API returned ${response.status}`);
+      const saved: unknown = await response.json();
+      if (!isSiteConfig(saved))
+        throw new Error("The content API returned an invalid site configuration.");
+      setConfigState(mergeConfig(saved));
+      setReady(true);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Could not load site content.";
+      setLoadError(message);
+      throw error;
+    }
   }, []);
   useEffect(() => {
+    if (serverConfig) return;
     refresh()
       .catch((error) => {
-        console.error(
-          "Could not load content from the Node API; showing the packaged defaults.",
-          error,
-        );
-      })
-      .finally(() => {
-        setReady(true);
+        console.error("Could not load content from the Node API.", error);
       });
-  }, [refresh]);
+  }, [refresh, serverConfig]);
   useEffect(() => {
     document.documentElement.style.setProperty("--primary", config.brand.accent);
   }, [config.brand.accent]);
@@ -228,19 +280,47 @@ export function CMSProvider({ children }: { children: ReactNode }) {
     () => ({
       config,
       ready,
+      loadError,
       refresh,
       async setConfig(next) {
         await persistConfig(next);
         setConfigState(mergeConfig(next));
+        setLoadError(null);
+        setReady(true);
       },
       async reset() {
         await persistConfig(initialConfig);
         setConfigState(initialConfig);
+        setLoadError(null);
+        setReady(true);
       },
     }),
-    [config, ready, refresh],
+    [config, ready, loadError, refresh],
   );
-  return <CMSContext.Provider value={value}>{children}</CMSContext.Provider>;
+  return (
+    <CMSContext.Provider value={value}>
+      {!ready ? (
+        <div className="cms-load-gate" role={loadError ? "alert" : "status"}>
+          {loadError ? (
+            <>
+              <p>Could not load the website content from the server.</p>
+              <small>{loadError}</small>
+              <button onClick={() => refresh().catch((error) => console.error(error))}>
+                Try again
+              </button>
+            </>
+          ) : (
+            <>
+              <strong className="cms-load-brand">VZ</strong>
+              <span className="cms-load-spinner" aria-hidden="true" />
+            </>
+          )}
+        </div>
+      ) : (
+        children
+      )}
+    </CMSContext.Provider>
+  );
 }
 
 export function useCMS() {

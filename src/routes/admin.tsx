@@ -17,6 +17,7 @@ import {
   ChevronDown,
   CircleHelp,
   Clapperboard,
+  Copy,
   Eye,
   FileText,
   Globe2,
@@ -39,6 +40,7 @@ import {
   X,
 } from "lucide-react";
 import type { EditableItem, SiteConfig } from "@/lib/cms";
+import { projectCategories, type ProjectCategoryId } from "@/lib/projects";
 import { initialConfig, useCMS } from "@/lib/cms";
 import adminCss from "@/admin.css?url";
 
@@ -110,6 +112,7 @@ const labels: Record<
     | "viewSite"
     | "confirmReset"
     | "newItem"
+    | "duplicate"
     | "logo"
     | "accent"
     | "sectionsHint"
@@ -186,7 +189,7 @@ const labels: Record<
     projectCount: "Projects",
     clientCount: "Clients",
     siteReady: "Site status",
-    localNote: "Demo data",
+    localNote: "Ready",
     empty: "No entries yet",
     copy: "Bilingual content",
     arabic: "Arabic",
@@ -194,6 +197,7 @@ const labels: Record<
     viewSite: "Open website",
     confirmReset: "Reset all dashboard content to the original site values?",
     newItem: "New item",
+    duplicate: "Duplicate",
     logo: "Primary logo URL",
     accent: "Brand accent color",
     sectionsHint: "Turn homepage blocks on or off. Changes are saved on the server for everyone.",
@@ -268,7 +272,7 @@ const labels: Record<
     projectCount: "المشروعات",
     clientCount: "العملاء",
     siteReady: "حالة الموقع",
-    localNote: "بيانات تجريبية",
+    localNote: "جاهز",
     empty: "لا توجد عناصر بعد",
     copy: "محتوى ثنائي اللغة",
     arabic: "العربية",
@@ -276,6 +280,7 @@ const labels: Record<
     viewSite: "فتح الموقع",
     confirmReset: "هل تريد استعادة المحتوى الأصلي للموقع؟",
     newItem: "عنصر جديد",
+    duplicate: "تكرار",
     logo: "رابط الشعار الأساسي",
     accent: "اللون المميز للعلامة",
     sectionsHint: "أظهر أو أخفِ أقسام الصفحة الرئيسية. التغييرات محفوظة للجميع على الخادم.",
@@ -322,6 +327,9 @@ function AdminPage() {
   const [draft, setDraft] = useState<SiteConfig>(cms.config);
   const [selectedId, setSelectedId] = useState("");
   const [search, setSearch] = useState("");
+  const [projectCategoryFilter, setProjectCategoryFilter] = useState<ProjectCategoryId | "all">(
+    "all",
+  );
   const [saved, setSaved] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => setDraft(cms.config), [cms.config]);
@@ -413,6 +421,24 @@ function AdminPage() {
     update(group, [fresh, ...draft[group]]);
     setSelectedId(id);
   };
+  const duplicateProject = (item: EditableItem) => {
+    let copyNumber = 1;
+    let id = `${item.id}-copy`;
+    while (draft.portfolio.some((project) => project.id === id)) {
+      copyNumber += 1;
+      id = `${item.id}-copy-${copyNumber}`;
+    }
+    const copy = structuredClone(item);
+    copy.id = id;
+    copy.name = {
+      en: `${item.name.en || t.newItem} (Copy)`,
+      ar: `${item.name.ar || t.newItem} (نسخة)`,
+    };
+    copy.link =
+      copy.projectKind === "external" ? (copy.projectUrl ?? item.link) : `/projects/${id}`;
+    update("portfolio", [copy, ...draft.portfolio]);
+    setSelectedId(id);
+  };
   const removeRecord = (group: "services" | "portfolio" | "clients", id: string) => {
     if (!window.confirm(lang === "ar" ? "حذف هذا العنصر؟" : "Remove this item?")) return;
     update(
@@ -464,15 +490,15 @@ function AdminPage() {
       <div className="vz-login" dir={rtl ? "rtl" : "ltr"}>
         <div className="vz-login-visual">
           <a href="/" className="vz-mark" aria-label="Viral Zoom">
-            VZ<span>®</span>
+            <img src={draft.brand.whiteLogo || draft.brand.logo} alt="Viral Zoom" />
           </a>
           <div className="vz-visual-copy">
             <span className="vz-kicker">CREATIVE × CONTROL</span>
-            <h1>
-              VIRAL
-              <br />
-              <i>ZOOM</i>
-            </h1>
+            <img
+              className="vz-login-logo"
+              src={draft.brand.whiteLogo || draft.brand.logo}
+              alt="Viral Zoom"
+            />
             <p>
               {lang === "ar"
                 ? "كل تفاصيل علامتك التجارية، في مساحة واحدة."
@@ -488,7 +514,7 @@ function AdminPage() {
         <section className="vz-login-panel">
           <div className="vz-login-head">
             <a className="vz-wordmark" href="/">
-              VIRAL ZOOM<span>®</span>
+              <img src={draft.brand.logo} alt="Viral Zoom" />
             </a>
             <button className="vz-lang-button" onClick={() => setLang(rtl ? "en" : "ar")}>
               <Globe2 size={15} />
@@ -544,18 +570,15 @@ function AdminPage() {
     <aside className={`vz-sidebar${mobileOpen ? " is-open" : ""}`}>
       <div className="vz-sidebar-brand">
         <a className="vz-brand-lockup" href="/">
-          <span className="vz-brand-icon">VZ</span>
-          <span>
-            <b>VIRAL ZOOM</b>
-            <small>CONTROL STUDIO</small>
-          </span>
+          <img src={draft.brand.logo} alt="Viral Zoom" />
+          <small>CONTROL STUDIO</small>
         </a>
         <button className="vz-mobile-close" onClick={() => setMobileOpen(false)}>
           <X size={19} />
         </button>
       </div>
       <div className="vz-workspace">
-        <span className="vz-workspace-icon">V</span>
+        <img className="vz-workspace-icon" src={draft.brand.logo} alt="" aria-hidden="true" />
         <span>
           <b>{draft.brand.name}</b>
           <small>{lang === "ar" ? "لوحة إدارة الموقع" : "Website workspace"}</small>
@@ -713,9 +736,21 @@ function AdminPage() {
     section === "services" || section === "portfolio" || section === "clients"
       ? draft[editorGroup]
       : [];
-  const filtered = records.filter((x) =>
-    `${x.name.en} ${x.name.ar}`.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filtered = records.filter((item) => {
+    const matchesSearch = `${item.name.en} ${item.name.ar}`
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    if (!matchesSearch || editorGroup !== "portfolio" || projectCategoryFilter === "all")
+      return matchesSearch;
+    const categories = [item.projectCategory, ...(item.additionalCategories ?? [])];
+    if (projectCategoryFilter === "mobile-apps")
+      return categories.some(
+        (category) => category === "mobile-apps" || category === "platforms-apps",
+      );
+    if (projectCategoryFilter === "branding")
+      return categories.some((category) => category === "branding" || category === "ui-ux");
+    return categories.includes(projectCategoryFilter);
+  });
   const selected = records.find((x) => x.id === selectedId);
   const listEditor = (group: "services" | "portfolio" | "clients") => (
     <div className="vz-list-layout">
@@ -726,7 +761,13 @@ function AdminPage() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={t.searchPlaceholder}
+              placeholder={
+                group === "portfolio"
+                  ? lang === "ar"
+                    ? "ابحث عن مشروع…"
+                    : "Search projects…"
+                  : t.searchPlaceholder
+              }
             />
           </label>
           <button className="vz-small-add" onClick={() => addRecord(group)}>
@@ -734,6 +775,28 @@ function AdminPage() {
             {t.add}
           </button>
         </div>
+        {group === "portfolio" && (
+          <div className="vz-record-filters">
+            <label className="vz-category-filter">
+              <span>{lang === "ar" ? "التصنيف" : "Category"}</span>
+              <select
+                value={projectCategoryFilter}
+                onChange={(event) =>
+                  setProjectCategoryFilter(event.target.value as ProjectCategoryId | "all")
+                }
+              >
+                {projectCategories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category[lang]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <small className="vz-record-count">
+              {lang === "ar" ? `${filtered.length} مشروع` : `${filtered.length} projects`}
+            </small>
+          </div>
+        )}
         <div className="vz-record-items">
           {filtered.map((item) => (
             <button
@@ -747,8 +810,15 @@ function AdminPage() {
               <span className="vz-record-copy">
                 <b>{item.name[lang] || item.name.en || t.newItem}</b>
                 <small>{item.enabled ? t.enabled : t.hide}</small>
+                {group === "portfolio" && item.projectCategory && (
+                  <small className="vz-record-category">
+                    {projectCategories.find((category) => category.id === item.projectCategory)?.[
+                      lang
+                    ] ?? item.projectCategory}
+                  </small>
+                )}
               </span>
-              <ArrowLeft size={15} />
+              {rtl ? <ArrowLeft size={15} /> : <ArrowRight size={15} />}
             </button>
           ))}
           {!filtered.length && <div className="vz-empty">{t.empty}</div>}
@@ -762,13 +832,25 @@ function AdminPage() {
                 <span className="vz-overline">{t.contentControl}</span>
                 <h3>{selected.name[lang] || t.editItem}</h3>
               </div>
-              <button
-                className="vz-icon-button danger"
-                title={t.delete}
-                onClick={() => removeRecord(group, selected.id)}
-              >
-                <Trash2 size={16} />
-              </button>
+              <div className="vz-editor-actions">
+                {group === "portfolio" && (
+                  <button
+                    className="vz-icon-button vz-duplicate-button"
+                    title={t.duplicate}
+                    onClick={() => duplicateProject(selected)}
+                  >
+                    <Copy size={14} />
+                    <span>{t.duplicate}</span>
+                  </button>
+                )}
+                <button
+                  className="vz-icon-button danger"
+                  title={t.delete}
+                  onClick={() => removeRecord(group, selected.id)}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
             </div>
             <div className="vz-form-stack">
               {bilingualFields(t.itemName, selected.name, (v) =>
@@ -796,16 +878,13 @@ function AdminPage() {
                       })
                     }
                   >
-                    <option value="social-media">
-                      {lang === "ar" ? "السوشيال ميديا" : "Social media"}
-                    </option>
-                    <option value="websites">{lang === "ar" ? "المواقع" : "Websites"}</option>
-                    <option value="mobile-apps">
-                      {lang === "ar" ? "التطبيقات والمنصات" : "Apps & platforms"}
-                    </option>
-                    <option value="branding">
-                      {lang === "ar" ? "الهوية وUI/UX" : "Branding & UI/UX"}
-                    </option>
+                    {projectCategories
+                      .filter((category) => category.id !== "all")
+                      .map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category[lang]}
+                        </option>
+                      ))}
                   </select>
                 </label>
               )}
@@ -1037,8 +1116,8 @@ function AdminPage() {
           <Stat
             icon={<Globe2 />}
             label={t.siteReady}
-            value={lang === "ar" ? "محلي" : "Local"}
-            note={lang === "ar" ? "على هذا المتصفح" : "This browser only"}
+            value={lang === "ar" ? "جاهز" : "Ready"}
+            note={lang === "ar" ? "الحفظ على الخادم" : "Saved on the server"}
             green
           />
         </div>
@@ -1336,7 +1415,7 @@ function AdminPage() {
           <div className="vz-content-top">
             {section === "overview" ? null : (
               <span className="vz-page-mark">
-                VZ <i>STUDIO</i>
+                <img src={draft.brand.logo} alt="Viral Zoom" />
               </span>
             )}
             <div className="vz-header-save">
@@ -1362,9 +1441,7 @@ function AdminPage() {
           {body}
         </main>
         <footer className="vz-footer">
-          <span>
-            VIRAL ZOOM <i>—</i> CONTROL STUDIO
-          </span>
+          <img src={draft.brand.logo} alt="Viral Zoom" />
           <span>
             {t.mobile}
             <b> · </b>© 2025

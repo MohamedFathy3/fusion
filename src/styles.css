@@ -4,6 +4,58 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.cms-load-gate {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--foreground);
+  background: var(--background);
+  text-align: center;
+}
+
+.cms-load-gate p {
+  margin: 0;
+}
+
+.cms-load-brand {
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.cms-load-gate small {
+  color: var(--muted-foreground);
+}
+
+.cms-load-gate button {
+  border: 0;
+  border-radius: 6px;
+  padding: 9px 16px;
+  color: white;
+  background: var(--primary);
+  cursor: pointer;
+}
+
+.cms-load-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: cms-load-spin 750ms linear infinite;
+}
+
+@keyframes cms-load-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /*
  * Design system definition.
  *

@@ -60,16 +60,25 @@ function Index() {
   const { config, ready } = useCMS();
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(false);
+  const [preferencesReady, setPreferencesReady] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
   const ar = language === "ar";
 
   useEffect(() => {
+    let nextDarkMode = false;
+    let nextLanguage: Language = "en";
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") === "dark");
-      setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
+      nextDarkMode = localStorage.getItem("viral-zoom-theme") === "dark";
+      nextLanguage = localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en";
     } catch {
-      // Keep the default language and light mode when storage is unavailable.
+      // Continue with English and light mode if browser storage is unavailable.
     }
+    document.documentElement.classList.toggle("dark", nextDarkMode);
+    document.documentElement.lang = nextLanguage;
+    document.documentElement.dir = nextLanguage === "ar" ? "rtl" : "ltr";
+    setDarkMode(nextDarkMode);
+    setLanguage(nextLanguage);
+    setPreferencesReady(true);
   }, []);
 
   useEffect(() => {
@@ -100,6 +109,14 @@ function Index() {
     });
     setActiveSection(id);
   };
+
+  if (!ready || !preferencesReady)
+    return (
+      <div className="cms-load-gate" role="status">
+        <strong className="cms-load-brand">VZ</strong>
+        <span className="cms-load-spinner" aria-hidden="true" />
+      </div>
+    );
 
   return (
     <div className="site" dir={ar ? "rtl" : "ltr"}>

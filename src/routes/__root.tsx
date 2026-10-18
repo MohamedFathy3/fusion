@@ -14,6 +14,7 @@ import Lenis from "lenis";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CMSProvider } from "../lib/cms";
+import { loadSiteConfig } from "../lib/cms-loader";
 
 function NotFoundComponent() {
   return (
@@ -94,6 +95,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
   shellComponent: RootShell,
+  loader: async () => ({ siteConfig: await loadSiteConfig() }),
+  staleTime: 30_000,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
@@ -115,6 +118,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { siteConfig } = Route.useLoaderData();
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -131,7 +135,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CMSProvider>
+      <CMSProvider serverConfig={siteConfig}>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </CMSProvider>
