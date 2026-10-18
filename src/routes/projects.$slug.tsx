@@ -81,7 +81,7 @@ function ProjectDetailPage() {
     };
   const projectExists = ready ? Boolean(liveProject) : Boolean(routeData.project);
   const [language, setLanguage] = useState<Language>("en");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [animateCommunityGrowth, setAnimateCommunityGrowth] = useState(false);
   const [animatePerformance, setAnimatePerformance] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -170,10 +170,10 @@ function ProjectDetailPage() {
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") === "dark");
+      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
       setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
     } catch {
-      // Keep the default language and light mode when storage is unavailable.
+      // Keep the default language and dark mode when storage is unavailable.
     }
   }, []);
 

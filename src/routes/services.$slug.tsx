@@ -71,17 +71,17 @@ function ShowServicePage() {
       });
   const serviceExists = ready ? Boolean(liveService) : Boolean(routeData.service);
   const [language, setLanguage] = useState<Language>("en");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const navigate = useNavigate();
   const ar = language === "ar";
   const t = (english: string, arabic: string) => translate(language, english, arabic);
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") === "dark");
+      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
       setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
     } catch {
-      // Keep the default language and light mode when storage is unavailable.
+      // Keep the default language and dark mode when storage is unavailable.
     }
   }, []);
 

@@ -47,7 +47,7 @@ export const Route = createFileRoute("/projects/")({
 function ProjectsPage() {
   const { config, ready } = useCMS();
   const [language, setLanguage] = useState<Language>("en");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [activeCategory, setActiveCategory] = useState<ProjectCategoryId | "all">("all");
   const navigate = useNavigate();
   const ar = language === "ar";
@@ -72,10 +72,10 @@ function ProjectsPage() {
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") === "dark");
+      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
       setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
     } catch {
-      // Keep the default language and light mode when storage is unavailable.
+      // Keep the default language and dark mode when storage is unavailable.
     }
   }, []);
 

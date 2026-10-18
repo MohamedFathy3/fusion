@@ -106,6 +106,12 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try { document.documentElement.classList.toggle("dark", localStorage.getItem("viral-zoom-theme") !== "light"); } catch { document.documentElement.classList.add("dark"); }',
+          }}
+        />
         <HeadContent />
       </head>
       <body>

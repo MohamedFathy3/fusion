@@ -59,16 +59,16 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { config, ready } = useCMS();
   const [language, setLanguage] = useState<Language>("en");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
   const ar = language === "ar";
 
   useEffect(() => {
-    let nextDarkMode = false;
+    let nextDarkMode = true;
     let nextLanguage: Language = "en";
     try {
-      nextDarkMode = localStorage.getItem("viral-zoom-theme") === "dark";
+      nextDarkMode = localStorage.getItem("viral-zoom-theme") !== "light";
       nextLanguage = localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en";
     } catch {
       // Continue with English and light mode if browser storage is unavailable.
