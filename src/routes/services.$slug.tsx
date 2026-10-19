@@ -8,6 +8,7 @@ import type { Language, SectionId } from "@/components/showcase/types";
 import { services } from "@/lib/showcase-data";
 import { translate } from "@/components/showcase/types";
 import { useCMS } from "@/lib/cms";
+import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: ({ params }) => {
@@ -19,18 +20,25 @@ export const Route = createFileRoute("/services/$slug")({
     const title = data.service?.title.ar ?? data.slug;
     const descriptionEn = data.service?.description.en ?? "Viral Zoom digital services.";
     const descriptionAr = data.service?.description.ar ?? "خدمات فايرال زوم الرقمية.";
+    const pageUrl = canonicalUrl(`/services/${encodeURIComponent(data.slug)}`);
     return {
+      links: [{ rel: "canonical", href: pageUrl }],
       meta: [
         { title: `${title} | Viral Zoom` },
         { name: "description", content: `${descriptionAr} ${descriptionEn}`.slice(0, 160) },
         { property: "og:title", content: `${title} | Viral Zoom` },
+        { property: "og:url", content: pageUrl },
         { property: "og:description", content: descriptionEn.slice(0, 160) },
-        ...(data.service ? [{ property: "og:image", content: data.service.image }] : []),
+        ...(data.service
+          ? [{ property: "og:image", content: absoluteSiteAsset(data.service.image) }]
+          : []),
         { property: "og:type", content: "article" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: `${title} | Viral Zoom` },
         { name: "twitter:description", content: descriptionAr.slice(0, 160) },
-        ...(data.service ? [{ name: "twitter:image", content: data.service.image }] : []),
+        ...(data.service
+          ? [{ name: "twitter:image", content: absoluteSiteAsset(data.service.image) }]
+          : []),
       ],
       scripts: [
         {
@@ -38,6 +46,7 @@ export const Route = createFileRoute("/services/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
+            url: pageUrl,
             name: data.service?.title.en ?? data.slug,
             description: descriptionEn,
             ...(data.service ? { image: data.service.image } : {}),

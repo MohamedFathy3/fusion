@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, ChartNoAxesColumnIncreasing, Lightbulb, Search, TrendingUp } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  ChartNoAxesColumnIncreasing,
+  Lightbulb,
+  Search,
+  TrendingUp,
+} from "lucide-react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import logo from "@/assets/logo.png.asset.json";
 import whiteLogo from "@/assets/logo-white.png.asset.json";
@@ -7,10 +16,12 @@ import website from "@/assets/website.jpg.asset.json";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import { translate } from "@/components/showcase/types";
+import { canonicalUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/about/")({
   component: AboutPage,
   head: () => ({
+    links: [{ rel: "canonical", href: canonicalUrl("/about") }],
     meta: [
       { title: "About Viral Zoom — Creative & Digital Agency | من نحن" },
       {
@@ -19,6 +30,7 @@ export const Route = createFileRoute("/about/")({
           "Meet Viral Zoom, a creative and digital agency combining strategy, design and technology to help brands grow. تعرف على فايرال زوم، وكالة إبداعية ورقمية تجمع الاستراتيجية والتصميم والتكنولوجيا لتنمية العلامات التجارية.",
       },
       { property: "og:title", content: "About Viral Zoom — Creative & Digital Agency" },
+      { property: "og:url", content: canonicalUrl("/about") },
       {
         property: "og:description",
         content: "Creative thinking, smart strategy and standout execution for growing brands.",
@@ -107,7 +119,9 @@ function AboutPage() {
   const backToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
     });
   };
 
@@ -145,15 +159,28 @@ function AboutPage() {
             <div className="about-hero-art">
               <img
                 src={website.url}
-                alt={t("A creative digital project by Viral Zoom", "مشروع رقمي إبداعي من فايرال زوم")}
+                alt={t(
+                  "A creative digital project by Viral Zoom",
+                  "مشروع رقمي إبداعي من فايرال زوم",
+                )}
               />
-              <span className="about-hero-art-caption">{t("Ideas made visible", "أفكار تتحول لواقع")}</span>
-              <span className="about-hero-art-stamp" aria-hidden="true">VZ<br />STUDIO</span>
+              <span className="about-hero-art-caption">
+                {t("Ideas made visible", "أفكار تتحول لواقع")}
+              </span>
+              <span className="about-hero-art-stamp" aria-hidden="true">
+                VZ
+                <br />
+                STUDIO
+              </span>
             </div>
           </div>
         </section>
 
-        <section className="about-story section" id="about-story" aria-labelledby="about-story-title">
+        <section
+          className="about-story section"
+          id="about-story"
+          aria-labelledby="about-story-title"
+        >
           <div className="section-inner about-story-inner">
             <div className="about-story-label">
               <span className="section-eyebrow">{t("WHO WE ARE", "مين إحنا")}</span>
@@ -161,7 +188,10 @@ function AboutPage() {
             </div>
             <div className="about-story-copy">
               <h2 id="about-story-title">
-                {t("A creative partner for brands ready to grow.", "شريك إبداعي للعلامات اللي مستعدة تكبر.")}
+                {t(
+                  "A creative partner for brands ready to grow.",
+                  "شريك إبداعي للعلامات اللي مستعدة تكبر.",
+                )}
               </h2>
               <p>
                 {t(
@@ -201,7 +231,9 @@ function AboutPage() {
               {values.map(({ icon: Icon, title, text }, index) => (
                 <article className="about-value-card" key={title.en}>
                   <span className="about-value-number">0{index + 1}</span>
-                  <span className="about-value-icon"><Icon aria-hidden="true" /></span>
+                  <span className="about-value-icon">
+                    <Icon aria-hidden="true" />
+                  </span>
                   <h3>{title[language]}</h3>
                   <p>{text[language]}</p>
                 </article>
@@ -214,7 +246,12 @@ function AboutPage() {
           <div className="section-inner about-approach-inner">
             <div>
               <p className="section-eyebrow">{t("OUR APPROACH", "منهجيتنا")}</p>
-              <h2 id="about-approach-title">{t("Think clearly. Create boldly. Keep growing.", "فكّر بوضوح. ابتكر بجرأة. واستمر في التطور.")}</h2>
+              <h2 id="about-approach-title">
+                {t(
+                  "Think clearly. Create boldly. Keep growing.",
+                  "فكّر بوضوح. ابتكر بجرأة. واستمر في التطور.",
+                )}
+              </h2>
               <p>
                 {t(
                   "We work through a clear cycle: understand the opportunity, create and test ideas, learn from what happens, then build on what works.",
@@ -224,7 +261,11 @@ function AboutPage() {
             </div>
             <div className="about-approach-mark" aria-hidden="true">
               <TrendingUp />
-              <span>IDEAS<br />IN MOTION</span>
+              <span>
+                IDEAS
+                <br />
+                IN MOTION
+              </span>
             </div>
           </div>
         </section>
@@ -232,9 +273,16 @@ function AboutPage() {
         <section className="about-cta section">
           <div className="section-inner about-cta-inner">
             <div>
-              <p className="section-eyebrow">{t("LET'S BUILD WHAT'S NEXT", "يلا نبدأ خطوتك الجاية")}</p>
+              <p className="section-eyebrow">
+                {t("LET'S BUILD WHAT'S NEXT", "يلا نبدأ خطوتك الجاية")}
+              </p>
               <h2>{t("Have an idea in mind?", "عندك فكرة في بالك؟")}</h2>
-              <p>{t("Tell us what you are working toward. We would love to hear about it.", "احكيلنا عن هدفك، ويسعدنا نسمع فكرتك.")}</p>
+              <p>
+                {t(
+                  "Tell us what you are working toward. We would love to hear about it.",
+                  "احكيلنا عن هدفك، ويسعدنا نسمع فكرتك.",
+                )}
+              </p>
             </div>
             <Link to="/" hash="contact" className="about-cta-link">
               {t("Start a conversation", "ابدأ كلامنا")}
@@ -243,7 +291,11 @@ function AboutPage() {
           </div>
         </section>
       </main>
-      <ShowcaseFooter language={language} logo={darkMode ? whiteLogo.url : logo.url} onBackToTop={backToTop} />
+      <ShowcaseFooter
+        language={language}
+        logo={darkMode ? whiteLogo.url : logo.url}
+        onBackToTop={backToTop}
+      />
     </div>
   );
 }

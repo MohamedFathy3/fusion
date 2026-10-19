@@ -30,7 +30,7 @@ type ProjectContent = {
   description: { en: string; ar: string };
 };
 
-type SocialPlatform = "Instagram" | "TikTok" | "Facebook" | "Snapchat";
+export type SocialPlatform = "Instagram" | "TikTok" | "Facebook" | "Snapchat";
 
 export type SocialMediaShowcase = {
   posts: {

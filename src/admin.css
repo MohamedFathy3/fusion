@@ -1800,3 +1800,28 @@
     transition: none !important;
   }
 }
+.vz-category-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-top: 5px;
+}
+.vz-category-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ece8ee;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #554c5b;
+  background: #fff;
+  font-size: 10px;
+}
+.vz-category-check input {
+  accent-color: #69499e;
+}
+.vz-small-add.vz-danger-action {
+  border: 1px solid #f0d7d7;
+  color: #a43c3c;
+  background: #fff7f7;
+}

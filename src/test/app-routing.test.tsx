@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
 import { projectHasCategory, projects } from "@/lib/projects";
+import { initialConfig, projectItemsFromConfig } from "@/lib/cms";
+import { canonicalUrl } from "@/lib/seo";
 
 // Match routes without running loaders or rendering: loaders may need a server or
 // network the test run lacks, and jsdom never loads the stylesheets React waits on.
@@ -55,5 +57,36 @@ describe("App routing", () => {
     }
     expect(project.imageGallery).toHaveLength(8);
     expect(projectHasCategory(project, "social-media")).toBe(true);
+  });
+
+  it("keeps the social case study editable with eight posts, three Meta images and an ending video", () => {
+    const project = projects.find((item) => item.slug === "social-media-growth-concept");
+
+    expect(project?.kind).toBe("case-study");
+    if (!project || project.kind !== "case-study" || !project.socialMediaShowcase) {
+      throw new Error("Expected the social campaign case study to exist");
+    }
+    expect(project.socialMediaShowcase.posts).toHaveLength(8);
+    expect(project.socialMediaShowcase.performanceImages).toHaveLength(3);
+    expect(project.socialMediaShowcase.video).toBeTruthy();
+    expect(project.socialMediaShowcase.communityGrowth.length).toBeGreaterThan(0);
+  });
+
+  it("uses the verified viralzoom.tech origin for canonical URLs", () => {
+    expect(canonicalUrl("/services/website-design")).toBe(
+      "https://viralzoom.tech/services/website-design",
+    );
+  });
+
+  it("does not publish dashboard duplicate-copy records in the public project list", () => {
+    const original = initialConfig.portfolio[0];
+    if (!original) throw new Error("Expected an initial portfolio project");
+    const copy = {
+      ...original,
+      id: "duplicate-copy-test",
+      name: { en: "Brand project (Copy) (Copy)", ar: "نسخة مكررة" },
+    };
+
+    expect(projectItemsFromConfig([copy])).toHaveLength(0);
   });
 });

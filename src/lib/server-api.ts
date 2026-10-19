@@ -289,9 +289,7 @@ async function initializeStore() {
     CREATE INDEX IF NOT EXISTS content_items_order
       ON content_items (collection, position);
   `);
-  const hasSettings = database
-    .prepare("SELECT 1 AS present FROM site_settings WHERE id = 1")
-    .get();
+  const hasSettings = database.prepare("SELECT 1 AS present FROM site_settings WHERE id = 1").get();
   if (hasSettings) return;
 
   let document: ContentDocument;
@@ -386,8 +384,7 @@ const typeByExtension: Record<string, string> = {
 };
 
 function publicOrigin() {
-  const configured = env["PUBLIC_SITE_URL"]?.trim();
-  if (!configured) return null;
+  const configured = env["PUBLIC_SITE_URL"]?.trim() || "https://viralzoom.tech";
   try {
     const url = new URL(configured);
     return url.protocol === "https:" && url.pathname === "/" && !url.username && !url.password
@@ -432,7 +429,12 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
       "/projects",
       ...config.services.filter((item) => item.enabled).map((item) => `/services/${item.id}`),
       ...config.portfolio
-        .filter((item) => item.enabled && item.projectKind !== "external")
+        .filter(
+          (item) =>
+            item.enabled &&
+            item.projectKind !== "external" &&
+            !/(?:\s+\(copy\))+$/i.test(item.name.en),
+        )
         .map((item) => `/projects/${item.id}`),
     ];
     const uniquePaths = [...new Set(paths)];
@@ -447,6 +449,7 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
     });
   }
   if (url.pathname === "/api/health" && method === "GET") {
+    await ensureStore();
     return json({ ok: true, runtime: "node", storage: "sqlite" });
   }
 
