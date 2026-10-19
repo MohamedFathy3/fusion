@@ -10,7 +10,6 @@ export function ShowcaseContact({ language }: { language: Language }) {
   const contactPhone = config.contact.phone || "01064621943";
   const t = (english: string, arabic: string) => translate(language, english, arabic);
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => event.preventDefault();
-
   return (
     <section className="contact-section" id="contact" aria-labelledby="contact-title">
       <div className="section-inner contact-layout">
