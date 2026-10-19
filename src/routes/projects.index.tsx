@@ -15,11 +15,13 @@ import {
   type ProjectCategoryId,
 } from "@/lib/projects";
 import { projectItemsFromConfig, useCMS } from "@/lib/cms";
+import { canonicalUrl } from "@/lib/seo";
 import { translate } from "@/components/showcase/types";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
   head: () => ({
+    links: [{ rel: "canonical", href: canonicalUrl("/projects") }],
     meta: [
       { title: "أعمالنا في التسويق والتصميم | Viral Zoom" },
       {
@@ -34,6 +36,7 @@ export const Route = createFileRoute("/projects/")({
           "مشاريع في السوشيال ميديا وتصميم المواقع والتطبيقات والهوية البصرية من Viral Zoom.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: canonicalUrl("/projects") },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "أعمال Viral Zoom في التسويق والتصميم" },
       {
@@ -208,7 +211,14 @@ function ProjectsPage() {
 
             <div className="projects-grid">
               {visibleProjects.map((project) => {
-                const cardCategoryId = activeCategory === "all" ? project.category : activeCategory;
+                const cardCategoryId =
+                  activeCategory !== "all"
+                    ? activeCategory
+                    : project.category === "platforms-apps"
+                      ? "mobile-apps"
+                      : project.category === "ui-ux"
+                        ? "branding"
+                        : project.category;
                 const cardContent = (
                   <>
                     <div className="projects-card-image-wrap">

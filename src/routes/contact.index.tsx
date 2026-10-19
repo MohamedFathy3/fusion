@@ -8,10 +8,12 @@ import worldMap from "@/assets/bg-2-e496b57f-842e-4cf1-8733-ba70e093aea4.png";
 import { ShowcaseContact, ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { translate } from "@/components/showcase/types";
+import { canonicalUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/contact/")({
   component: ContactPage,
   head: () => ({
+    links: [{ rel: "canonical", href: canonicalUrl("/contact") }],
     meta: [
       { title: "Contact Viral Zoom | تواصل مع فايرال زوم" },
       {
@@ -20,6 +22,7 @@ export const Route = createFileRoute("/contact/")({
           "Have a project in mind? Get in touch with Viral Zoom. عندك مشروع في بالك؟ تواصل مع فايرال زوم.",
       },
       { property: "og:title", content: "Contact Viral Zoom | تواصل مع فايرال زوم" },
+      { property: "og:url", content: canonicalUrl("/contact") },
       {
         property: "og:description",
         content: "Tell us what you are looking to create and let's start a conversation.",
@@ -81,7 +84,9 @@ function ContactPage() {
   const backToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
     });
   };
 
@@ -104,7 +109,9 @@ function ContactPage() {
           />
           <div className="contact-page-hero-shade" />
           <div className="contact-page-hero-content">
-            <p className="section-eyebrow">{t("LET'S MAKE SOMETHING GREAT", "يلا نعمل حاجة مميزة")}</p>
+            <p className="section-eyebrow">
+              {t("LET'S MAKE SOMETHING GREAT", "يلا نعمل حاجة مميزة")}
+            </p>
             <h1 id="contact-page-title">
               {t("Let's talk", "خلّينا")}
               <br />
@@ -121,7 +128,9 @@ function ContactPage() {
               <ArrowDown aria-hidden="true" />
             </a>
           </div>
-          <span className="contact-page-hero-index" aria-hidden="true">VZ — 01</span>
+          <span className="contact-page-hero-index" aria-hidden="true">
+            VZ — 01
+          </span>
         </section>
 
         <div className="contact-page-form">
@@ -133,10 +142,10 @@ function ContactPage() {
           <div className="contact-map-shade" />
           <div className="section-inner contact-map-content">
             <div>
-              <p className="contact-map-eyebrow">{t("GOOD IDEAS TRAVEL", "الأفكار الحلوة بتوصل")}</p>
-              <h2 id="contact-map-title">
-                {t("One connected world.", "عالم واحد يجمعنا.")}
-              </h2>
+              <p className="contact-map-eyebrow">
+                {t("GOOD IDEAS TRAVEL", "الأفكار الحلوة بتوصل")}
+              </p>
+              <h2 id="contact-map-title">{t("One connected world.", "عالم واحد يجمعنا.")}</h2>
               <p>
                 {t(
                   "Wherever you are, let's make something meaningful together.",
@@ -148,11 +157,17 @@ function ContactPage() {
               VZ
               <ArrowDownLeft />
             </span>
-            <span className="contact-map-coordinate" aria-hidden="true">CREATIVE CONNECTIONS — EVERYWHERE</span>
+            <span className="contact-map-coordinate" aria-hidden="true">
+              CREATIVE CONNECTIONS — EVERYWHERE
+            </span>
           </div>
         </section>
       </main>
-      <ShowcaseFooter language={language} logo={darkMode ? whiteLogo.url : logo.url} onBackToTop={backToTop} />
+      <ShowcaseFooter
+        language={language}
+        logo={darkMode ? whiteLogo.url : logo.url}
+        onBackToTop={backToTop}
+      />
     </div>
   );
 }

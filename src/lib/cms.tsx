@@ -115,43 +115,45 @@ export const initialConfig: SiteConfig = {
 };
 
 export function projectItemsFromConfig(items: EditableItem[]): Project[] {
-  return items.map((item) => {
-    const original = baseProjects.find((project) => project.slug === item.id);
-    const category = item.projectCategory ?? original?.category ?? "branding";
-    const extra = item.additionalCategories ?? original?.additionalCategories;
-    if (item.projectKind === "external" || original?.kind === "external") {
-      const originalExternal = original?.kind === "external" ? original : undefined;
+  return items
+    .filter((item) => !/(?:\s+\(copy\))+$/i.test(item.name.en))
+    .map((item) => {
+      const original = baseProjects.find((project) => project.slug === item.id);
+      const category = item.projectCategory ?? original?.category ?? "branding";
+      const extra = item.additionalCategories ?? original?.additionalCategories;
+      if (item.projectKind === "external" || original?.kind === "external") {
+        const originalExternal = original?.kind === "external" ? original : undefined;
+        return {
+          ...(originalExternal ?? {}),
+          slug: item.id,
+          name: item.name.en,
+          localizedName: item.name,
+          category,
+          ...(extra ? { additionalCategories: extra } : {}),
+          kind: "external" as const,
+          projectType: originalExternal?.projectType ?? ("website" as const),
+          url: item.projectUrl ?? item.link ?? originalExternal?.url ?? "/",
+          image: item.image,
+          description: item.description,
+        };
+      }
+      const originalCase = original?.kind === "case-study" ? original : undefined;
+      const gallery = item.imageGallery ?? originalCase?.imageGallery;
+      const showcase = item.socialMediaShowcase ?? originalCase?.socialMediaShowcase;
       return {
-        ...(originalExternal ?? {}),
+        ...(originalCase ?? {}),
         slug: item.id,
         name: item.name.en,
         localizedName: item.name,
         category,
         ...(extra ? { additionalCategories: extra } : {}),
-        kind: "external" as const,
-        projectType: originalExternal?.projectType ?? ("website" as const),
-        url: item.projectUrl ?? item.link ?? originalExternal?.url ?? "/",
+        kind: "case-study" as const,
         image: item.image,
         description: item.description,
+        ...(gallery ? { imageGallery: gallery } : {}),
+        ...(showcase ? { socialMediaShowcase: showcase } : {}),
       };
-    }
-    const originalCase = original?.kind === "case-study" ? original : undefined;
-    const gallery = item.imageGallery ?? originalCase?.imageGallery;
-    const showcase = item.socialMediaShowcase ?? originalCase?.socialMediaShowcase;
-    return {
-      ...(originalCase ?? {}),
-      slug: item.id,
-      name: item.name.en,
-      localizedName: item.name,
-      category,
-      ...(extra ? { additionalCategories: extra } : {}),
-      kind: "case-study" as const,
-      image: item.image,
-      description: item.description,
-      ...(gallery ? { imageGallery: gallery } : {}),
-      ...(showcase ? { socialMediaShowcase: showcase } : {}),
-    };
-  });
+    });
 }
 
 type CMSContextValue = {
@@ -168,8 +170,8 @@ function isBilingual(value: unknown): value is Bilingual {
   return (
     typeof value === "object" &&
     value !== null &&
-    typeof (value as Record<string, unknown>).en === "string" &&
-    typeof (value as Record<string, unknown>).ar === "string"
+    typeof (value as Record<string, unknown>)["en"] === "string" &&
+    typeof (value as Record<string, unknown>)["ar"] === "string"
   );
 }
 
@@ -245,8 +247,8 @@ export function CMSProvider({
   children: ReactNode;
   serverConfig?: SiteConfig;
 }) {
-  const [config, setConfigState] = useState<SiteConfig>(
-    () => (serverConfig ? mergeConfig(serverConfig) : initialConfig),
+  const [config, setConfigState] = useState<SiteConfig>(() =>
+    serverConfig ? mergeConfig(serverConfig) : initialConfig,
   );
   const [ready, setReady] = useState(Boolean(serverConfig));
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -268,11 +270,18 @@ export function CMSProvider({
   }, []);
   useEffect(() => {
     if (serverConfig) return;
-    refresh()
-      .catch((error) => {
-        console.error("Could not load content from the Node API.", error);
-      });
+    refresh().catch((error) => {
+      console.error("Could not load content from the Node API.", error);
+    });
   }, [refresh, serverConfig]);
+  useEffect(() => {
+    const syncPublishedContent = (event: StorageEvent) => {
+      if (event.key !== "viral-zoom-cms-revision") return;
+      void refresh().catch((error) => console.error("Could not sync published content.", error));
+    };
+    window.addEventListener("storage", syncPublishedContent);
+    return () => window.removeEventListener("storage", syncPublishedContent);
+  }, [refresh]);
   useEffect(() => {
     document.documentElement.style.setProperty("--primary", config.brand.accent);
   }, [config.brand.accent]);
@@ -287,12 +296,22 @@ export function CMSProvider({
         setConfigState(mergeConfig(next));
         setLoadError(null);
         setReady(true);
+        try {
+          localStorage.setItem("viral-zoom-cms-revision", String(Date.now()));
+        } catch {
+          // Cross-tab refresh is optional when browser storage is unavailable.
+        }
       },
       async reset() {
         await persistConfig(initialConfig);
         setConfigState(initialConfig);
         setLoadError(null);
         setReady(true);
+        try {
+          localStorage.setItem("viral-zoom-cms-revision", String(Date.now()));
+        } catch {
+          // Cross-tab refresh is optional when browser storage is unavailable.
+        }
       },
     }),
     [config, ready, loadError, refresh],

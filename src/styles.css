@@ -769,7 +769,9 @@ html { scroll-behavior: auto; }
 @keyframes social-performance-card-in { from { opacity: 0; transform: translateY(28px) scale(.9) rotate(var(--social-card-rotation)); } to { opacity: 1; transform: rotate(var(--social-card-rotation)); } }
 .social-case-study-video { display: grid; gap: 18px; }
 .social-case-study-video h2 { margin-top: 8px; font-size: clamp(24px, 3vw, 36px); line-height: 1.2; font-weight: 800; }
-.social-case-study-video video { display: block; width: 100%; max-height: 680px; border: 1px solid var(--border); border-radius: 14px; background: #0b0810; object-fit: contain; }
+.social-case-study-video video, .social-case-study-video iframe { display: block; width: 100%; border: 1px solid var(--border); border-radius: 14px; background: #0b0810; }
+.social-case-study-video video { max-height: 680px; object-fit: contain; }
+.social-case-study-video iframe { aspect-ratio: 16 / 9; }
 .social-image-gallery { display: grid; gap: 24px; }
 .social-image-gallery-heading h2 { margin-top: 8px; font-size: clamp(24px, 3vw, 36px); line-height: 1.2; font-weight: 800; }
 .social-image-gallery-heading p { margin-top: 8px; color: var(--muted-foreground); font-size: 13px; }
@@ -794,6 +796,11 @@ html { scroll-behavior: auto; }
 .social-growth-platform svg { width: 15px; height: 15px; }
 .social-growth-count { font-size: clamp(27px, 4vw, 40px); line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; }
 .social-growth-item > span:last-child { color: oklch(0.82 0.02 303); font-size: 10px; }
+.social-case-video { display: grid; gap: 16px; }
+.social-case-video h2 { margin-top: 8px; font-size: clamp(24px, 3vw, 36px); line-height: 1.2; font-weight: 800; }
+.social-case-video video, .social-case-video iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); border-radius: 14px; background: #100b18; }
+.social-case-video video { object-fit: contain; }
+.social-case-video iframe { border: 0; }
 .project-detail-contact { padding-block: 60px; background: var(--secondary); }
 .project-detail-contact-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
 .project-detail-contact h2 { max-width: 700px; margin-top: 10px; font-size: clamp(28px, 4vw, 44px); line-height: 1.2; font-weight: 700; }

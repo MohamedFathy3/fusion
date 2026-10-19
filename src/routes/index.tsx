@@ -13,11 +13,13 @@ import {
 } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { useCMS } from "@/lib/cms";
+import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
 import logo from "@/assets/logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
+    links: [{ rel: "canonical", href: canonicalUrl("/") }],
     meta: [
       { title: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
       {
@@ -32,13 +34,14 @@ export const Route = createFileRoute("/")({
           "نصمم مواقع ومتاجر إلكترونية ونقدم حلول التسويق الرقمي وتطوير البرمجيات لمساعدة الشركات على النمو.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: canonicalUrl("/") },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
       {
         name: "twitter:description",
         content: "تصميم مواقع ومتاجر إلكترونية، تسويق رقمي، وتطوير برمجيات لنمو أعمالك.",
       },
-      { name: "twitter:image", content: logo.url },
+      { name: "twitter:image", content: absoluteSiteAsset(logo.url) },
     ],
     scripts: [
       {
@@ -47,6 +50,7 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "Viral Zoom",
+          url: canonicalUrl("/"),
           email: "info@viralzoom.com",
           logo: logo.url,
           description: "شركة تصميم مواقع وتسويق إلكتروني وتطوير برمجيات.",
@@ -60,7 +64,6 @@ function Index() {
   const { config, ready } = useCMS();
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(true);
-  const [preferencesReady, setPreferencesReady] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
   const ar = language === "ar";
 
@@ -78,7 +81,6 @@ function Index() {
     document.documentElement.dir = nextLanguage === "ar" ? "rtl" : "ltr";
     setDarkMode(nextDarkMode);
     setLanguage(nextLanguage);
-    setPreferencesReady(true);
   }, []);
 
   useEffect(() => {
@@ -110,7 +112,7 @@ function Index() {
     setActiveSection(id);
   };
 
-  if (!ready || !preferencesReady)
+  if (!ready)
     return (
       <div className="cms-load-gate" role="status">
         <strong className="cms-load-brand">VZ</strong>

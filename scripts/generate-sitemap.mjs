@@ -2,13 +2,9 @@ import { readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-const configuredOrigin = (process.env.PUBLIC_SITE_URL || process.env.VITE_PUBLIC_SITE_URL)?.trim();
-if (!configuredOrigin) {
-  console.warn(
-    "PUBLIC_SITE_URL is not set; sitemap.xml was not generated. Set it to the verified public HTTPS origin.",
-  );
-  process.exit(0);
-}
+const configuredOrigin =
+  (process.env.PUBLIC_SITE_URL || process.env.VITE_PUBLIC_SITE_URL)?.trim() ||
+  "https://viralzoom.tech";
 
 let origin;
 try {
@@ -30,14 +26,15 @@ try {
 }
 
 const servicesSource = await readFile("src/lib/showcase-data.ts", "utf8");
-const projectsSource = (await readFile("src/lib/projects.ts", "utf8")).split(
-  "...starPlusProjects",
-)[0];
+const projectsSource = await readFile("src/lib/projects.ts", "utf8");
+const starPlusSource = await readFile("src/lib/starplus-projects.ts", "utf8");
 const serviceSlugs = [...servicesSource.matchAll(/slug:\s*"([^"]+)"/g)].map(
   (match) => `/services/${match[1]}`,
 );
-const projectSlugs = [...projectsSource.matchAll(/slug:\s*"([^"]+)"/g)].map(
-  (match) => `/projects/${match[1]}`,
+const projectSlugs = [projectsSource, starPlusSource].flatMap((source) =>
+  [...source.matchAll(/slug:\s*"([^"]+)"/g)].map(
+    (match) => `/projects/${encodeURIComponent(match[1])}`,
+  ),
 );
 const paths = [
   ...new Set([

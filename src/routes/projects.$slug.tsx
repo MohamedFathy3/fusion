@@ -17,6 +17,7 @@ import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { projectCategories, projects, type CaseStudyProject } from "@/lib/projects";
 import { projectItemsFromConfig, useCMS } from "@/lib/cms";
+import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
 import { translate } from "@/components/showcase/types";
 
 export const Route = createFileRoute("/projects/$slug")({
@@ -30,18 +31,25 @@ export const Route = createFileRoute("/projects/$slug")({
     const descriptionEn =
       data.project?.description.en ?? "Creative and digital marketing project by Viral Zoom.";
     const descriptionAr = data.project?.description.ar ?? "مشروع إبداعي وتسويقي من فايرال زوم.";
+    const pageUrl = canonicalUrl(`/projects/${encodeURIComponent(data.slug)}`);
     return {
+      links: [{ rel: "canonical", href: pageUrl }],
       meta: [
         { title: `${title} — Viral Zoom Projects` },
         { name: "description", content: descriptionAr.slice(0, 160) },
         { property: "og:title", content: `${title} — Viral Zoom` },
+        { property: "og:url", content: pageUrl },
         { property: "og:description", content: descriptionEn.slice(0, 160) },
-        ...(data.project ? [{ property: "og:image", content: data.project.image }] : []),
+        ...(data.project
+          ? [{ property: "og:image", content: absoluteSiteAsset(data.project.image) }]
+          : []),
         { property: "og:type", content: "article" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: `${title} — Viral Zoom` },
         { name: "twitter:description", content: descriptionEn.slice(0, 160) },
-        ...(data.project ? [{ name: "twitter:image", content: data.project.image }] : []),
+        ...(data.project
+          ? [{ name: "twitter:image", content: absoluteSiteAsset(data.project.image) }]
+          : []),
       ],
       scripts: [
         {
@@ -49,6 +57,7 @@ export const Route = createFileRoute("/projects/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "CreativeWork",
+            url: pageUrl,
             name: title,
             description: descriptionEn,
             ...(data.project ? { image: data.project.image } : {}),
@@ -383,14 +392,25 @@ function ProjectDetailPage() {
                       <span className="section-eyebrow">{t("CAMPAIGN FILM", "فيديو الحملة")}</span>
                       <h2>{t("The story, in motion.", "الحكاية وهي بتتحرك.")}</h2>
                     </div>
-                    <video
-                      controls
-                      playsInline
-                      preload="metadata"
-                      poster={project.socialMediaShowcase.videoPoster}
-                    >
-                      <source src={project.socialMediaShowcase.video} type="video/mp4" />
-                    </video>
+                    {resolveVideoEmbed(project.socialMediaShowcase.video) ? (
+                      <iframe
+                        src={resolveVideoEmbed(project.socialMediaShowcase.video) ?? undefined}
+                        title={projectName}
+                        loading="lazy"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        controls
+                        playsInline
+                        preload="metadata"
+                        poster={project.socialMediaShowcase.videoPoster}
+                      >
+                        <source src={project.socialMediaShowcase.video} />
+                      </video>
+                    )}
                   </section>
                 )}
               </div>
@@ -494,6 +514,30 @@ function ProjectDetailPage() {
       </dialog>
     </div>
   );
+}
+
+function resolveVideoEmbed(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    const hostname = url.hostname.replace(/^www\./, "");
+    if (hostname === "youtu.be") {
+      const id = url.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}` : null;
+    }
+    if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+      const id = url.pathname.startsWith("/embed/")
+        ? url.pathname.split("/")[2]
+        : url.searchParams.get("v");
+      return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}` : null;
+    }
+    if (hostname === "vimeo.com" || hostname === "player.vimeo.com") {
+      const id = url.pathname.split("/").filter(Boolean).at(-1);
+      return id && /^\d+$/.test(id) ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 function AnimatedFollowerCount({

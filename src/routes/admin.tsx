@@ -40,7 +40,7 @@ import {
   X,
 } from "lucide-react";
 import type { EditableItem, SiteConfig } from "@/lib/cms";
-import { projectCategories, type ProjectCategoryId } from "@/lib/projects";
+import { projectCategories, type ProjectCategoryId, type SocialPlatform } from "@/lib/projects";
 import { initialConfig, useCMS } from "@/lib/cms";
 import adminCss from "@/admin.css?url";
 
@@ -434,8 +434,10 @@ function AdminPage() {
       en: `${item.name.en || t.newItem} (Copy)`,
       ar: `${item.name.ar || t.newItem} (نسخة)`,
     };
-    copy.link =
+    const copiedLink =
       copy.projectKind === "external" ? (copy.projectUrl ?? item.link) : `/projects/${id}`;
+    if (copiedLink) copy.link = copiedLink;
+    else delete copy.link;
     update("portfolio", [copy, ...draft.portfolio]);
     setSelectedId(id);
   };
@@ -889,6 +891,41 @@ function AdminPage() {
                 </label>
               )}
               {group === "portfolio" && (
+                <div className="vz-field">
+                  <span>{lang === "ar" ? "تصنيفات إضافية" : "Additional categories"}</span>
+                  <div className="vz-category-checks">
+                    {projectCategories
+                      .filter(
+                        (category) =>
+                          category.id !== "all" && category.id !== selected.projectCategory,
+                      )
+                      .map((category) => {
+                        const checked =
+                          selected.additionalCategories?.includes(
+                            category.id as ProjectCategoryId,
+                          ) ?? false;
+                        return (
+                          <label className="vz-category-check" key={category.id}>
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(event) => {
+                                const current = selected.additionalCategories ?? [];
+                                updateRecord(group, selected.id, {
+                                  additionalCategories: event.target.checked
+                                    ? [...current, category.id as ProjectCategoryId]
+                                    : current.filter((id) => id !== category.id),
+                                });
+                              }}
+                            />
+                            <span>{category[lang]}</span>
+                          </label>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+              {group === "portfolio" && (
                 <div className="vz-form-stack">
                   <b>
                     {lang === "ar"
@@ -926,6 +963,32 @@ function AdminPage() {
                   {selected.socialMediaShowcase.posts.map((post, index) => (
                     <div className="vz-panel" key={`${post.platform}-${index}`}>
                       <b>{`${post.platform} · ${index + 1}`}</b>
+                      <label className="vz-field">
+                        <span>{lang === "ar" ? "المنصة" : "Platform"}</span>
+                        <select
+                          value={post.platform}
+                          onChange={(event) => {
+                            const showcase = selected.socialMediaShowcase;
+                            if (!showcase) return;
+                            const posts = [...showcase.posts];
+                            posts[index] = {
+                              ...post,
+                              platform: event.target.value as SocialPlatform,
+                            };
+                            updateRecord(group, selected.id, {
+                              socialMediaShowcase: { ...showcase, posts },
+                            });
+                          }}
+                        >
+                          {(["Instagram", "TikTok", "Facebook", "Snapchat"] as const).map(
+                            (platform) => (
+                              <option key={platform} value={platform}>
+                                {platform}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </label>
                       {bilingualFields(
                         lang === "ar" ? "عنوان المنشور" : "Post title",
                         post.title,
@@ -965,29 +1028,135 @@ function AdminPage() {
                           });
                         },
                       )}
+                      <button
+                        className="vz-small-add vz-danger-action"
+                        type="button"
+                        onClick={() => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: {
+                              ...showcase,
+                              posts: showcase.posts.filter((_, itemIndex) => itemIndex !== index),
+                            },
+                          });
+                        }}
+                      >
+                        <X size={14} />
+                        {lang === "ar" ? "حذف المنشور" : "Remove post"}
+                      </button>
                     </div>
                   ))}
+                  <button
+                    className="vz-small-add"
+                    type="button"
+                    onClick={() => {
+                      const showcase = selected.socialMediaShowcase;
+                      if (!showcase) return;
+                      updateRecord(group, selected.id, {
+                        socialMediaShowcase: {
+                          ...showcase,
+                          posts: [
+                            ...showcase.posts,
+                            {
+                              platform: "Instagram",
+                              title: { en: "New post", ar: "منشور جديد" },
+                              reach: "",
+                              image: "",
+                            },
+                          ],
+                        },
+                      });
+                    }}
+                  >
+                    <Plus size={15} />
+                    {lang === "ar" ? "إضافة منشور سوشيال" : "Add social post"}
+                  </button>
                   <b>
                     {lang === "ar" ? "صور نتائج Meta / الأداء" : "Meta / performance screenshots"}
                   </b>
-                  {selected.socialMediaShowcase.performanceImages.map((image, index) =>
-                    mediaInput(
-                      `${lang === "ar" ? "لقطة أداء" : "Performance screenshot"} ${index + 1}`,
-                      image,
-                      (url) => {
-                        const showcase = selected.socialMediaShowcase;
-                        if (!showcase) return;
-                        const performanceImages = [...showcase.performanceImages];
-                        performanceImages[index] = url;
-                        updateRecord(group, selected.id, {
-                          socialMediaShowcase: { ...showcase, performanceImages },
-                        });
-                      },
-                    ),
-                  )}
+                  {selected.socialMediaShowcase.performanceImages.map((image, index) => (
+                    <div className="vz-panel" key={`${image}-${index}`}>
+                      {mediaInput(
+                        `${lang === "ar" ? "لقطة أداء" : "Performance screenshot"} ${index + 1}`,
+                        image,
+                        (url) => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          const performanceImages = [...showcase.performanceImages];
+                          performanceImages[index] = url;
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: { ...showcase, performanceImages },
+                          });
+                        },
+                      )}
+                      <button
+                        className="vz-small-add vz-danger-action"
+                        type="button"
+                        onClick={() => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: {
+                              ...showcase,
+                              performanceImages: showcase.performanceImages.filter(
+                                (_, itemIndex) => itemIndex !== index,
+                              ),
+                            },
+                          });
+                        }}
+                      >
+                        <X size={14} />
+                        {lang === "ar" ? "حذف الصورة" : "Remove image"}
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    className="vz-small-add"
+                    type="button"
+                    onClick={() => {
+                      const showcase = selected.socialMediaShowcase;
+                      if (!showcase) return;
+                      updateRecord(group, selected.id, {
+                        socialMediaShowcase: {
+                          ...showcase,
+                          performanceImages: [...showcase.performanceImages, ""],
+                        },
+                      });
+                    }}
+                  >
+                    <Plus size={15} />
+                    {lang === "ar" ? "إضافة لقطة Meta" : "Add Meta screenshot"}
+                  </button>
                   <b>{lang === "ar" ? "أرقام نمو الجمهور" : "Audience growth metrics"}</b>
                   {selected.socialMediaShowcase.communityGrowth.map((metric, index) => (
                     <div className="vz-form-stack" key={`${metric.platform}-${index}`}>
+                      <label className="vz-field">
+                        <span>{lang === "ar" ? "المنصة" : "Platform"}</span>
+                        <select
+                          value={metric.platform}
+                          onChange={(event) => {
+                            const showcase = selected.socialMediaShowcase;
+                            if (!showcase) return;
+                            const communityGrowth = [...showcase.communityGrowth];
+                            communityGrowth[index] = {
+                              ...metric,
+                              platform: event.target.value as SocialPlatform,
+                            };
+                            updateRecord(group, selected.id, {
+                              socialMediaShowcase: { ...showcase, communityGrowth },
+                            });
+                          }}
+                        >
+                          {(["Instagram", "TikTok", "Facebook", "Snapchat"] as const).map(
+                            (platform) => (
+                              <option key={platform} value={platform}>
+                                {platform}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </label>
                       {field(
                         `${metric.platform} ${lang === "ar" ? "العدد" : "count"}`,
                         metric.followers,
@@ -1014,8 +1183,51 @@ function AdminPage() {
                           });
                         },
                       )}
+                      <button
+                        className="vz-small-add vz-danger-action"
+                        type="button"
+                        onClick={() => {
+                          const showcase = selected.socialMediaShowcase;
+                          if (!showcase) return;
+                          updateRecord(group, selected.id, {
+                            socialMediaShowcase: {
+                              ...showcase,
+                              communityGrowth: showcase.communityGrowth.filter(
+                                (_, itemIndex) => itemIndex !== index,
+                              ),
+                            },
+                          });
+                        }}
+                      >
+                        <X size={14} />
+                        {lang === "ar" ? "حذف الرقم" : "Remove metric"}
+                      </button>
                     </div>
                   ))}
+                  <button
+                    className="vz-small-add"
+                    type="button"
+                    onClick={() => {
+                      const showcase = selected.socialMediaShowcase;
+                      if (!showcase) return;
+                      updateRecord(group, selected.id, {
+                        socialMediaShowcase: {
+                          ...showcase,
+                          communityGrowth: [
+                            ...showcase.communityGrowth,
+                            {
+                              platform: "Instagram",
+                              followers: "",
+                              label: { en: "new followers", ar: "متابع جديد" },
+                            },
+                          ],
+                        },
+                      });
+                    }}
+                  >
+                    <Plus size={15} />
+                    {lang === "ar" ? "إضافة رقم أداء" : "Add performance metric"}
+                  </button>
                   {mediaInput(
                     lang === "ar" ? "فيديو الحملة" : "Campaign video",
                     selected.socialMediaShowcase.video ?? "",

@@ -8,11 +8,13 @@ import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import { services } from "@/lib/showcase-data";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { translate } from "@/components/showcase/types";
+import { canonicalUrl } from "@/lib/seo";
 import { useCMS } from "@/lib/cms";
 
 export const Route = createFileRoute("/services/")({
   component: ServicesPage,
   head: () => ({
+    links: [{ rel: "canonical", href: canonicalUrl("/services") }],
     meta: [
       { title: "Our Services — Viral Zoom | خدمات فايرال زوم" },
       {
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/services/")({
           "اكتشف خدمات تصميم المواقع والتسويق الرقمي وإدارة السوشيال ميديا والإنتاج الإبداعي من Viral Zoom.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: canonicalUrl("/services") },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "خدمات Viral Zoom الرقمية والإبداعية" },
       {
