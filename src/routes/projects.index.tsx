@@ -17,13 +17,15 @@ import {
 import { projectItemsFromConfig, useCMS } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
 import { translate } from "@/components/showcase/types";
+import { loadSiteConfig } from "@/lib/cms-loader";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
-  head: () => ({
+  loader: async () => ({ siteConfig: await loadSiteConfig() }),
+  head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/projects") }],
     meta: [
-      { title: "أعمالنا في التسويق والتصميم | Viral Zoom" },
+      { title: loaderData?.siteConfig.content.seo.projectsTitle.en },
       {
         name: "description",
         content:

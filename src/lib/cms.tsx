@@ -29,6 +29,51 @@ import logo from "@/assets/logo.png.asset.json";
 import whiteLogo from "@/assets/logo-white.png.asset.json";
 
 export type Bilingual = { en: string; ar: string };
+export type AboutValue = { title: Bilingual; text: Bilingual };
+export type ProcessStep = { name: Bilingual; description: Bilingual };
+export type SiteContent = {
+  about: {
+    seoTitle: Bilingual;
+    seoDescription: Bilingual;
+    heroEyebrow: Bilingual;
+    heroTitle: Bilingual;
+    heroTitleAccent: Bilingual;
+    heroDescription: Bilingual;
+    heroCta: Bilingual;
+    heroImageAlt: Bilingual;
+    heroCaption: Bilingual;
+    storyEyebrow: Bilingual;
+    storyTitle: Bilingual;
+    storyParagraphs: Bilingual[];
+    storyCta: Bilingual;
+    valuesEyebrow: Bilingual;
+    valuesTitle: Bilingual;
+    valuesDescription: Bilingual;
+    values: AboutValue[];
+    approachEyebrow: Bilingual;
+    approachTitle: Bilingual;
+    approachDescription: Bilingual;
+    ctaEyebrow: Bilingual;
+    ctaTitle: Bilingual;
+    ctaDescription: Bilingual;
+    ctaButton: Bilingual;
+  };
+  process: {
+    eyebrow: Bilingual;
+    title: Bilingual;
+    intro: Bilingual;
+    steps: ProcessStep[];
+  };
+  seo: {
+    siteTitle: Bilingual;
+    siteDescription: Bilingual;
+    homeTitle: Bilingual;
+    homeDescription: Bilingual;
+    servicesTitle: Bilingual;
+    projectsTitle: Bilingual;
+    contactTitle: Bilingual;
+  };
+};
 export type EditableItem = {
   id: string;
   name: Bilingual;
@@ -54,6 +99,7 @@ export type SiteConfig = {
   portfolio: EditableItem[];
   clients: EditableItem[];
   contact: { email: string; phone: string; whatsapp: string; address: Bilingual };
+  content: SiteContent;
 };
 
 export const initialConfig: SiteConfig = {
@@ -111,6 +157,143 @@ export const initialConfig: SiteConfig = {
     phone: "",
     whatsapp: "",
     address: { en: "Cairo, Egypt", ar: "القاهرة، مصر" },
+  },
+  content: {
+    about: {
+      seoTitle: {
+        en: "About Viral Zoom — Creative & Digital Agency",
+        ar: "عن فايرال زوم — وكالة إبداعية ورقمية",
+      },
+      seoDescription: {
+        en: "Meet Viral Zoom, a creative and digital agency combining strategy, design and technology to help brands grow.",
+        ar: "تعرف على فايرال زوم، وكالة إبداعية ورقمية تجمع الاستراتيجية والتصميم والتكنولوجيا لتنمية العلامات التجارية.",
+      },
+      heroEyebrow: { en: "ABOUT VIRAL ZOOM", ar: "عن فايرال زوم" },
+      heroTitle: { en: "We turn bold ideas", ar: "نحوّل الأفكار" },
+      heroTitleAccent: { en: "into real impact.", ar: "الجريئة لتأثير حقيقي." },
+      heroDescription: {
+        en: "We are a creative and digital agency bringing strategy, design and technology together to help brands move forward.",
+        ar: "إحنا وكالة إبداعية ورقمية بنجمع الاستراتيجية والتصميم والتكنولوجيا عشان نساعد العلامات التجارية تتقدم.",
+      },
+      heroCta: { en: "Get to know us", ar: "اعرفنا أكتر" },
+      heroImageAlt: {
+        en: "A creative digital project by Viral Zoom",
+        ar: "مشروع رقمي إبداعي من فايرال زوم",
+      },
+      heroCaption: { en: "Ideas made visible", ar: "أفكار تتحول لواقع" },
+      storyEyebrow: { en: "WHO WE ARE", ar: "مين إحنا" },
+      storyTitle: {
+        en: "A creative partner for brands ready to grow.",
+        ar: "شريك إبداعي للعلامات اللي مستعدة تكبر.",
+      },
+      storyParagraphs: [
+        {
+          en: "At Viral Zoom, we bring creative services and digital solutions together under one roof. From brand identity and content to websites, campaigns and production, we help shape consistent experiences that connect with people.",
+          ar: "في فايرال زوم، بنجمع الخدمات الإبداعية والحلول الرقمية في مكان واحد. من الهوية والمحتوى للمواقع والحملات والإنتاج، بنساعد في بناء تجارب متناسقة تقرّب علامتك من جمهورها.",
+        },
+        {
+          en: "Every project starts with understanding what makes your business different. Then we turn that understanding into clear ideas, thoughtful design and work made to support your next step.",
+          ar: "كل مشروع بيبدأ بفهم اللي بيميّز شغلك. بعدها نحوّل الفهم لأفكار واضحة وتصميم مدروس وشغل يساعدك تاخد خطوتك الجاية.",
+        },
+      ],
+      storyCta: { en: "Explore selected projects", ar: "شوف مشاريعنا" },
+      valuesEyebrow: { en: "HOW WE THINK", ar: "طريقة تفكيرنا" },
+      valuesTitle: { en: "Creative with purpose.", ar: "إبداع له هدف." },
+      valuesDescription: {
+        en: "Good work is more than a good-looking idea. It should make sense for your brand and move you toward a goal.",
+        ar: "الشغل الحلو مش مجرد شكل جذاب؛ لازم يناسب علامتك ويقرّبك من هدفك.",
+      },
+      values: [
+        {
+          title: { en: "Start with insight", ar: "نبدأ بالفهم" },
+          text: {
+            en: "We learn about your brand, your audience and your goals before shaping the right direction.",
+            ar: "نفهم علامتك وجمهورك وأهدافك قبل ما نحدد الاتجاه المناسب.",
+          },
+        },
+        {
+          title: { en: "Make ideas matter", ar: "نحوّل الأفكار لتأثير" },
+          text: {
+            en: "We bring creative thinking and practical strategy together to make every touchpoint count.",
+            ar: "نجمع بين الإبداع والاستراتيجية العملية عشان كل نقطة تواصل يكون ليها أثر.",
+          },
+        },
+        {
+          title: { en: "Build for progress", ar: "نبني للتطور" },
+          text: {
+            en: "We test, learn and refine the work, keeping the focus on meaningful progress for your brand.",
+            ar: "نختبر ونتعلم ونطوّر شغلنا، مع تركيزنا على تقدم حقيقي لعلامتك التجارية.",
+          },
+        },
+      ],
+      approachEyebrow: { en: "OUR APPROACH", ar: "منهجيتنا" },
+      approachTitle: {
+        en: "Think clearly. Create boldly. Keep growing.",
+        ar: "فكّر بوضوح. ابتكر بجرأة. واستمر في التطور.",
+      },
+      approachDescription: {
+        en: "We work through a clear cycle: understand the opportunity, create and test ideas, learn from what happens, then build on what works.",
+        ar: "بنتبع خطوات واضحة: نفهم الفرصة، نبتكر ونختبر الأفكار، نتعلم من النتائج، وبعدها نطوّر اللي أثبت نجاحه.",
+      },
+      ctaEyebrow: { en: "LET'S BUILD WHAT'S NEXT", ar: "يلا نبدأ خطوتك الجاية" },
+      ctaTitle: { en: "Have an idea in mind?", ar: "عندك فكرة في بالك؟" },
+      ctaDescription: {
+        en: "Tell us what you are working toward. We would love to hear about it.",
+        ar: "احكيلنا عن هدفك، ويسعدنا نسمع فكرتك.",
+      },
+      ctaButton: { en: "Start a conversation", ar: "ابدأ كلامنا" },
+    },
+    process: {
+      eyebrow: { en: "THE VIRAL ZOOM METHOD", ar: "منهجية فايرال زوم" },
+      title: {
+        en: "Measure. Ideate. Experiment. Read. Scale.",
+        ar: "حلّل. ابتكر. جرّب. قيّم. وسّع.",
+      },
+      intro: {
+        en: "A clear, repeatable process for meaningful results.",
+        ar: "خطوات واضحة ومتكررة لتحقيق نتائج مؤثرة.",
+      },
+      steps: [
+        {
+          name: { en: "Measure", ar: "حلّل" },
+          description: { en: "Find the opportunity.", ar: "نكتشف الفرص المناسبة." },
+        },
+        {
+          name: { en: "Ideate", ar: "ابتكر" },
+          description: { en: "Turn insight into ideas.", ar: "نحوّل الرؤى إلى أفكار." },
+        },
+        {
+          name: { en: "Experiment", ar: "جرّب" },
+          description: { en: "Create. Test. Iterate.", ar: "نبتكر، نختبر، ونطوّر." },
+        },
+        {
+          name: { en: "Read", ar: "حلّل النتائج" },
+          description: { en: "Learn what works.", ar: "نتعلّم مما يحقق النتائج." },
+        },
+        {
+          name: { en: "Scale", ar: "وسّع" },
+          description: { en: "Do more of what works.", ar: "نوسّع أثر ما ينجح." },
+        },
+      ],
+    },
+    seo: {
+      siteTitle: { en: "Viral Zoom", ar: "فايرال زوم" },
+      siteDescription: {
+        en: "Creative and digital marketing agency.",
+        ar: "وكالة إبداعية ورقمية للتسويق والتصميم.",
+      },
+      homeTitle: {
+        en: "Creative & Digital Marketing | Viral Zoom",
+        ar: "الإبداع والتسويق الرقمي | فايرال زوم",
+      },
+      homeDescription: {
+        en: "Ideas that make your brand impossible to ignore.",
+        ar: "أفكار تجعل علامتك التجارية مستحيلة التجاهل.",
+      },
+      servicesTitle: { en: "Our Services | Viral Zoom", ar: "خدماتنا | فايرال زوم" },
+      projectsTitle: { en: "Our Projects | Viral Zoom", ar: "أعمالنا | فايرال زوم" },
+      contactTitle: { en: "Contact Viral Zoom", ar: "تواصل مع فايرال زوم" },
+    },
   },
 };
 
@@ -198,6 +381,10 @@ export function isSiteConfig(value: unknown): value is SiteConfig {
     typeof config.contact.phone === "string" &&
     typeof config.contact.whatsapp === "string" &&
     isBilingual(config.contact.address) &&
+    !!config.content &&
+    !!config.content.about &&
+    !!config.content.process &&
+    !!config.content.seo &&
     Array.isArray(config.services) &&
     Array.isArray(config.portfolio) &&
     Array.isArray(config.clients)
@@ -220,6 +407,13 @@ function mergeConfig(saved: SiteConfig): SiteConfig {
       ...initialConfig.contact,
       ...saved.contact,
       address: { ...initialConfig.contact.address, ...saved.contact?.address },
+    },
+    content: {
+      ...initialConfig.content,
+      ...saved.content,
+      about: { ...initialConfig.content.about, ...saved.content?.about },
+      process: { ...initialConfig.content.process, ...saved.content?.process },
+      seo: { ...initialConfig.content.seo, ...saved.content?.seo },
     },
     services: Array.isArray(saved.services) ? saved.services : initialConfig.services,
     portfolio: Array.isArray(saved.portfolio) ? saved.portfolio : initialConfig.portfolio,

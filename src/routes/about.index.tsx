@@ -15,63 +15,37 @@ import whiteLogo from "@/assets/logo-white.png.asset.json";
 import website from "@/assets/website.jpg.asset.json";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
-import { translate } from "@/components/showcase/types";
 import { canonicalUrl } from "@/lib/seo";
-
+import { useCMS } from "@/lib/cms";
+import { loadSiteConfig } from "@/lib/cms-loader";
 export const Route = createFileRoute("/about/")({
   component: AboutPage,
-  head: () => ({
+  loader: async () => ({ siteConfig: await loadSiteConfig() }),
+  head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/about") }],
     meta: [
-      { title: "About Viral Zoom — Creative & Digital Agency | من نحن" },
+      { title: loaderData?.siteConfig.content.about.seoTitle.en },
       {
         name: "description",
-        content:
-          "Meet Viral Zoom, a creative and digital agency combining strategy, design and technology to help brands grow. تعرف على فايرال زوم، وكالة إبداعية ورقمية تجمع الاستراتيجية والتصميم والتكنولوجيا لتنمية العلامات التجارية.",
+        content: loaderData?.siteConfig.content.about.seoDescription.en,
       },
-      { property: "og:title", content: "About Viral Zoom — Creative & Digital Agency" },
+      { property: "og:title", content: loaderData?.siteConfig.content.about.seoTitle.en },
       { property: "og:url", content: canonicalUrl("/about") },
       {
         property: "og:description",
-        content: "Creative thinking, smart strategy and standout execution for growing brands.",
+        content: loaderData?.siteConfig.content.about.seoDescription.en,
       },
     ],
   }),
 });
 
-const values = [
-  {
-    icon: Search,
-    title: { en: "Start with insight", ar: "نبدأ بالفهم" },
-    text: {
-      en: "We learn about your brand, your audience and your goals before shaping the right direction.",
-      ar: "نفهم علامتك وجمهورك وأهدافك قبل ما نحدد الاتجاه المناسب.",
-    },
-  },
-  {
-    icon: Lightbulb,
-    title: { en: "Make ideas matter", ar: "نحوّل الأفكار لتأثير" },
-    text: {
-      en: "We bring creative thinking and practical strategy together to make every touchpoint count.",
-      ar: "نجمع بين الإبداع والاستراتيجية العملية عشان كل نقطة تواصل يكون ليها أثر.",
-    },
-  },
-  {
-    icon: ChartNoAxesColumnIncreasing,
-    title: { en: "Build for progress", ar: "نبني للتطور" },
-    text: {
-      en: "We test, learn and refine the work, keeping the focus on meaningful progress for your brand.",
-      ar: "نختبر ونتعلم ونطوّر شغلنا، مع تركيزنا على تقدم حقيقي لعلامتك التجارية.",
-    },
-  },
-];
-
 function AboutPage() {
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(true);
   const navigate = useNavigate();
+  const { config } = useCMS();
+  const about = config.content.about;
   const ar = language === "ar";
-  const t = (english: string, arabic: string) => translate(language, english, arabic);
 
   useEffect(() => {
     try {
@@ -139,34 +113,21 @@ function AboutPage() {
         <section className="about-hero" aria-labelledby="about-title">
           <div className="section-inner about-hero-inner">
             <div className="about-hero-copy">
-              <p className="section-eyebrow">{t("ABOUT VIRAL ZOOM", "عن فايرال زوم")}</p>
+              <p className="section-eyebrow">{about.heroEyebrow[language]}</p>
               <h1 id="about-title">
-                {t("We turn bold ideas", "نحوّل الأفكار")}
+                {about.heroTitle[language]}
                 <br />
-                <span>{t("into real impact.", "الجريئة لتأثير حقيقي.")}</span>
+                <span>{about.heroTitleAccent[language]}</span>
               </h1>
-              <p>
-                {t(
-                  "We are a creative and digital agency bringing strategy, design and technology together to help brands move forward.",
-                  "إحنا وكالة إبداعية ورقمية بنجمع الاستراتيجية والتصميم والتكنولوجيا عشان نساعد العلامات التجارية تتقدم.",
-                )}
-              </p>
+              <p>{about.heroDescription[language]}</p>
               <a className="about-hero-cta" href="#about-story">
-                {t("Get to know us", "اعرفنا أكتر")}
+                {about.heroCta[language]}
                 <ArrowDown aria-hidden="true" />
               </a>
             </div>
             <div className="about-hero-art">
-              <img
-                src={website.url}
-                alt={t(
-                  "A creative digital project by Viral Zoom",
-                  "مشروع رقمي إبداعي من فايرال زوم",
-                )}
-              />
-              <span className="about-hero-art-caption">
-                {t("Ideas made visible", "أفكار تتحول لواقع")}
-              </span>
+              <img src={website.url} alt={about.heroImageAlt[language]} />
+              <span className="about-hero-art-caption">{about.heroCaption[language]}</span>
               <span className="about-hero-art-stamp" aria-hidden="true">
                 VZ
                 <br />
@@ -183,30 +144,15 @@ function AboutPage() {
         >
           <div className="section-inner about-story-inner">
             <div className="about-story-label">
-              <span className="section-eyebrow">{t("WHO WE ARE", "مين إحنا")}</span>
+              <span className="section-eyebrow">{about.storyEyebrow[language]}</span>
               <span className="about-story-index">01 / VZ</span>
             </div>
             <div className="about-story-copy">
-              <h2 id="about-story-title">
-                {t(
-                  "A creative partner for brands ready to grow.",
-                  "شريك إبداعي للعلامات اللي مستعدة تكبر.",
-                )}
-              </h2>
-              <p>
-                {t(
-                  "At Viral Zoom, we bring creative services and digital solutions together under one roof. From brand identity and content to websites, campaigns and production, we help shape consistent experiences that connect with people.",
-                  "في فايرال زوم، بنجمع الخدمات الإبداعية والحلول الرقمية في مكان واحد. من الهوية والمحتوى للمواقع والحملات والإنتاج، بنساعد في بناء تجارب متناسقة تقرّب علامتك من جمهورها.",
-                )}
-              </p>
-              <p>
-                {t(
-                  "Every project starts with understanding what makes your business different. Then we turn that understanding into clear ideas, thoughtful design and work made to support your next step.",
-                  "كل مشروع بيبدأ بفهم اللي بيميّز شغلك. بعدها نحوّل الفهم لأفكار واضحة وتصميم مدروس وشغل يساعدك تاخد خطوتك الجاية.",
-                )}
-              </p>
+              <h2 id="about-story-title">{about.storyTitle[language]}</h2>
+              <p>{about.storyParagraphs[0][language]}</p>
+              <p>{about.storyParagraphs[1][language]}</p>
               <Link className="about-inline-link" to="/projects">
-                {t("Explore selected projects", "شوف مشاريعنا")}
+                {about.storyCta[language]}
                 {ar ? <ArrowLeft aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
               </Link>
             </div>
@@ -217,27 +163,25 @@ function AboutPage() {
           <div className="section-inner">
             <div className="about-values-heading">
               <div>
-                <p className="section-eyebrow">{t("HOW WE THINK", "طريقة تفكيرنا")}</p>
-                <h2 id="about-values-title">{t("Creative with purpose.", "إبداع له هدف.")}</h2>
+                <p className="section-eyebrow">{about.valuesEyebrow[language]}</p>
+                <h2 id="about-values-title">{about.valuesTitle[language]}</h2>
               </div>
-              <p>
-                {t(
-                  "Good work is more than a good-looking idea. It should make sense for your brand and move you toward a goal.",
-                  "الشغل الحلو مش مجرد شكل جذاب؛ لازم يناسب علامتك ويقرّبك من هدفك.",
-                )}
-              </p>
+              <p>{about.valuesDescription[language]}</p>
             </div>
             <div className="about-values-grid">
-              {values.map(({ icon: Icon, title, text }, index) => (
-                <article className="about-value-card" key={title.en}>
-                  <span className="about-value-number">0{index + 1}</span>
-                  <span className="about-value-icon">
-                    <Icon aria-hidden="true" />
-                  </span>
-                  <h3>{title[language]}</h3>
-                  <p>{text[language]}</p>
-                </article>
-              ))}
+              {about.values.map(({ title, text }, index) => {
+                const Icon = [Search, Lightbulb, ChartNoAxesColumnIncreasing][index] ?? Search;
+                return (
+                  <article className="about-value-card" key={title.en}>
+                    <span className="about-value-number">0{index + 1}</span>
+                    <span className="about-value-icon">
+                      <Icon aria-hidden="true" />
+                    </span>
+                    <h3>{title[language]}</h3>
+                    <p>{text[language]}</p>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -245,19 +189,9 @@ function AboutPage() {
         <section className="about-approach section" aria-labelledby="about-approach-title">
           <div className="section-inner about-approach-inner">
             <div>
-              <p className="section-eyebrow">{t("OUR APPROACH", "منهجيتنا")}</p>
-              <h2 id="about-approach-title">
-                {t(
-                  "Think clearly. Create boldly. Keep growing.",
-                  "فكّر بوضوح. ابتكر بجرأة. واستمر في التطور.",
-                )}
-              </h2>
-              <p>
-                {t(
-                  "We work through a clear cycle: understand the opportunity, create and test ideas, learn from what happens, then build on what works.",
-                  "بنتبع خطوات واضحة: نفهم الفرصة، نبتكر ونختبر الأفكار، نتعلم من النتائج، وبعدها نطوّر اللي أثبت نجاحه.",
-                )}
-              </p>
+              <p className="section-eyebrow">{about.approachEyebrow[language]}</p>
+              <h2 id="about-approach-title">{about.approachTitle[language]}</h2>
+              <p>{about.approachDescription[language]}</p>
             </div>
             <div className="about-approach-mark" aria-hidden="true">
               <TrendingUp />
@@ -273,19 +207,12 @@ function AboutPage() {
         <section className="about-cta section">
           <div className="section-inner about-cta-inner">
             <div>
-              <p className="section-eyebrow">
-                {t("LET'S BUILD WHAT'S NEXT", "يلا نبدأ خطوتك الجاية")}
-              </p>
-              <h2>{t("Have an idea in mind?", "عندك فكرة في بالك؟")}</h2>
-              <p>
-                {t(
-                  "Tell us what you are working toward. We would love to hear about it.",
-                  "احكيلنا عن هدفك، ويسعدنا نسمع فكرتك.",
-                )}
-              </p>
+              <p className="section-eyebrow">{about.ctaEyebrow[language]}</p>
+              <h2>{about.ctaTitle[language]}</h2>
+              <p>{about.ctaDescription[language]}</p>
             </div>
             <Link to="/" hash="contact" className="about-cta-link">
-              {t("Start a conversation", "ابدأ كلامنا")}
+              {about.ctaButton[language]}
               <ArrowUpRight aria-hidden="true" />
             </Link>
           </div>

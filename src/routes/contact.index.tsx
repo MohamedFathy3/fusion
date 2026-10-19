@@ -9,17 +9,18 @@ import { ShowcaseContact, ShowcaseFooter, ShowcaseHeader } from "@/components/sh
 import type { Language, SectionId } from "@/components/showcase/types";
 import { translate } from "@/components/showcase/types";
 import { canonicalUrl } from "@/lib/seo";
+import { loadSiteConfig } from "@/lib/cms-loader";
 
 export const Route = createFileRoute("/contact/")({
   component: ContactPage,
-  head: () => ({
+  loader: async () => ({ siteConfig: await loadSiteConfig() }),
+  head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/contact") }],
     meta: [
-      { title: "Contact Viral Zoom | تواصل مع فايرال زوم" },
+      { title: loaderData?.siteConfig.content.seo.contactTitle.en },
       {
         name: "description",
-        content:
-          "Have a project in mind? Get in touch with Viral Zoom. عندك مشروع في بالك؟ تواصل مع فايرال زوم.",
+        content: loaderData?.siteConfig.content.seo.siteDescription.en,
       },
       { property: "og:title", content: "Contact Viral Zoom | تواصل مع فايرال زوم" },
       { property: "og:url", content: canonicalUrl("/contact") },

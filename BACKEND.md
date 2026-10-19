@@ -1,58 +1,50 @@
-# Backend وتشغيل Viral Zoom
+# Backend وتشغيل Oasis Web Design
 
-يقدّم backend بـ **Node.js** صفحات التطبيق وواجهات API من الأصل نفسه. محتوى CMS يُحفظ في قاعدة SQLite على الخادم في `DATA_DIR/site-content.sqlite`، والملفات المرفوعة في `DATA_DIR/uploads/`، لذلك يرى جميع الزوار التعديلات نفسها. لا تُخزّن بيانات المحتوى أو جلسة المدير في `localStorage`.
+يقدّم backend بـ **Node.js** صفحات التطبيق وواجهات API من الأصل نفسه. محتوى CMS يُحفظ في **MySQL** داخل جدولي `site_settings` و`content_items`، والملفات المرفوعة في `DATA_DIR/uploads/`؛ لذلك يرى جميع الزوار التعديلات نفسها. لا تُخزّن بيانات المحتوى أو جلسة المدير في `localStorage`.
 
-عند أول تشغيل، تُنشأ قاعدة SQLite وتُملأ من `site-content.json` القديم إن كان موجودًا داخل `DATA_DIR`؛ يظل ملف JSON كما هو كنسخة احتياطية ولا تُكتب إليه التعديلات الجديدة. إذا لم يوجد ملف قديم، تُنشأ قاعدة البيانات بمحتوى الموقع الابتدائي. خذ نسخة احتياطية من `site-content.sqlite` ومجلد `uploads` معًا.
+## إعداد MySQL والبيانات الافتراضية
 
-## مكتبة الصور والفيديو
-
-الأصول الافتراضية مضمّنة محليًا في `public/media/`، وصور معرض الأعمال تُقدّم من `public/media/portfolio/`؛ لا تعتمد الروابط الجديدة على مخزن الملفات المؤقت. تُحوّل الصور إلى WebP للعرض السريع، بينما يحتفظ المشروع بأصول المصدر الخام خارج مجلد النشر. عند رفع صورة أو فيديو من `/admin`، يُحفظ الملف في `DATA_DIR/uploads/` ويُحفظ رابطه ضمن سجل CMS، ويمكن استبداله أو مسحه من نفس المحرر. في الاستضافة الفعلية، يجب أن يكون `DATA_DIR` على قرص دائم.
-
-## تشغيل محلي
+1. أنشئ قاعدة البيانات والجداول:
 
 ```bash
-cp .env.example .env
-# افتح .env وضع كلمة مرور مدير جديدة وSESSION_SECRET عشوائيًا وطويلًا.
-npm ci
-npm run dev
+mysql -u root -p < database/schema.sql
 ```
 
-بعد بناء الإنتاج، يمكن تشغيل اختبار API المتكامل باستخدام `npm run build && npm run test:api`؛ يستخدم الاختبار مساحة بيانات مؤقتة وكلمة مرور اختبار ولا يغيّر بيانات الموقع الفعلية.
-
-لوحة الإدارة: `/admin`. استخدم البريد المعيّن في `ADMIN_EMAIL` (الافتراضي `admin@admin.com`) وكلمة المرور المحفوظة على الخادم في `ADMIN_PASSWORD`. لا تضع كلمة المرور أو `SESSION_SECRET` في Git. يتطلب تشغيل دخول المدير تعيين كلمة المرور؛ إذا لم تُضبط، سيرفض الخادم تسجيل الدخول بدل استخدام كلمة مرور افتراضية.
-
-## بناء وتشغيل إنتاجي
+2. انسخ `.env.example` إلى `.env` وضع بيانات الاتصال وكلمة مرور المدير.
+3. حمّل البيانات الافتراضية المطابقة للموقع الحالي مباشرة من ملف SQL:
 
 ```bash
-PUBLIC_SITE_URL=https://your-verified-domain.example npm run build
+mysql -u oasis_web -p oasis_web < database/seed.sql
+```
+
+أو استخدم السكربت المكافئ بعد `npm ci`:
+
+```bash
+npm run db:seed
+```
+
+يمكن بدل المتغيرات المنفصلة استخدام `MYSQL_URL=mysql://user:password@host:3306/oasis_web`.
+
+يدعم التطبيق `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE` و`MYSQL_CONNECTION_LIMIT`. عند أول تشغيل، إذا كانت الجداول فارغة سيقوم الخادم بتحميل `data/site-content.json` إن وجد، وإلا يستخدم `initialConfig` المضمّن. يظل `database/default-site-content.json` نسخة البيانات الافتراضية القابلة لإعادة الـ seed.
+
+## تشغيل وبناء الإنتاج
+
+```bash
+npm ci
+npm run build
 npm start
 ```
 
-`PUBLIC_SITE_URL` يجب أن يكون عنوان الموقع العام الفعلي كاملًا مع HTTPS (مثل `https://viralzoom.tech`) ومضبوطًا في بيئة تشغيل الخادم، وليس وقت البناء فقط؛ يستخدمه فحص Origin لقبول طلبات لوحة الإدارة خلف Nginx/Reverse Proxy. لا تستخدم عنوان معاينة مؤقتًا. الخادم يحتاج **Node.js 22.5 أو أحدث** لدعم SQLite المضمّن في Node. اترك `DATA_DIR` على قرص دائم في الاستضافة، واحتفظ بنسخ احتياطية من قاعدة البيانات ومجلد الرفع. قاعدة SQLite ما زالت ملفًا على الخادم وليست قاعدة مستضافة خارجيًا؛ لا ينصح بمجلد محلي مؤقت أو serverless filesystem للبيانات والرفع. عند تشغيل أكثر من نسخة/عامل بالتوازي، انقل المحتوى إلى قاعدة بيانات مشتركة والوسائط إلى Object Storage بدل القرص المحلي.
+الخادم يحتاج Node.js 22.5 أو أحدث. يجب أن تكون MySQL قاعدة مشتركة ودائمة، وأن يكون `DATA_DIR` على قرص دائم للوسائط المرفوعة. احتفظ بنسخة احتياطية من جداول MySQL ومجلد `uploads` معًا.
+
+لوحة الإدارة: `/admin`. استخدم البريد الموجود في `ADMIN_EMAIL` وكلمة المرور الموجودة في `ADMIN_PASSWORD`. لا تضع كلمة المرور أو `SESSION_SECRET` في Git.
 
 ## API
 
-| Method            | Endpoint               | الصلاحية | الغرض                                                                      |
-| ----------------- | ---------------------- | -------- | -------------------------------------------------------------------------- |
-| `GET`             | `/api/health`          | عام      | صحة الخدمة ونوع التخزين                                                    |
-| `GET`             | `/api/auth/session`    | عام      | حالة جلسة المدير                                                           |
-| `POST`            | `/api/auth/login`      | عام      | دخول المدير؛ يضع cookie `HttpOnly`                                         |
-| `POST`            | `/api/auth/logout`     | جلسة     | إنهاء الجلسة                                                               |
-| `GET`             | `/api/site`            | عام      | إعدادات العلامة، أقسام الرئيسية، التواصل والخدمات والأعمال والعملاء        |
-| `PUT`             | `/api/site`            | مدير     | حفظ إعدادات CMS كاملة                                                      |
-| `GET`             | `/api/services`        | عام      | قائمة الخدمات؛ ويمكن طلب خدمة محددة بـ `/api/services/:id`                 |
-| `POST/PUT/DELETE` | `/api/services[/\:id]` | مدير     | إنشاء/تعديل/حذف خدمة                                                       |
-| `GET`             | `/api/projects`        | عام      | قائمة المشاريع وتفاصيلها، بما في ذلك الصور والتصنيفات ودراسة حالة السوشيال |
-| `POST/PUT/DELETE` | `/api/projects[/\:id]` | مدير     | إنشاء/تعديل/حذف مشروع                                                      |
-| `GET`             | `/api/clients`         | عام      | قائمة العملاء                                                              |
-| `POST/PUT/DELETE` | `/api/clients[/\:id]`  | مدير     | إنشاء/تعديل/حذف عميل                                                       |
-| `POST`            | `/api/uploads`         | مدير     | رفع JPG/PNG/WebP/GIF حتى 10 MB أو MP4/WebM حتى 100 MB                      |
-| `GET`             | `/uploads/:filename`   | عام      | تقديم ملف مرفوع من مجلد البيانات                                           |
-| `GET`             | `/sitemap.xml`         | عام      | Sitemap حيّ بالخدمات والمشاريع المنشورة عند ضبط النطاق                     |
-| `GET`             | `/robots.txt`          | عام      | توجيه الزواحف وإعلان رابط Sitemap عند ضبط النطاق                           |
+تبقى واجهات API نفسها: `/api/site`, `/api/services`, `/api/projects`, `/api/clients`, `/api/uploads`, `/api/auth/*`, `/api/health`, بالإضافة إلى sitemap وrobots الديناميكيين. كل عمليات القراءة العامة تعرض العناصر المنشورة فقط، بينما التعديل يتطلب جلسة المدير.
 
-تُرسل طلبات الإدارة مع cookie الجلسة ذاتها؛ لوحة التحكم تفعّلها تلقائيًا. `POST /api/uploads` يستقبل `multipart/form-data` وفيه حقل `file`. الصور والفيديوهات المرفوعة لا تُحوّل إلى data URL.
+لاختبار API الكامل، جهّز قاعدة MySQL اختبارية ثم شغّل:
 
-## Search Console
-
-أثبت ملكية النطاق في [Google Search Console](https://search.google.com/search-console) بنفسك عبر DNS أو طريقة التحقق التي تختارها، ثم أرسل `https://نطاقك/sitemap.xml`. لا يمكن إثبات الملكية أو إرسال ملفات sitemap نيابة عن مالك النطاق من دون صلاحية حساب Google.
+```bash
+npm run build && MYSQL_DATABASE=oasis_web_test npm run test:api
+```
