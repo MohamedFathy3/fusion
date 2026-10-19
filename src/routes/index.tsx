@@ -15,17 +15,18 @@ import type { Language, SectionId } from "@/components/showcase/types";
 import { useCMS } from "@/lib/cms";
 import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
 import logo from "@/assets/logo.png.asset.json";
+import { loadSiteConfig } from "@/lib/cms-loader";
 
 export const Route = createFileRoute("/")({
   component: Index,
-  head: () => ({
+  loader: async () => ({ siteConfig: await loadSiteConfig() }),
+  head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/") }],
     meta: [
-      { title: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
+      { title: loaderData?.siteConfig.content.seo.homeTitle.en },
       {
         name: "description",
-        content:
-          "نصمم مواقع ومتاجر إلكترونية ونقدم حلول التسويق الرقمي وتطوير البرمجيات لمساعدة الشركات على النمو. Viral Zoom — فايرال زوم.",
+        content: loaderData?.siteConfig.content.seo.homeDescription.en,
       },
       { property: "og:title", content: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
       {

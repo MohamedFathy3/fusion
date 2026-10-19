@@ -288,7 +288,7 @@ html { scroll-behavior: auto; }
 .contact-info-card > :not(.contact-world-map) { position: relative; z-index: 1; }
 .contact-world-map { position: absolute; z-index: -1; inset-block: 0; inset-inline-start: -15%; width: 130%; height: 100%; object-fit: contain; object-position: center; opacity: .78; filter: brightness(.22) contrast(1.7); mix-blend-mode: multiply; pointer-events: none; }
 .dark .contact-world-map { opacity: .62; filter: invert(1) brightness(1.2) contrast(1.5); mix-blend-mode: screen; }
-.contact-phone-icon { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 50%; color：var(--primary); }
+.contact-phone-icon { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 50%; color: var(--primary); }
 .contact-phone-icon svg { width: 19px; height: 19px; }
 .contact-phone { width: fit-content; margin-top: 24px; color: var(--foreground); font-size: clamp(21px, 2vw, 29px); text-decoration: none; transition: color .2s ease; }
 .contact-phone:hover { color: var(--primary); }

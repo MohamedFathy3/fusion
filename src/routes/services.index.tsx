@@ -10,17 +10,18 @@ import type { Language, SectionId } from "@/components/showcase/types";
 import { translate } from "@/components/showcase/types";
 import { canonicalUrl } from "@/lib/seo";
 import { useCMS } from "@/lib/cms";
+import { loadSiteConfig } from "@/lib/cms-loader";
 
 export const Route = createFileRoute("/services/")({
   component: ServicesPage,
-  head: () => ({
+  loader: async () => ({ siteConfig: await loadSiteConfig() }),
+  head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/services") }],
     meta: [
-      { title: "Our Services — Viral Zoom | خدمات فايرال زوم" },
+      { title: loaderData?.siteConfig.content.seo.servicesTitle.en },
       {
         name: "description",
-        content:
-          "Explore the creative, digital marketing and production services offered by Viral Zoom. اكتشف خدمات فايرال زوم الإبداعية والتسويقية.",
+        content: loaderData?.siteConfig.content.seo.siteDescription.en,
       },
       { property: "og:title", content: "خدمات التسويق الرقمي وتصميم المواقع | Viral Zoom" },
       {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { access, mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "node:net";
@@ -17,7 +17,6 @@ const port = await new Promise((resolve, reject) => {
   });
 });
 const password = `integration-${randomUUID()}-Strong!`;
-const databaseFile = join(dataDir, "site-content.sqlite");
 const server = spawn(process.execPath, [".output/server/index.mjs"], {
   cwd: root,
   env: {
@@ -30,6 +29,12 @@ const server = spawn(process.execPath, [".output/server/index.mjs"], {
     ADMIN_PASSWORD: password,
     SESSION_SECRET: randomUUID() + randomUUID(),
     DATA_DIR: dataDir,
+    MYSQL_URL: process.env.MYSQL_URL,
+    MYSQL_HOST: process.env.MYSQL_HOST,
+    MYSQL_PORT: process.env.MYSQL_PORT,
+    MYSQL_USER: process.env.MYSQL_USER,
+    MYSQL_PASSWORD: process.env.MYSQL_PASSWORD,
+    MYSQL_DATABASE: process.env.MYSQL_DATABASE,
     PUBLIC_SITE_URL: "https://viralzoom-test.invalid",
   },
   stdio: ["ignore", "pipe", "pipe"],
@@ -64,8 +69,7 @@ try {
   const health = await fetch(`${base}/api/health`).then((response) => response.json());
   assert.equal(health.ok, true);
   assert.equal(health.runtime, "node");
-  assert.equal(health.storage, "sqlite");
-  await access(databaseFile);
+  assert.equal(health.storage, "mysql");
 
   const publicConfig = await fetch(`${base}/api/site`).then((response) => response.json());
   assert.equal(
@@ -171,7 +175,7 @@ try {
   assert.ok(robots.includes("Disallow: /admin"));
 
   console.log(
-    "API integration passed: SQLite persistence, health, guest write protection, admin session, persisted CMS edits, project CRUD, media upload, dynamic sitemap and robots rules.",
+    "API integration passed: MySQL persistence, health, guest write protection, admin session, persisted CMS edits, project CRUD, media upload, dynamic sitemap and robots rules.",
   );
 } finally {
   server.kill("SIGTERM");
