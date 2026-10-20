@@ -6,8 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-process.env["LOVABLE_PREVIEW_HOST"] ??=
-  "https://viralzoom.tech";
+process.env["LOVABLE_PREVIEW_HOST"] ??= "https://viralzoom.tech";
 
 export default defineConfig({
   nitro: {
@@ -15,7 +14,10 @@ export default defineConfig({
   },
   vite: {
     server: {
-      allowedHosts: ["https://viralzoom.tech"],
+      allowedHosts: ["viralzoom.tech", "www.viralzoom.tech"],
+    },
+    preview: {
+      allowedHosts: ["viralzoom.tech", "www.viralzoom.tech"],
     },
   },
   tanstackStart: {
