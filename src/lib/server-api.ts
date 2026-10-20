@@ -1,5 +1,6 @@
 import { createHmac, randomBytes, timingSafeEqual, randomUUID } from "node:crypto";
-import { createPool, type Pool } from "mysql2/promise";
+import { PrismaClient } from "@prisma/client";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, extname, resolve, sep } from "node:path";
 import { env } from "node:process";
@@ -19,7 +20,7 @@ const collections = {
 } as const;
 type CollectionName = keyof typeof collections;
 type ContentDocument = { config: SiteConfig };
-let database: Pool | undefined;
+let database: PrismaClient | undefined;
 let storeInitialization: Promise<void> | undefined;
 
 function json(data: unknown, status = 200, headers?: HeadersInit) {
@@ -185,38 +186,46 @@ function migrateStoredMedia(document: ContentDocument): {
   return { document: rewritten.value, changed };
 }
 
-async function getDatabase(): Promise<Pool> {
+async function getDatabase(): Promise<PrismaClient> {
   if (database) return database;
-  const url = env["MYSQL_URL"]?.trim();
-  database = createPool(
-    url || {
-      host: env["MYSQL_HOST"] || "127.0.0.1",
-      port: Number(env["MYSQL_PORT"] || 3306),
-      user: env["MYSQL_USER"] || "root",
-      password: env["MYSQL_PASSWORD"] || "",
-      database: env["MYSQL_DATABASE"] || "oasis_web",
-      connectionLimit: Number(env["MYSQL_CONNECTION_LIMIT"] || 10),
-      waitForConnections: true,
-      charset: "utf8mb4",
-    },
-  );
+  if (!env["DATABASE_URL"] && env["MYSQL_URL"]) {
+    env["DATABASE_URL"] = env["MYSQL_URL"];
+  }
+  if (!env["DATABASE_URL"]) {
+    const user = encodeURIComponent(env["MYSQL_USER"] || "root");
+    const password = encodeURIComponent(env["MYSQL_PASSWORD"] || "");
+    const host = env["MYSQL_HOST"] || "127.0.0.1";
+    const port = env["MYSQL_PORT"] || "3306";
+    const databaseName = encodeURIComponent(env["MYSQL_DATABASE"] || "oasis_web");
+    env["DATABASE_URL"] = `mysql://${user}:${password}@${host}:${port}/${databaseName}`;
+  }
+  const connectionUrl = env["DATABASE_URL"] || env["MYSQL_URL"];
+  const parsed = connectionUrl ? new URL(connectionUrl) : null;
+  const adapter = new PrismaMariaDb({
+    host: parsed?.hostname || env["MYSQL_HOST"] || "127.0.0.1",
+    port: Number(parsed?.port || env["MYSQL_PORT"] || 3306),
+    user: decodeURIComponent(parsed?.username || env["MYSQL_USER"] || "root"),
+    password: decodeURIComponent(parsed?.password || env["MYSQL_PASSWORD"] || ""),
+    database: decodeURIComponent(
+      parsed?.pathname.replace(/^\//, "") || env["MYSQL_DATABASE"] || "oasis_web",
+    ),
+    connectionLimit: Number(env["MYSQL_CONNECTION_LIMIT"] || 10),
+  });
+  database = new PrismaClient({ adapter });
   return database;
 }
 
 async function loadConfigFromDatabase(): Promise<SiteConfig> {
   const db = await getDatabase();
-  const [settingRows] = await db.query(
-    "SELECT brand, hero, sections, contact, content FROM site_settings WHERE id = 1",
-  );
-  const settings = (settingRows as Record<string, unknown>[])[0];
+  const settings = await db.siteSettings.findUnique({ where: { id: 1 } });
   if (!settings) throw new Error("MySQL site settings are missing");
   const { brand, hero, sections, contact, content } = settings;
   if (![brand, hero, sections, contact, content].every((value) => typeof value === "string")) {
     throw new Error("MySQL site settings have invalid values");
   }
-  const [itemRows] = await db.query(
-    "SELECT collection, content FROM content_items ORDER BY collection, position, item_id",
-  );
+  const itemRows = await db.contentItem.findMany({
+    orderBy: [{ collection: "asc" }, { position: "asc" }, { itemId: "asc" }],
+  });
   const config: SiteConfig = {
     brand: JSON.parse(brand as string),
     hero: JSON.parse(hero as string),
@@ -227,14 +236,10 @@ async function loadConfigFromDatabase(): Promise<SiteConfig> {
     portfolio: [],
     clients: [],
   };
-  for (const item of itemRows as Record<string, unknown>[]) {
-    const collectionName = item["collection"];
-    const content = item["content"];
-    if (typeof collectionName !== "string" || typeof content !== "string")
-      throw new Error("MySQL content item has invalid values");
-    const collection = collections[collectionName as CollectionName];
-    if (!collection) throw new Error(`Unknown MySQL content collection: ${collectionName}`);
-    (config[collection] as EditableItem[]).push(JSON.parse(content) as EditableItem);
+  for (const item of itemRows) {
+    const collection = collections[item.collection as CollectionName];
+    if (!collection) throw new Error(`Unknown MySQL content collection: ${item.collection}`);
+    (config[collection] as EditableItem[]).push(JSON.parse(item.content) as EditableItem);
   }
   if (!validConfig(config)) throw new Error("MySQL site content is invalid");
   return config;
@@ -242,77 +247,46 @@ async function loadConfigFromDatabase(): Promise<SiteConfig> {
 
 async function persistStore(document: ContentDocument) {
   const db = await getDatabase();
-  const connection = await db.getConnection();
   const config = document.config;
-  try {
-    await connection.beginTransaction();
-    await connection.execute(
-      `INSERT INTO site_settings (id, brand, hero, sections, contact, content)
-       VALUES (1, ?, ?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE
-         brand = VALUES(brand), hero = VALUES(hero), sections = VALUES(sections), contact = VALUES(contact), content = VALUES(content)`,
-      [
-        JSON.stringify(config.brand),
-        JSON.stringify(config.hero),
-        JSON.stringify(config.sections),
-        JSON.stringify(config.contact),
-        JSON.stringify(config.content),
-      ],
-    );
-    await connection.execute("DELETE FROM content_items");
-    for (const collection of Object.keys(collections) as CollectionName[]) {
+  await db.$transaction(async (tx) => {
+    await tx.siteSettings.upsert({
+      where: { id: 1 },
+      create: {
+        id: 1,
+        brand: JSON.stringify(config.brand),
+        hero: JSON.stringify(config.hero),
+        sections: JSON.stringify(config.sections),
+        contact: JSON.stringify(config.contact),
+        content: JSON.stringify(config.content),
+      },
+      update: {
+        brand: JSON.stringify(config.brand),
+        hero: JSON.stringify(config.hero),
+        sections: JSON.stringify(config.sections),
+        contact: JSON.stringify(config.contact),
+        content: JSON.stringify(config.content),
+      },
+    });
+    await tx.contentItem.deleteMany();
+    const rows = (Object.keys(collections) as CollectionName[]).flatMap((collection) => {
       const field = collections[collection];
-      for (const [position, item] of config[field].entries()) {
-        await connection.execute(
-          "INSERT INTO content_items (collection, item_id, position, content) VALUES (?, ?, ?, ?)",
-          [collection, item.id, position, JSON.stringify(item)],
-        );
-      }
-    }
-    await connection.commit();
-  } catch (error) {
-    await connection.rollback();
-    throw error;
-  } finally {
-    connection.release();
-  }
+      return config[field].map((item, position) => ({
+        collection,
+        itemId: item.id,
+        position,
+        content: JSON.stringify(item),
+      }));
+    });
+    await tx.contentItem.createMany({ data: rows });
+  });
 }
 
 async function initializeStore() {
   await mkdir(DATA_DIR, { recursive: true });
   await mkdir(UPLOADS_DIR, { recursive: true });
   const db = await getDatabase();
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS site_settings (
-      id TINYINT UNSIGNED NOT NULL PRIMARY KEY,
-      brand LONGTEXT NOT NULL,
-      hero LONGTEXT NOT NULL,
-      sections LONGTEXT NOT NULL,
-      contact LONGTEXT NOT NULL,
-      content LONGTEXT NOT NULL
-    ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-  `);
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS content_items (
-      collection VARCHAR(32) NOT NULL,
-      item_id VARCHAR(191) NOT NULL,
-      position INT NOT NULL,
-      content LONGTEXT NOT NULL,
-      PRIMARY KEY (collection, item_id),
-      INDEX content_items_order (collection, position)
-    ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-  `);
-  try {
-    await db.query("ALTER TABLE site_settings ADD COLUMN content LONGTEXT NULL");
-  } catch (error) {
-    const code = (error as { code?: string }).code;
-    if (code !== "ER_DUP_FIELDNAME") throw error;
-  }
-  await db.execute("UPDATE site_settings SET content = ? WHERE content IS NULL", [
-    JSON.stringify(initialConfig.content),
-  ]);
-  const [rows] = await db.query("SELECT 1 AS present FROM site_settings WHERE id = 1");
-  if ((rows as unknown[]).length > 0) return;
+  const existing = await db.siteSettings.findUnique({ where: { id: 1 } });
+  if (existing) return;
 
   let document: ContentDocument;
   try {

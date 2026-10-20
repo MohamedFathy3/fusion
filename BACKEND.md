@@ -2,30 +2,51 @@
 
 يقدّم backend بـ **Node.js** صفحات التطبيق وواجهات API من الأصل نفسه. محتوى CMS يُحفظ في **MySQL** داخل جدولي `site_settings` و`content_items`، والملفات المرفوعة في `DATA_DIR/uploads/`؛ لذلك يرى جميع الزوار التعديلات نفسها. لا تُخزّن بيانات المحتوى أو جلسة المدير في `localStorage`.
 
-## إعداد MySQL والبيانات الافتراضية
+## إعداد MySQL وPrisma والبيانات الافتراضية
 
-1. أنشئ قاعدة البيانات والجداول:
+1. أنشئ قاعدة البيانات من لوحة الاستضافة أولًا؛ المستخدم المشترك لا يحتاج ولا يملك عادة صلاحية `CREATE DATABASE`.
+
+2. انسخ `.env.example` إلى `.env` وضع بيانات الاتصال وكلمة مرور المدير. يجب أن يحتوي `.env` على `DATABASE_URL`، مثل:
+
+```env
+DATABASE_URL="mysql://viralzoom:PASSWORD@localhost:3306/viralzoom_oasis_web"
+```
+
+3. ثبّت الحزم وطبّق migrations:
+
+```bash
+npm ci
+npx prisma generate
+npx prisma migrate deploy
+```
+
+4. حمّل البيانات الافتراضية عبر Prisma:
+
+```bash
+npx prisma db seed
+```
+
+في الاستضافة المشتركة، لا تستخدم `prisma migrate dev` على السيرفر. هذا الأمر مخصص للتطوير المحلي فقط.
+
+الطريقة القديمة ما زالت متاحة كخيار احتياطي لإنشاء الجداول أو استيراد البيانات يدويًا:
 
 ```bash
 mysql -u root -p < database/schema.sql
 ```
 
-2. انسخ `.env.example` إلى `.env` وضع بيانات الاتصال وكلمة مرور المدير.
-3. حمّل البيانات الافتراضية المطابقة للموقع الحالي مباشرة من ملف SQL:
-
 ```bash
 mysql -u oasis_web -p oasis_web < database/seed.sql
 ```
 
-أو استخدم السكربت المكافئ بعد `npm ci`:
+أو استخدم سكربت MySQL القديم:
 
 ```bash
-npm run db:seed
+npm run db:seed:legacy
 ```
 
 يمكن بدل المتغيرات المنفصلة استخدام `MYSQL_URL=mysql://user:password@host:3306/oasis_web`.
 
-يدعم التطبيق `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE` و`MYSQL_CONNECTION_LIMIT`. عند أول تشغيل، إذا كانت الجداول فارغة سيقوم الخادم بتحميل `data/site-content.json` إن وجد، وإلا يستخدم `initialConfig` المضمّن. يظل `database/default-site-content.json` نسخة البيانات الافتراضية القابلة لإعادة الـ seed.
+يستخدم التطبيق Prisma Client مع MariaDB adapter. ويدعم أيضًا `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE` و`MYSQL_CONNECTION_LIMIT` كبديل متوافق؛ لكن أوامر Prisma تحتاج `DATABASE_URL`. يظل `database/default-site-content.json` نسخة البيانات الافتراضية القابلة لإعادة الـ seed.
 
 ## تشغيل وبناء الإنتاج
 
