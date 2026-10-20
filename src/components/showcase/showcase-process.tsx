@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Language } from "./types";
-import { translate } from "./types";
 import { useCMS } from "@/lib/cms";
 
 const stepIcons: LucideIcon[] = [
@@ -23,7 +22,6 @@ export function ShowcaseProcess({ language }: { language: Language }) {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const { config } = useCMS();
-  const t = (english: string, arabic: string) => translate(language, english, arabic);
   const process = config.content.process;
 
   useEffect(() => {
@@ -70,7 +68,7 @@ export function ShowcaseProcess({ language }: { language: Language }) {
                     <Icon aria-hidden="true" />
                   </span>
                 </div>
-                {index < steps.length - 1 && (
+                {index < process.steps.length - 1 && (
                   <span className="process-connector" aria-hidden="true" />
                 )}
                 <div className="process-copy" dir={language === "ar" ? "rtl" : "ltr"}>
