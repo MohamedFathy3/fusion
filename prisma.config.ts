@@ -1,4 +1,9 @@
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
+
+const databaseUrl =
+  process.env.DATABASE_URL ||
+  process.env.MYSQL_URL ||
+  `mysql://${encodeURIComponent(process.env.MYSQL_USER || "root")}:${encodeURIComponent(process.env.MYSQL_PASSWORD || "")}@${process.env.MYSQL_HOST || "127.0.0.1"}:${process.env.MYSQL_PORT || "3306"}/${encodeURIComponent(process.env.MYSQL_DATABASE || "oasis_web")}`;
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -7,6 +12,6 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    url: databaseUrl,
   },
 });
