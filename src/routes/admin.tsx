@@ -53,7 +53,7 @@ export const Route = createFileRoute("/admin")({
 });
 const ADMIN_EMAIL = "admin@admin.com";
 type Lang = "en" | "ar";
-type Section = "overview" | "home" | "services" | "portfolio" | "clients" | "settings";
+type Section = "overview" | "home" | "pages" | "services" | "portfolio" | "clients" | "settings";
 const labels: Record<
   Lang,
   Record<
@@ -140,6 +140,7 @@ const labels: Record<
   en: {
     overview: "Overview",
     home: "Homepage",
+    pages: "Page copy",
     services: "Services",
     portfolio: "Portfolio",
     clients: "Clients",
@@ -223,6 +224,7 @@ const labels: Record<
   ar: {
     overview: "نظرة عامة",
     home: "الرئيسية",
+    pages: "محتوى الصفحات",
     services: "الخدمات",
     portfolio: "الأعمال",
     clients: "العملاء",
@@ -307,11 +309,22 @@ const labels: Record<
 const menuItems: { id: Section; icon: typeof LayoutDashboard }[] = [
   { id: "overview", icon: LayoutDashboard },
   { id: "home", icon: Monitor },
+  { id: "pages", icon: FileText },
   { id: "services", icon: Sparkles },
   { id: "portfolio", icon: ImagePlus },
   { id: "clients", icon: Users },
   { id: "settings", icon: Settings2 },
 ];
+const pageContentGroups = [
+  { id: "common", en: "Shared site content", ar: "المحتوى المشترك" },
+  { id: "home", en: "Homepage", ar: "الرئيسية" },
+  { id: "about", en: "About page", ar: "من نحن" },
+  { id: "services", en: "Services page", ar: "صفحة الخدمات" },
+  { id: "projects", en: "Projects page", ar: "صفحة المشاريع" },
+  { id: "contact", en: "Contact page", ar: "صفحة التواصل" },
+  { id: "serviceDetail", en: "Service details", ar: "تفاصيل الخدمة" },
+  { id: "projectDetail", en: "Project details", ar: "تفاصيل المشروع" },
+] as const;
 
 function AdminPage() {
   const cms = useCMS();
@@ -324,6 +337,8 @@ function AdminPage() {
   const [loginError, setLoginError] = useState("");
   const [busy, setBusy] = useState(false);
   const [section, setSection] = useState<Section>("overview");
+  const [pageContentGroup, setPageContentGroup] =
+    useState<keyof SiteConfig["content"]["pages"]>("common");
   const [draft, setDraft] = useState<SiteConfig>(cms.config);
   const [selectedId, setSelectedId] = useState("");
   const [search, setSearch] = useState("");
@@ -1465,7 +1480,61 @@ function AdminPage() {
         </div>
       </>
     );
-  else if (section === "services" || section === "portfolio" || section === "clients")
+  else if (section === "pages") {
+    const pageContent = draft.content.pages[pageContentGroup];
+    body = (
+      <>
+        <PageIntro
+          eyebrow="02 / PAGE CONTENT"
+          title={t.pages}
+          desc={
+            lang === "ar"
+              ? "حرّر نصوص الموقع لكل الصفحات واللغتين. تُحفظ التغييرات في قاعدة البيانات."
+              : "Edit bilingual copy across the site. Changes are saved to the database."
+          }
+        />
+        <div className="vz-panel">
+          <label className="vz-field">
+            <span>{lang === "ar" ? "اختر الصفحة" : "Choose a page"}</span>
+            <select
+              value={pageContentGroup}
+              onChange={(event) =>
+                setPageContentGroup(event.target.value as keyof SiteConfig["content"]["pages"])
+              }
+            >
+              {pageContentGroups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group[lang]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="vz-form-stack">
+            {Object.entries(pageContent).map(([key, value]) => (
+              <div key={key}>
+                {bilingualFields(
+                  key.replace(/([A-Z])/g, " $1").replace(/^./, (letter) => letter.toUpperCase()),
+                  value,
+                  (next) =>
+                    update("content", {
+                      ...draft.content,
+                      pages: {
+                        ...draft.content.pages,
+                        [pageContentGroup]: {
+                          ...pageContent,
+                          [key]: next,
+                        },
+                      },
+                    }),
+                  true,
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+  } else if (section === "services" || section === "portfolio" || section === "clients")
     body = (
       <>
         <PageIntro

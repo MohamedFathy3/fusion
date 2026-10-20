@@ -14,7 +14,6 @@ import {
 import type { Language, SectionId } from "@/components/showcase/types";
 import { useCMS } from "@/lib/cms";
 import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
-import logo from "@/assets/logo.png.asset.json";
 import { loadSiteConfig } from "@/lib/cms-loader";
 
 export const Route = createFileRoute("/")({
@@ -23,26 +22,28 @@ export const Route = createFileRoute("/")({
   head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/") }],
     meta: [
-      { title: loaderData?.siteConfig.content.seo.homeTitle.en },
+      { title: loaderData?.siteConfig.content.pages.home.seoTitle.en },
       {
         name: "description",
-        content: loaderData?.siteConfig.content.seo.homeDescription.en,
+        content: loaderData?.siteConfig.content.pages.home.seoDescription.en,
       },
-      { property: "og:title", content: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
+      { property: "og:title", content: loaderData?.siteConfig.content.pages.home.seoTitle.en },
       {
         property: "og:description",
-        content:
-          "نصمم مواقع ومتاجر إلكترونية ونقدم حلول التسويق الرقمي وتطوير البرمجيات لمساعدة الشركات على النمو.",
+        content: loaderData?.siteConfig.content.pages.home.seoDescription.en,
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl("/") },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "شركة تصميم مواقع وتسويق إلكتروني | Viral Zoom" },
+      { name: "twitter:title", content: loaderData?.siteConfig.content.pages.home.seoTitle.en },
       {
         name: "twitter:description",
-        content: "تصميم مواقع ومتاجر إلكترونية، تسويق رقمي، وتطوير برمجيات لنمو أعمالك.",
+        content: loaderData?.siteConfig.content.pages.home.seoDescription.en,
       },
-      { name: "twitter:image", content: absoluteSiteAsset(logo.url) },
+      {
+        name: "twitter:image",
+        content: absoluteSiteAsset(loaderData?.siteConfig.brand.logo ?? ""),
+      },
     ],
     scripts: [
       {
@@ -50,11 +51,11 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "Viral Zoom",
+          name: loaderData?.siteConfig.brand.name,
           url: canonicalUrl("/"),
-          email: "info@viralzoom.com",
-          logo: logo.url,
-          description: "شركة تصميم مواقع وتسويق إلكتروني وتطوير برمجيات.",
+          email: loaderData?.siteConfig.contact.email,
+          logo: loaderData?.siteConfig.brand.logo,
+          description: loaderData?.siteConfig.content.pages.home.seoDescription.en,
         }),
       },
     ],

@@ -10,13 +10,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import logo from "@/assets/logo.png.asset.json";
-import whiteLogo from "@/assets/logo-white.png.asset.json";
-import website from "@/assets/website.jpg.asset.json";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import { canonicalUrl } from "@/lib/seo";
-import { useCMS } from "@/lib/cms";
+import { getPageCopy, useCMS } from "@/lib/cms";
 import { loadSiteConfig } from "@/lib/cms-loader";
 export const Route = createFileRoute("/about/")({
   component: AboutPage,
@@ -24,16 +21,16 @@ export const Route = createFileRoute("/about/")({
   head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/about") }],
     meta: [
-      { title: loaderData?.siteConfig.content.about.seoTitle.en },
+      { title: loaderData?.siteConfig.content.pages.about.seoTitle.en },
       {
         name: "description",
-        content: loaderData?.siteConfig.content.about.seoDescription.en,
+        content: loaderData?.siteConfig.content.pages.about.seoDescription.en,
       },
-      { property: "og:title", content: loaderData?.siteConfig.content.about.seoTitle.en },
+      { property: "og:title", content: loaderData?.siteConfig.content.pages.about.seoTitle.en },
       { property: "og:url", content: canonicalUrl("/about") },
       {
         property: "og:description",
-        content: loaderData?.siteConfig.content.about.seoDescription.en,
+        content: loaderData?.siteConfig.content.pages.about.seoDescription.en,
       },
     ],
   }),
@@ -44,7 +41,7 @@ function AboutPage() {
   const [darkMode, setDarkMode] = useState(true);
   const navigate = useNavigate();
   const { config } = useCMS();
-  const about = config.content.about;
+  const copy = (key: string) => getPageCopy(config, "about", key, language);
   const ar = language === "ar";
 
   useEffect(() => {
@@ -113,21 +110,21 @@ function AboutPage() {
         <section className="about-hero" aria-labelledby="about-title">
           <div className="section-inner about-hero-inner">
             <div className="about-hero-copy">
-              <p className="section-eyebrow">{about.heroEyebrow[language]}</p>
+              <p className="section-eyebrow">{copy("heroEyebrow")}</p>
               <h1 id="about-title">
-                {about.heroTitle[language]}
+                {copy("heroTitle")}
                 <br />
-                <span>{about.heroTitleAccent[language]}</span>
+                <span>{copy("heroTitleAccent")}</span>
               </h1>
-              <p>{about.heroDescription[language]}</p>
+              <p>{copy("heroDescription")}</p>
               <a className="about-hero-cta" href="#about-story">
-                {about.heroCta[language]}
+                {copy("heroCta")}
                 <ArrowDown aria-hidden="true" />
               </a>
             </div>
             <div className="about-hero-art">
-              <img src={website.url} alt={about.heroImageAlt[language]} />
-              <span className="about-hero-art-caption">{about.heroCaption[language]}</span>
+              <img src={copy("heroImage")} alt={copy("heroImageAlt")} />
+              <span className="about-hero-art-caption">{copy("heroCaption")}</span>
               <span className="about-hero-art-stamp" aria-hidden="true">
                 VZ
                 <br />
@@ -144,15 +141,15 @@ function AboutPage() {
         >
           <div className="section-inner about-story-inner">
             <div className="about-story-label">
-              <span className="section-eyebrow">{about.storyEyebrow[language]}</span>
+              <span className="section-eyebrow">{copy("storyEyebrow")}</span>
               <span className="about-story-index">01 / VZ</span>
             </div>
             <div className="about-story-copy">
-              <h2 id="about-story-title">{about.storyTitle[language]}</h2>
-              <p>{about.storyParagraphs[0][language]}</p>
-              <p>{about.storyParagraphs[1][language]}</p>
+              <h2 id="about-story-title">{copy("storyTitle")}</h2>
+              <p>{copy("storyParagraph1")}</p>
+              <p>{copy("storyParagraph2")}</p>
               <Link className="about-inline-link" to="/projects">
-                {about.storyCta[language]}
+                {copy("storyCta")}
                 {ar ? <ArrowLeft aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
               </Link>
             </div>
@@ -163,22 +160,22 @@ function AboutPage() {
           <div className="section-inner">
             <div className="about-values-heading">
               <div>
-                <p className="section-eyebrow">{about.valuesEyebrow[language]}</p>
-                <h2 id="about-values-title">{about.valuesTitle[language]}</h2>
+                <p className="section-eyebrow">{copy("valuesEyebrow")}</p>
+                <h2 id="about-values-title">{copy("valuesTitle")}</h2>
               </div>
-              <p>{about.valuesDescription[language]}</p>
+              <p>{copy("valuesDescription")}</p>
             </div>
             <div className="about-values-grid">
-              {about.values.map(({ title, text }, index) => {
+              {[0, 1, 2].map((index) => {
                 const Icon = [Search, Lightbulb, ChartNoAxesColumnIncreasing][index] ?? Search;
                 return (
-                  <article className="about-value-card" key={title.en}>
+                  <article className="about-value-card" key={index}>
                     <span className="about-value-number">0{index + 1}</span>
                     <span className="about-value-icon">
                       <Icon aria-hidden="true" />
                     </span>
-                    <h3>{title[language]}</h3>
-                    <p>{text[language]}</p>
+                    <h3>{copy(`value${index + 1}Title`)}</h3>
+                    <p>{copy(`value${index + 1}Text`)}</p>
                   </article>
                 );
               })}
@@ -189,16 +186,16 @@ function AboutPage() {
         <section className="about-approach section" aria-labelledby="about-approach-title">
           <div className="section-inner about-approach-inner">
             <div>
-              <p className="section-eyebrow">{about.approachEyebrow[language]}</p>
-              <h2 id="about-approach-title">{about.approachTitle[language]}</h2>
-              <p>{about.approachDescription[language]}</p>
+              <p className="section-eyebrow">{copy("approachEyebrow")}</p>
+              <h2 id="about-approach-title">{copy("approachTitle")}</h2>
+              <p>{copy("approachDescription")}</p>
             </div>
             <div className="about-approach-mark" aria-hidden="true">
               <TrendingUp />
               <span>
-                IDEAS
+                {copy("approachMarkFirst")}
                 <br />
-                IN MOTION
+                {copy("approachMarkSecond")}
               </span>
             </div>
           </div>
@@ -207,12 +204,12 @@ function AboutPage() {
         <section className="about-cta section">
           <div className="section-inner about-cta-inner">
             <div>
-              <p className="section-eyebrow">{about.ctaEyebrow[language]}</p>
-              <h2>{about.ctaTitle[language]}</h2>
-              <p>{about.ctaDescription[language]}</p>
+              <p className="section-eyebrow">{copy("ctaEyebrow")}</p>
+              <h2>{copy("ctaTitle")}</h2>
+              <p>{copy("ctaDescription")}</p>
             </div>
             <Link to="/" hash="contact" className="about-cta-link">
-              {about.ctaButton[language]}
+              {copy("ctaButton")}
               <ArrowUpRight aria-hidden="true" />
             </Link>
           </div>
@@ -220,7 +217,7 @@ function AboutPage() {
       </main>
       <ShowcaseFooter
         language={language}
-        logo={darkMode ? whiteLogo.url : logo.url}
+        logo={darkMode ? config.brand.whiteLogo : config.brand.logo}
         onBackToTop={backToTop}
       />
     </div>

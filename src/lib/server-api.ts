@@ -196,7 +196,7 @@ async function getDatabase(): Promise<PrismaClient> {
     const password = encodeURIComponent(env["MYSQL_PASSWORD"] || "");
     const host = env["MYSQL_HOST"] || "127.0.0.1";
     const port = env["MYSQL_PORT"] || "3306";
-    const databaseName = encodeURIComponent(env["MYSQL_DATABASE"] || "oasis_web");
+    const databaseName = encodeURIComponent(env["MYSQL_DATABASE"] || "viralzoom");
     env["DATABASE_URL"] = `mysql://${user}:${password}@${host}:${port}/${databaseName}`;
   }
   const connectionUrl = env["DATABASE_URL"] || env["MYSQL_URL"];
@@ -207,7 +207,7 @@ async function getDatabase(): Promise<PrismaClient> {
     user: decodeURIComponent(parsed?.username || env["MYSQL_USER"] || "root"),
     password: decodeURIComponent(parsed?.password || env["MYSQL_PASSWORD"] || ""),
     database: decodeURIComponent(
-      parsed?.pathname.replace(/^\//, "") || env["MYSQL_DATABASE"] || "oasis_web",
+      parsed?.pathname.replace(/^\//, "") || env["MYSQL_DATABASE"] || "viralzoom",
     ),
     connectionLimit: Number(env["MYSQL_CONNECTION_LIMIT"] || 10),
   });
@@ -643,3 +643,4 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
 
   return json({ error: "Not found" }, 404);
 }
+

@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { isSiteConfig } from "@/lib/cms";
+import { isSiteConfig, mergeSiteConfig } from "@/lib/cms";
 
 export const loadSiteConfig = createServerFn({ method: "GET" }).handler(async () => {
   const { handleApiRequest } = await import("@/lib/server-api");
@@ -13,5 +13,5 @@ export const loadSiteConfig = createServerFn({ method: "GET" }).handler(async ()
   if (!isSiteConfig(config)) {
     throw new Error("The server returned an incomplete site configuration.");
   }
-  return config;
+  return mergeSiteConfig(config);
 });

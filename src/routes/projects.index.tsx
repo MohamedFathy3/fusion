@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import logo from "@/assets/logo.png.asset.json";
-import whiteLogo from "@/assets/logo-white.png.asset.json";
 import hero from "@/assets/hero.mp4.asset.json";
 import heroWebm from "@/assets/hero.webm.asset.json";
 import poster from "@/assets/poster.jpg.asset.json";
@@ -14,9 +12,8 @@ import {
   projects,
   type ProjectCategoryId,
 } from "@/lib/projects";
-import { projectItemsFromConfig, useCMS } from "@/lib/cms";
+import { getPageCopy, projectItemsFromConfig, useCMS } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
-import { translate } from "@/components/showcase/types";
 import { loadSiteConfig } from "@/lib/cms-loader";
 
 export const Route = createFileRoute("/projects/")({
@@ -25,25 +22,23 @@ export const Route = createFileRoute("/projects/")({
   head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/projects") }],
     meta: [
-      { title: loaderData?.siteConfig.content.seo.projectsTitle.en },
+      { title: loaderData?.siteConfig.content.pages.projects.seoTitle.en },
       {
         name: "description",
-        content:
-          "تصفح مشاريع Viral Zoom في السوشيال ميديا وتصميم المواقع والتطبيقات والهوية البصرية. اكتشف نماذج من أعمالنا الإبداعية.",
+        content: loaderData?.siteConfig.content.pages.projects.seoDescription.ar,
       },
-      { property: "og:title", content: "أعمال Viral Zoom في التسويق والتصميم" },
+      { property: "og:title", content: loaderData?.siteConfig.content.pages.projects.seoTitle.ar },
       {
         property: "og:description",
-        content:
-          "مشاريع في السوشيال ميديا وتصميم المواقع والتطبيقات والهوية البصرية من Viral Zoom.",
+        content: loaderData?.siteConfig.content.pages.projects.seoDescription.ar,
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl("/projects") },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "أعمال Viral Zoom في التسويق والتصميم" },
+      { name: "twitter:title", content: loaderData?.siteConfig.content.pages.projects.seoTitle.ar },
       {
         name: "twitter:description",
-        content: "نماذج من أعمال السوشيال ميديا والمواقع والتطبيقات والهوية البصرية.",
+        content: loaderData?.siteConfig.content.pages.projects.seoDescription.ar,
       },
     ],
   }),
@@ -56,7 +51,16 @@ function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState<ProjectCategoryId | "all">("all");
   const navigate = useNavigate();
   const ar = language === "ar";
-  const t = (english: string, arabic: string) => translate(language, english, arabic);
+  const copy = (key: string) => getPageCopy(config, "projects", key, language);
+  const categoryLabels: Record<string, string> = {
+    all: copy("categoryAll"),
+    "social-media": copy("categorySocialMedia"),
+    websites: copy("categoryWebsites"),
+    "mobile-apps": copy("categoryMobileApps"),
+    branding: copy("categoryBranding"),
+    "platforms-apps": copy("categoryMobileApps"),
+    "ui-ux": copy("categoryBranding"),
+  };
   const allProjects = useMemo(
     () =>
       ready ? projectItemsFromConfig(config.portfolio.filter((item) => item.enabled)) : projects,
@@ -132,7 +136,7 @@ function ProjectsPage() {
         <section
           className="projects-hero"
           aria-labelledby="projects-title"
-          style={{ backgroundImage: `url("${poster.url}")` }}
+          style={{ backgroundImage: `url("${config.hero.poster || poster.url}")` }}
         >
           <video
             className="projects-hero-video"
@@ -140,28 +144,21 @@ function ProjectsPage() {
             muted
             loop
             playsInline
-            poster={poster.url}
+            poster={config.hero.poster || poster.url}
             aria-hidden="true"
             tabIndex={-1}
           >
-            <source src={heroWebm.url} type="video/webm" />
-            <source src={hero.url} type="video/mp4" />
+            {config.hero.video === hero.url && <source src={heroWebm.url} type="video/webm" />}
+            <source src={config.hero.video || hero.url} type="video/mp4" />
           </video>
           <div className="projects-hero-overlay" aria-hidden="true" />
           <div className="section-inner projects-hero-inner">
             <div className="projects-hero-copy">
-              <p className="section-eyebrow">{t("SELECTED WORK", "أعمال مختارة")}</p>
-              <h1 id="projects-title">
-                {t("Every piece in our creative portfolio.", "كل مشروع في محفظتنا الإبداعية.")}
-              </h1>
-              <p className="projects-intro-copy">
-                {t(
-                  "A selection of brands and ideas brought to life by Viral Zoom.",
-                  "مجموعة من العلامات والأفكار اللي حولناها لتجارب إبداعية في فايرال زوم.",
-                )}
-              </p>
+              <p className="section-eyebrow">{copy("heroEyebrow")}</p>
+              <h1 id="projects-title">{copy("heroTitle")}</h1>
+              <p className="projects-intro-copy">{copy("heroDescription")}</p>
             </div>
-            <div className="projects-hero-art" aria-label={t("Featured projects", "مشاريع مختارة")}>
+            <div className="projects-hero-art" aria-label={copy("featuredLabel")}>
               {allProjects.slice(0, 3).map((project, index) => (
                 <div
                   className={`projects-hero-image projects-hero-image-${index + 1}`}
@@ -178,16 +175,9 @@ function ProjectsPage() {
           </div>
         </section>
 
-        <section
-          className="projects-gallery section"
-          aria-label={t("Project gallery", "معرض المشاريع")}
-        >
+        <section className="projects-gallery section" aria-label={copy("galleryLabel")}>
           <div className="section-inner">
-            <div
-              className="projects-filters"
-              role="group"
-              aria-label={t("Filter projects by category", "تصفية المشاريع حسب الفئة")}
-            >
+            <div className="projects-filters" role="group" aria-label={copy("filterLabel")}>
               {availableCategories.map((category) => {
                 const count =
                   category.id === "all"
@@ -204,7 +194,7 @@ function ProjectsPage() {
                     aria-pressed={selected}
                     onClick={() => setActiveCategory(category.id)}
                   >
-                    {category[language]}
+                    {categoryLabels[category.id] ?? category.id}
                     <span>{count}</span>
                   </button>
                 );
@@ -226,11 +216,7 @@ function ProjectsPage() {
                     <div className="projects-card-image-wrap">
                       <img src={project.image} alt={project.name} loading="lazy" />
                       <span className="projects-card-category">
-                        {
-                          projectCategories.find((category) => category.id === cardCategoryId)?.[
-                            language
-                          ]
-                        }
+                        {categoryLabels[cardCategoryId] ?? cardCategoryId}
                       </span>
                       {project.kind === "external" && (
                         <ArrowUpRight className="projects-card-external" aria-hidden="true" />
@@ -240,9 +226,7 @@ function ProjectsPage() {
                       <h2>{project.localizedName?.[language] ?? project.name}</h2>
                       <p>{project.description[language]}</p>
                       <span className="projects-card-action">
-                        {project.kind === "external"
-                          ? t("Visit project", "زيارة المشروع")
-                          : t("View project", "عرض المشروع")}
+                        {project.kind === "external" ? copy("visitProject") : copy("openProject")}
                         <ArrowRight aria-hidden="true" />
                       </span>
                     </div>
@@ -276,7 +260,7 @@ function ProjectsPage() {
       </main>
       <ShowcaseFooter
         language={language}
-        logo={darkMode ? whiteLogo.url : logo.url}
+        logo={darkMode ? config.brand.whiteLogo : config.brand.logo}
         onBackToTop={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       />
     </div>

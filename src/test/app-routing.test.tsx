@@ -4,12 +4,24 @@ import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
 import { projectHasCategory, projects } from "@/lib/projects";
-import { initialConfig, projectItemsFromConfig } from "@/lib/cms";
+import { getPageCopy, initialConfig, mergeSiteConfig, projectItemsFromConfig } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
 
 // Match routes without running loaders or rendering: loaders may need a server or
 // network the test run lacks, and jsdom never loads the stylesheets React waits on.
 describe("App routing", () => {
+  it("provides bilingual CMS copy for each public page", () => {
+    const config = mergeSiteConfig(initialConfig);
+
+    expect(getPageCopy(config, "about", "heroTitle", "en")).toBe("We turn bold ideas");
+    expect(getPageCopy(config, "about", "heroTitle", "ar")).toBe("نحوّل الأفكار");
+    expect(getPageCopy(config, "services", "heroTitle", "en")).toBe("Services that");
+    expect(getPageCopy(config, "projects", "heroTitle", "ar")).toBe(
+      "كل مشروع في محفظتنا الإبداعية.",
+    );
+    expect(getPageCopy(config, "contact", "heroTitle", "en")).toBe("Let's talk");
+  });
+
   it("matches a page for / instead of falling back to not found", () => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
 

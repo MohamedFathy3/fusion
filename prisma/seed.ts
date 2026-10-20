@@ -10,7 +10,7 @@ const adapter = new PrismaMariaDb({
   user: decodeURIComponent(parsed?.username || process.env.MYSQL_USER || "root"),
   password: decodeURIComponent(parsed?.password || process.env.MYSQL_PASSWORD || ""),
   database: decodeURIComponent(
-    parsed?.pathname.replace(/^\//, "") || process.env.MYSQL_DATABASE || "oasis_web",
+    parsed?.pathname.replace(/^\//, "") || process.env.MYSQL_DATABASE || "viralzoom",
   ),
   connectionLimit: Number(process.env.MYSQL_CONNECTION_LIMIT || 10),
 });
@@ -76,7 +76,6 @@ try {
     ];
     await tx.contentItem.createMany({ data: rows });
   });
-
   console.log(
     `Seeded MySQL with Prisma: ${config.services.length} services, ${config.portfolio.length} projects, ${config.clients.length} clients.`,
   );

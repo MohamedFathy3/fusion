@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownLeft } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import logo from "@/assets/logo.png.asset.json";
-import whiteLogo from "@/assets/logo-white.png.asset.json";
-import website from "@/assets/website.jpg.asset.json";
 import worldMap from "@/assets/bg-2-e496b57f-842e-4cf1-8733-ba70e093aea4.png";
 import { ShowcaseContact, ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
-import { translate } from "@/components/showcase/types";
 import { canonicalUrl } from "@/lib/seo";
 import { loadSiteConfig } from "@/lib/cms-loader";
+import { getPageCopy, useCMS } from "@/lib/cms";
 
 export const Route = createFileRoute("/contact/")({
   component: ContactPage,
@@ -17,27 +14,28 @@ export const Route = createFileRoute("/contact/")({
   head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/contact") }],
     meta: [
-      { title: loaderData?.siteConfig.content.seo.contactTitle.en },
+      { title: loaderData?.siteConfig.content.pages.contact.seoTitle.en },
       {
         name: "description",
-        content: loaderData?.siteConfig.content.seo.siteDescription.en,
+        content: loaderData?.siteConfig.content.pages.contact.seoDescription.en,
       },
-      { property: "og:title", content: "Contact Viral Zoom | تواصل مع فايرال زوم" },
+      { property: "og:title", content: loaderData?.siteConfig.content.pages.contact.seoTitle.ar },
       { property: "og:url", content: canonicalUrl("/contact") },
       {
         property: "og:description",
-        content: "Tell us what you are looking to create and let's start a conversation.",
+        content: loaderData?.siteConfig.content.pages.contact.seoDescription.ar,
       },
     ],
   }),
 });
 
 function ContactPage() {
+  const { config } = useCMS();
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(true);
   const navigate = useNavigate();
   const ar = language === "ar";
-  const t = (english: string, arabic: string) => translate(language, english, arabic);
+  const copy = (key: string) => getPageCopy(config, "contact", key, language);
 
   useEffect(() => {
     try {
@@ -103,29 +101,18 @@ function ContactPage() {
       />
       <main>
         <section className="contact-page-hero" aria-labelledby="contact-page-title">
-          <img
-            className="contact-page-hero-image"
-            src={website.url}
-            alt={t("Creative digital work by Viral Zoom", "أعمال رقمية إبداعية من فايرال زوم")}
-          />
+          <img className="contact-page-hero-image" src={copy("heroImage")} alt={copy("heroAlt")} />
           <div className="contact-page-hero-shade" />
           <div className="contact-page-hero-content">
-            <p className="section-eyebrow">
-              {t("LET'S MAKE SOMETHING GREAT", "يلا نعمل حاجة مميزة")}
-            </p>
+            <p className="section-eyebrow">{copy("heroEyebrow")}</p>
             <h1 id="contact-page-title">
-              {t("Let's talk", "خلّينا")}
+              {copy("heroTitle")}
               <br />
-              <span>{t("about your next idea.", "نتكلم عن فكرتك الجاية.")}</span>
+              <span>{copy("heroTitleAccent")}</span>
             </h1>
-            <p>
-              {t(
-                "A new project, a big idea or just a question — we're ready to listen.",
-                "مشروع جديد، فكرة كبيرة أو حتى استفسار — إحنا جاهزين نسمعك.",
-              )}
-            </p>
+            <p>{copy("heroDescription")}</p>
             <a className="contact-page-hero-cta" href="#contact">
-              {t("Get in touch", "تواصل معنا")}
+              {copy("heroCta")}
               <ArrowDown aria-hidden="true" />
             </a>
           </div>
@@ -143,30 +130,23 @@ function ContactPage() {
           <div className="contact-map-shade" />
           <div className="section-inner contact-map-content">
             <div>
-              <p className="contact-map-eyebrow">
-                {t("GOOD IDEAS TRAVEL", "الأفكار الحلوة بتوصل")}
-              </p>
-              <h2 id="contact-map-title">{t("One connected world.", "عالم واحد يجمعنا.")}</h2>
-              <p>
-                {t(
-                  "Wherever you are, let's make something meaningful together.",
-                  "أينما كنت، يلا نعمل حاجة ليها معنى سوا.",
-                )}
-              </p>
+              <p className="contact-map-eyebrow">{copy("mapEyebrow")}</p>
+              <h2 id="contact-map-title">{copy("mapTitle")}</h2>
+              <p>{copy("mapDescription")}</p>
             </div>
             <span className="contact-map-mark" aria-hidden="true">
               VZ
               <ArrowDownLeft />
             </span>
             <span className="contact-map-coordinate" aria-hidden="true">
-              CREATIVE CONNECTIONS — EVERYWHERE
+              {copy("mapCoordinate")}
             </span>
           </div>
         </section>
       </main>
       <ShowcaseFooter
         language={language}
-        logo={darkMode ? whiteLogo.url : logo.url}
+        logo={darkMode ? config.brand.whiteLogo : config.brand.logo}
         onBackToTop={backToTop}
       />
     </div>

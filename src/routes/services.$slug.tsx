@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import logo from "@/assets/logo.png.asset.json";
-import whiteLogo from "@/assets/logo-white.png.asset.json";
 import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { services } from "@/lib/showcase-data";
-import { translate } from "@/components/showcase/types";
-import { useCMS } from "@/lib/cms";
+import { getPageCopy, useCMS } from "@/lib/cms";
 import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
+import { loadSiteConfig } from "@/lib/cms-loader";
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }) => {
-    const service = services.find((item) => item.slug === params.slug);
-    return { slug: params.slug, service: service ?? null };
+  loader: async ({ params }) => {
+    const config = await loadSiteConfig();
+    const service = config.services.find((item) => item.id === params.slug && item.enabled);
+    return {
+      slug: params.slug,
+      service: service
+        ? {
+            slug: service.id,
+            title: service.name,
+            description: service.description,
+            image: service.image,
+          }
+        : null,
+    };
   },
   head: ({ loaderData }) => {
     const data = loaderData ?? { slug: "service", service: null };
@@ -83,7 +92,7 @@ function ShowServicePage() {
   const [darkMode, setDarkMode] = useState(true);
   const navigate = useNavigate();
   const ar = language === "ar";
-  const t = (english: string, arabic: string) => translate(language, english, arabic);
+  const copy = (key: string) => getPageCopy(config, "serviceDetail", key, language);
 
   useEffect(() => {
     try {
@@ -148,8 +157,8 @@ function ShowServicePage() {
   if (ready && !serviceExists) {
     return (
       <main className="section-inner" style={{ paddingBlock: 120 }}>
-        <h1>{t("Service not found", "الخدمة غير موجودة")}</h1>
-        <Link to="/services">{t("Browse services", "تصفح الخدمات")}</Link>
+        <h1>{copy("notFound")}</h1>
+        <Link to="/services">{copy("browse")}</Link>
       </main>
     );
   }
@@ -179,16 +188,15 @@ function ShowServicePage() {
           <div className="section-inner service-detail-hero-content">
             <Link to="/services" className="service-detail-back">
               {ar ? <ArrowRight aria-hidden="true" /> : <ArrowLeft aria-hidden="true" />}
-              {t("All services", "كل الخدمات")}
+              {copy("all")}
             </Link>
             <p className="service-detail-eyebrow">
-              {t("VIRAL ZOOM / SERVICE", "فايرال زوم / خدماتنا")}{" "}
-              <span>{String(serviceIndex + 1).padStart(2, "0")}</span>
+              {copy("eyebrow")} <span>{String(serviceIndex + 1).padStart(2, "0")}</span>
             </p>
             <h1 id="service-detail-title">{service.title[language]}</h1>
             <p className="service-detail-lead">{serviceIntro}</p>
             <Link to="/" hash="contact" className="service-detail-cta">
-              {t("Start a project", "ابدأ مشروعك")}
+              {copy("cta")}
               <ArrowUpRight aria-hidden="true" />
             </Link>
           </div>
@@ -200,24 +208,15 @@ function ShowServicePage() {
         >
           <div className="section-inner service-detail-content-grid">
             <div className="service-detail-overview">
-              <p className="section-eyebrow">
-                {t("THE RIGHT MOVE FOR YOUR BRAND", "الخطوة الصح لعلامتك")}
-              </p>
-              <h2 id="service-overview-title">
-                {t("Make your next move count.", "خلّي خطوتك الجاية تفرق.")}
-              </h2>
+              <p className="section-eyebrow">{copy("benefitsEyebrow")}</p>
+              <h2 id="service-overview-title">{copy("benefitsTitle")}</h2>
             </div>
             <div className="service-detail-description">
-              <h3>{t("How we help", "إزاي بنساعدك")}</h3>
+              <h3>{copy("overviewTitle")}</h3>
               <p>{service.description[language]}</p>
-              <p>
-                {t(
-                  "We shape every project around your goals, your audience and the way your brand needs to grow. Our team brings the right creative and strategic thinking together to deliver work that feels distinctive and works hard for your business.",
-                  "بنصمم كل مشروع على حسب أهدافك وجمهورك وطريقة نمو علامتك التجارية. فريقنا بيجمع الإبداع والتفكير الاستراتيجي عشان نقدم شغل مميز ويدعم نجاح أعمالك.",
-                )}
-              </p>
+              <p>{copy("overviewDescription")}</p>
               <Link to="/" hash="contact" className="service-detail-text-link">
-                {t("Talk to our team", "اتكلم مع فريقنا")}
+                {copy("contact")}
                 {ar ? <ArrowLeft aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
               </Link>
             </div>
@@ -231,13 +230,11 @@ function ShowServicePage() {
           <div className="section-inner">
             <div className="section-heading">
               <div>
-                <p className="section-eyebrow">
-                  {t("MORE WAYS TO GROW", "خدمات تانية لتنمية شغلك")}
-                </p>
-                <h2 id="related-services-title">{t("Explore our services", "اكتشف خدماتنا")}</h2>
+                <p className="section-eyebrow">{copy("relatedEyebrow")}</p>
+                <h2 id="related-services-title">{copy("relatedTitle")}</h2>
               </div>
               <Link to="/services" className="service-detail-text-link">
-                {t("All services", "كل الخدمات")}
+                {copy("all")}
                 {ar ? <ArrowLeft aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
               </Link>
             </div>
@@ -260,7 +257,7 @@ function ShowServicePage() {
       </main>
       <ShowcaseFooter
         language={language}
-        logo={darkMode ? whiteLogo.url : logo.url}
+        logo={darkMode ? config.brand.whiteLogo : config.brand.logo}
         onBackToTop={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       />
     </div>
