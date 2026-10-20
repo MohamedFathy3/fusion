@@ -1,4 +1,4 @@
-import banner from "@/assets/Viral Zoom Creative Agency Banner.png";
+import banner from "@/assets/Untitled-3.webp";
 import type { Language } from "./types";
 import { getPageCopy, useCMS } from "@/lib/cms";
 
