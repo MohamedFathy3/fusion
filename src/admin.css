@@ -1077,6 +1077,27 @@
   display: block;
   margin-bottom: 6px;
 }
+.vz-video-type-tabs {
+  display: flex;
+  gap: 7px;
+}
+.vz-video-type-tabs button {
+  min-height: 34px;
+  border: 1px solid #eae6ec;
+  border-radius: 5px;
+  padding: 0 12px;
+  color: #554c5b;
+  background: #fff;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vz-video-type-tabs button.active {
+  border-color: #69499e;
+  color: #fff;
+  background: #69499e;
+}
 .vz-field input,
 .vz-field textarea {
   width: 100%;

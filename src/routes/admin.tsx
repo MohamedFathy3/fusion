@@ -40,7 +40,12 @@ import {
   X,
 } from "lucide-react";
 import type { EditableItem, SiteConfig } from "@/lib/cms";
-import { projectCategories, type ProjectCategoryId, type SocialPlatform } from "@/lib/projects";
+import {
+  projectCategories,
+  type ProjectCategoryId,
+  type SocialPlatform,
+  type VideoProjectType,
+} from "@/lib/projects";
 import { initialConfig, useCMS } from "@/lib/cms";
 import adminCss from "@/admin.css?url";
 
@@ -345,6 +350,7 @@ function AdminPage() {
   const [projectCategoryFilter, setProjectCategoryFilter] = useState<ProjectCategoryId | "all">(
     "all",
   );
+  const [videoEditorType, setVideoEditorType] = useState<VideoProjectType>("reels");
   const [saved, setSaved] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => setDraft(cms.config), [cms.config]);
@@ -430,6 +436,8 @@ function AdminPage() {
             projectCategory: "social-media" as const,
             projectKind: "case-study" as const,
             imageGallery: [] as string[],
+            reelsVideos: [] as string[],
+            promoVideos: [] as string[],
           }
         : {}),
     };
@@ -769,6 +777,8 @@ function AdminPage() {
     return categories.includes(projectCategoryFilter);
   });
   const selected = records.find((x) => x.id === selectedId);
+  const selectedVideoLinks =
+    videoEditorType === "reels" ? (selected?.reelsVideos ?? []) : (selected?.promoVideos ?? []);
   const listEditor = (group: "services" | "portfolio" | "clients") => (
     <div className="vz-list-layout">
       <div className="vz-record-list">
@@ -892,6 +902,7 @@ function AdminPage() {
                         projectCategory: event.target.value as NonNullable<
                           EditableItem["projectCategory"]
                         >,
+                        ...(event.target.value === "video" ? { projectKind: "case-study" } : {}),
                       })
                     }
                   >
@@ -904,6 +915,32 @@ function AdminPage() {
                       ))}
                   </select>
                 </label>
+              )}
+              {group === "portfolio" && selected.projectCategory === "video" && (
+                <div className="vz-field">
+                  <span>{lang === "ar" ? "تبويبات الفيديو" : "Video tabs"}</span>
+                  <div className="vz-video-type-tabs" role="tablist">
+                    {(
+                      [
+                        ["reels", "REELS", "video-type-reels-tab"],
+                        ["promo-video", "PROMO VIDEO", "video-type-promo-tab"],
+                      ] as const
+                    ).map(([type, label, id]) => (
+                      <button
+                        key={type}
+                        id={id}
+                        className={videoEditorType === type ? "active" : ""}
+                        type="button"
+                        role="tab"
+                        aria-selected={videoEditorType === type}
+                        aria-controls="video-links-panel"
+                        onClick={() => setVideoEditorType(type)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
               {group === "portfolio" && (
                 <div className="vz-field">
@@ -969,6 +1006,92 @@ function AdminPage() {
                   >
                     <Plus size={15} />
                     {lang === "ar" ? "إضافة صورة للمعرض" : "Add gallery image"}
+                  </button>
+                </div>
+              )}
+              {group === "portfolio" && selected.projectCategory === "video" && (
+                <div
+                  className="vz-form-stack"
+                  id="video-links-panel"
+                  role="tabpanel"
+                  aria-labelledby={
+                    videoEditorType === "reels" ? "video-type-reels-tab" : "video-type-promo-tab"
+                  }
+                >
+                  <b>
+                    {lang === "ar"
+                      ? `روابط ${videoEditorType === "reels" ? "REELS" : "PROMO VIDEO"} (${selectedVideoLinks.length})`
+                      : `${videoEditorType === "reels" ? "REELS" : "PROMO VIDEO"} links (${selectedVideoLinks.length})`}
+                  </b>
+                  <small>
+                    {lang === "ar"
+                      ? "أضف رابطًا مباشرًا لملف فيديو MP4 أو WebM."
+                      : "Add a direct link to an MP4 or WebM video file."}
+                  </small>
+                  {selectedVideoLinks.map((video, index) => (
+                    <div className="vz-panel" key={`${video}-${index}`}>
+                      {field(
+                        `${lang === "ar" ? "رابط الفيديو" : "Video URL"} ${index + 1}`,
+                        video,
+                        (value) => {
+                          const videos = [
+                            ...(videoEditorType === "reels"
+                              ? (selected.reelsVideos ?? [])
+                              : (selected.promoVideos ?? [])),
+                          ];
+                          videos[index] = value;
+                          updateRecord(
+                            group,
+                            selected.id,
+                            videoEditorType === "reels"
+                              ? { reelsVideos: videos }
+                              : { promoVideos: videos },
+                          );
+                        },
+                        "https://…",
+                      )}
+                      {video && (
+                        <div className="vz-image-preview">
+                          <video src={video} controls playsInline />
+                        </div>
+                      )}
+                      <button
+                        className="vz-small-add vz-danger-action"
+                        type="button"
+                        onClick={() =>
+                          updateRecord(group, selected.id, {
+                            ...(videoEditorType === "reels"
+                              ? {
+                                  reelsVideos: (selected.reelsVideos ?? []).filter(
+                                    (_, itemIndex) => itemIndex !== index,
+                                  ),
+                                }
+                              : {
+                                  promoVideos: (selected.promoVideos ?? []).filter(
+                                    (_, itemIndex) => itemIndex !== index,
+                                  ),
+                                }),
+                          })
+                        }
+                      >
+                        <X size={14} />
+                        {lang === "ar" ? "حذف الفيديو" : "Remove video"}
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    className="vz-small-add"
+                    type="button"
+                    onClick={() =>
+                      updateRecord(group, selected.id, {
+                        ...(videoEditorType === "reels"
+                          ? { reelsVideos: [...(selected.reelsVideos ?? []), ""] }
+                          : { promoVideos: [...(selected.promoVideos ?? []), ""] }),
+                      })
+                    }
+                  >
+                    <Plus size={15} />
+                    {lang === "ar" ? "إضافة رابط فيديو" : "Add video link"}
                   </button>
                 </div>
               )}

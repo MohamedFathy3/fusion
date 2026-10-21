@@ -3,7 +3,7 @@ import { createRouter, rootRouteId } from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
-import { projectHasCategory, projects } from "@/lib/projects";
+import { projectCategories, projectHasCategory, projects } from "@/lib/projects";
 import { getPageCopy, initialConfig, mergeSiteConfig, projectItemsFromConfig } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
 
@@ -58,6 +58,23 @@ describe("App routing", () => {
     expect(existingBrandProject && projectHasCategory(existingBrandProject, "social-media")).toBe(
       false,
     );
+  });
+
+  it("supports multiple Reels and Promo videos per video-production project", () => {
+    const item = {
+      ...initialConfig.portfolio[0]!,
+      id: "video-showcase-test",
+      projectCategory: "video" as const,
+      reelsVideos: ["https://cdn.example.com/reel-one.mp4", "https://cdn.example.com/reel-two.mp4"],
+      promoVideos: ["https://cdn.example.com/promo-one.mp4"],
+    };
+    const project = projectItemsFromConfig([item])[0];
+
+    expect(projectCategories.some((category) => category.id === "video")).toBe(true);
+    expect(project?.category).toBe("video");
+    expect(project && projectHasCategory(project, "video")).toBe(true);
+    expect(project?.reelsVideos).toHaveLength(2);
+    expect(project?.promoVideos).toHaveLength(1);
   });
 
   it("provides a second social project with exactly eight gallery images", () => {

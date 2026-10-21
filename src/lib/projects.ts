@@ -20,12 +20,16 @@ export type ProjectCategoryId =
   | "platforms-apps"
   | "branding";
 
+export type VideoProjectType = "reels" | "promo-video";
+
 type ProjectContent = {
   slug: string;
   name: string;
   localizedName?: { en: string; ar: string };
   category: ProjectCategoryId;
   additionalCategories?: ProjectCategoryId[];
+  reelsVideos?: string[];
+  promoVideos?: string[];
   image: string;
   description: { en: string; ar: string };
 };
@@ -273,6 +277,7 @@ export function projectHasCategory(project: Project, categoryId: ProjectCategory
 export const projectCategories = [
   { id: "all", en: "All", ar: "الكل" },
   { id: "social-media", en: "Social media", ar: "السوشيال ميديا" },
+  { id: "video", en: "Video Production", ar: "إنتاج الفيديو" },
   { id: "websites", en: "Websites", ar: "المواقع" },
   { id: "mobile-apps", en: "Apps & platforms", ar: "التطبيقات والمنصات" },
   { id: "branding", en: "Branding & UI/UX", ar: "الهوية وتصميم UI/UX" },

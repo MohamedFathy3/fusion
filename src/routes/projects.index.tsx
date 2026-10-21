@@ -11,6 +11,7 @@ import {
   projectHasCategory,
   projects,
   type ProjectCategoryId,
+  type VideoProjectType,
 } from "@/lib/projects";
 import { getPageCopy, projectItemsFromConfig, useCMS } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
@@ -49,12 +50,14 @@ function ProjectsPage() {
   const [language, setLanguage] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(true);
   const [activeCategory, setActiveCategory] = useState<ProjectCategoryId | "all">("all");
+  const [activeVideoType, setActiveVideoType] = useState<VideoProjectType>("reels");
   const navigate = useNavigate();
   const ar = language === "ar";
   const copy = (key: string) => getPageCopy(config, "projects", key, language);
   const categoryLabels: Record<string, string> = {
     all: copy("categoryAll"),
     "social-media": copy("categorySocialMedia"),
+    video: ar ? "إنتاج الفيديو" : "Video Production",
     websites: copy("categoryWebsites"),
     "mobile-apps": copy("categoryMobileApps"),
     branding: copy("categoryBranding"),
@@ -68,11 +71,20 @@ function ProjectsPage() {
   );
   const visibleProjects = useMemo(
     () =>
-      allProjects.filter(
-        (project) => activeCategory === "all" || projectHasCategory(project, activeCategory),
-      ),
+      allProjects.filter((project) => {
+        if (activeCategory !== "all" && !projectHasCategory(project, activeCategory)) return false;
+        return true;
+      }),
     [activeCategory, allProjects],
   );
+  const videoFeed = visibleProjects.flatMap(
+    (project) =>
+      (activeVideoType === "reels" ? project.reelsVideos : project.promoVideos)
+        ?.filter(Boolean)
+        .map((src, index) => ({ project, src, index })) ?? [],
+  );
+  const showVideoFeed = activeCategory === "video" && activeVideoType === "reels";
+  const showVideoGrid = activeCategory === "video" && activeVideoType === "promo-video";
   const availableCategories = projectCategories.filter(
     (category) =>
       category.id === "all" ||
@@ -192,7 +204,10 @@ function ProjectsPage() {
                     className={`projects-filter${selected ? " active" : ""}`}
                     type="button"
                     aria-pressed={selected}
-                    onClick={() => setActiveCategory(category.id)}
+                    onClick={() => {
+                      setActiveCategory(category.id);
+                      if (category.id === "video") setActiveVideoType("reels");
+                    }}
                   >
                     {categoryLabels[category.id] ?? category.id}
                     <span>{count}</span>
@@ -201,60 +216,130 @@ function ProjectsPage() {
               })}
             </div>
 
-            <div className="projects-grid">
-              {visibleProjects.map((project) => {
-                const cardCategoryId =
-                  activeCategory !== "all"
-                    ? activeCategory
-                    : project.category === "platforms-apps"
-                      ? "mobile-apps"
-                      : project.category === "ui-ux"
-                        ? "branding"
-                        : project.category;
-                const cardContent = (
-                  <>
-                    <div className="projects-card-image-wrap">
-                      <img src={project.image} alt={project.name} loading="lazy" />
-                      <span className="projects-card-category">
-                        {categoryLabels[cardCategoryId] ?? cardCategoryId}
-                      </span>
-                      {project.kind === "external" && (
-                        <ArrowUpRight className="projects-card-external" aria-hidden="true" />
-                      )}
-                    </div>
+            {activeCategory === "video" && (
+              <div
+                className="projects-filters projects-video-filters"
+                role="group"
+                aria-label={ar ? "نوع الفيديو" : "Video type"}
+              >
+                {(
+                  [
+                    ["reels", ar ? "ريلز" : "REELS"],
+                    ["promo-video", ar ? "فيديو ترويجي" : "PROMO VIDEO"],
+                  ] as const
+                ).map(([type, label]) => (
+                  <button
+                    key={type}
+                    className={`projects-filter${activeVideoType === type ? " active" : ""}`}
+                    type="button"
+                    aria-pressed={activeVideoType === type}
+                    onClick={() => setActiveVideoType(type)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {showVideoFeed ? (
+              videoFeed.length ? (
+                <div className="projects-reels-feed" aria-label={ar ? "ريلز" : "Reels"}>
+                  {videoFeed.map(({ project, src, index }) => (
+                    <article
+                      className="projects-reel"
+                      key={`${project.slug}-${index}`}
+                      aria-label={`${project.localizedName?.[language] ?? project.name} ${index + 1}`}
+                    >
+                      <video src={src} controls muted loop playsInline preload="metadata" />
+                      <div className="projects-reel-caption">
+                        <h2>{project.localizedName?.[language] ?? project.name}</h2>
+                        <p>{project.description[language]}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="projects-video-empty">
+                  {ar
+                    ? "لا توجد فيديوهات Reels مضافة حتى الآن."
+                    : "No Reels videos have been added yet."}
+                </p>
+              )
+            ) : showVideoGrid ? (
+              <div className="projects-video-grid">
+                {videoFeed.map(({ project, src, index }) => (
+                  <article className="projects-video-card" key={`${project.slug}-${index}`}>
+                    <video src={src} controls playsInline preload="metadata" />
                     <div className="projects-card-copy">
                       <h2>{project.localizedName?.[language] ?? project.name}</h2>
                       <p>{project.description[language]}</p>
-                      <span className="projects-card-action">
-                        {project.kind === "external" ? copy("visitProject") : copy("openProject")}
-                        <ArrowRight aria-hidden="true" />
-                      </span>
                     </div>
-                  </>
-                );
+                  </article>
+                ))}
+                {!videoFeed.length && (
+                  <p className="projects-video-empty">
+                    {ar
+                      ? "لا توجد فيديوهات Promo مضافة حتى الآن."
+                      : "No Promo videos have been added yet."}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="projects-grid">
+                {visibleProjects.map((project) => {
+                  const cardCategoryId =
+                    activeCategory !== "all"
+                      ? activeCategory
+                      : project.category === "platforms-apps"
+                        ? "mobile-apps"
+                        : project.category === "ui-ux"
+                          ? "branding"
+                          : project.category;
+                  const cardContent = (
+                    <>
+                      <div className="projects-card-image-wrap">
+                        <img src={project.image} alt={project.name} loading="lazy" />
+                        <span className="projects-card-category">
+                          {categoryLabels[cardCategoryId] ?? cardCategoryId}
+                        </span>
+                        {project.kind === "external" && (
+                          <ArrowUpRight className="projects-card-external" aria-hidden="true" />
+                        )}
+                      </div>
+                      <div className="projects-card-copy">
+                        <h2>{project.localizedName?.[language] ?? project.name}</h2>
+                        <p>{project.description[language]}</p>
+                        <span className="projects-card-action">
+                          {project.kind === "external" ? copy("visitProject") : copy("openProject")}
+                          <ArrowRight aria-hidden="true" />
+                        </span>
+                      </div>
+                    </>
+                  );
 
-                return project.kind === "external" ? (
-                  <a
-                    className="projects-card"
-                    href={project.url}
-                    key={project.slug}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {cardContent}
-                  </a>
-                ) : (
-                  <Link
-                    className="projects-card"
-                    to="/projects/$slug"
-                    params={{ slug: project.slug }}
-                    key={project.slug}
-                  >
-                    {cardContent}
-                  </Link>
-                );
-              })}
-            </div>
+                  return project.kind === "external" ? (
+                    <a
+                      className="projects-card"
+                      href={project.url}
+                      key={project.slug}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {cardContent}
+                    </a>
+                  ) : (
+                    <Link
+                      className="projects-card"
+                      to="/projects/$slug"
+                      params={{ slug: project.slug }}
+                      key={project.slug}
+                    >
+                      {cardContent}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
       </main>

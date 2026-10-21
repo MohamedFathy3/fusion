@@ -100,6 +100,8 @@ export type EditableItem = {
   projectKind?: "case-study" | "external";
   projectUrl?: string;
   imageGallery?: string[];
+  reelsVideos?: string[];
+  promoVideos?: string[];
   socialMediaShowcase?: SocialMediaShowcase;
 };
 export type SiteConfig = {
@@ -155,6 +157,8 @@ export const initialConfig: SiteConfig = {
     projectKind: item.kind,
     ...(item.kind === "external" ? { projectUrl: item.url } : {}),
     ...(item.kind === "case-study" && item.imageGallery ? { imageGallery: item.imageGallery } : {}),
+    ...(item.kind === "case-study" && item.reelsVideos ? { reelsVideos: item.reelsVideos } : {}),
+    ...(item.kind === "case-study" && item.promoVideos ? { promoVideos: item.promoVideos } : {}),
     ...(item.kind === "case-study" && item.socialMediaShowcase
       ? { socialMediaShowcase: item.socialMediaShowcase }
       : {}),
@@ -679,6 +683,8 @@ export function projectItemsFromConfig(items: EditableItem[]): Project[] {
       }
       const originalCase = original?.kind === "case-study" ? original : undefined;
       const gallery = item.imageGallery ?? originalCase?.imageGallery;
+      const reelsVideos = item.reelsVideos ?? originalCase?.reelsVideos;
+      const promoVideos = item.promoVideos ?? originalCase?.promoVideos;
       const showcase = item.socialMediaShowcase ?? originalCase?.socialMediaShowcase;
       return {
         ...(originalCase ?? {}),
@@ -691,6 +697,8 @@ export function projectItemsFromConfig(items: EditableItem[]): Project[] {
         image: item.image,
         description: item.description,
         ...(gallery ? { imageGallery: gallery } : {}),
+        ...(reelsVideos ? { reelsVideos } : {}),
+        ...(promoVideos ? { promoVideos } : {}),
         ...(showcase ? { socialMediaShowcase: showcase } : {}),
       };
     });
