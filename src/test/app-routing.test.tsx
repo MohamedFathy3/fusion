@@ -6,10 +6,22 @@ import { routeTree } from "@/routeTree.gen";
 import { projectCategories, projectHasCategory, projects } from "@/lib/projects";
 import { getPageCopy, initialConfig, mergeSiteConfig, projectItemsFromConfig } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
+import { resolveVideoEmbed } from "@/lib/video";
 
 // Match routes without running loaders or rendering: loaders may need a server or
 // network the test run lacks, and jsdom never loads the stylesheets React waits on.
 describe("App routing", () => {
+  it("converts supported video URLs into safe YouTube and Vimeo embeds", () => {
+    expect(resolveVideoEmbed("https://www.youtube.com/embed/3UlrYeR3WJo?si=oOanQEjTr7_5n0Ze")).toBe(
+      "https://www.youtube-nocookie.com/embed/3UlrYeR3WJo",
+    );
+    expect(resolveVideoEmbed("https://youtu.be/3UlrYeR3WJo")).toBe(
+      "https://www.youtube-nocookie.com/embed/3UlrYeR3WJo",
+    );
+    expect(resolveVideoEmbed("https://evil.example/embed/3UlrYeR3WJo")).toBeNull();
+    expect(resolveVideoEmbed("javascript:alert(1)")).toBeNull();
+  });
+
   it("provides bilingual CMS copy for each public page", () => {
     const config = mergeSiteConfig(initialConfig);
 

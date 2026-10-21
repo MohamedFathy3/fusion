@@ -16,6 +16,7 @@ import {
 import { getPageCopy, projectItemsFromConfig, useCMS } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
 import { loadSiteConfig } from "@/lib/cms-loader";
+import { resolveVideoEmbed } from "@/lib/video";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
@@ -250,7 +251,18 @@ function ProjectsPage() {
                       key={`${project.slug}-${index}`}
                       aria-label={`${project.localizedName?.[language] ?? project.name} ${index + 1}`}
                     >
-                      <video src={src} controls muted loop playsInline preload="metadata" />
+                      {resolveVideoEmbed(src) ? (
+                        <iframe
+                          src={resolveVideoEmbed(src) ?? undefined}
+                          title={`${project.localizedName?.[language] ?? project.name} ${index + 1}`}
+                          loading="lazy"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <video src={src} controls muted loop playsInline preload="metadata" />
+                      )}
                       <div className="projects-reel-caption">
                         <h2>{project.localizedName?.[language] ?? project.name}</h2>
                         <p>{project.description[language]}</p>
@@ -269,7 +281,18 @@ function ProjectsPage() {
               <div className="projects-video-grid">
                 {videoFeed.map(({ project, src, index }) => (
                   <article className="projects-video-card" key={`${project.slug}-${index}`}>
-                    <video src={src} controls playsInline preload="metadata" />
+                    {resolveVideoEmbed(src) ? (
+                      <iframe
+                        src={resolveVideoEmbed(src) ?? undefined}
+                        title={`${project.localizedName?.[language] ?? project.name} ${index + 1}`}
+                        loading="lazy"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video src={src} controls playsInline preload="metadata" />
+                    )}
                     <div className="projects-card-copy">
                       <h2>{project.localizedName?.[language] ?? project.name}</h2>
                       <p>{project.description[language]}</p>

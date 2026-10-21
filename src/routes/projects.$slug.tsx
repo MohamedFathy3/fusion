@@ -17,6 +17,7 @@ import { projectCategories, type CaseStudyProject } from "@/lib/projects";
 import { getPageCopy, projectItemsFromConfig, useCMS } from "@/lib/cms";
 import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
 import { loadSiteConfig } from "@/lib/cms-loader";
+import { resolveVideoEmbed } from "@/lib/video";
 
 export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params }) => {
@@ -471,30 +472,6 @@ function ProjectDetailPage() {
       </dialog>
     </div>
   );
-}
-
-function resolveVideoEmbed(rawUrl: string) {
-  try {
-    const url = new URL(rawUrl);
-    const hostname = url.hostname.replace(/^www\./, "");
-    if (hostname === "youtu.be") {
-      const id = url.pathname.split("/").filter(Boolean)[0];
-      return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}` : null;
-    }
-    if (hostname === "youtube.com" || hostname === "m.youtube.com") {
-      const id = url.pathname.startsWith("/embed/")
-        ? url.pathname.split("/")[2]
-        : url.searchParams.get("v");
-      return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}` : null;
-    }
-    if (hostname === "vimeo.com" || hostname === "player.vimeo.com") {
-      const id = url.pathname.split("/").filter(Boolean).at(-1);
-      return id && /^\d+$/.test(id) ? `https://player.vimeo.com/video/${id}` : null;
-    }
-  } catch {
-    return null;
-  }
-  return null;
 }
 
 function AnimatedFollowerCount({

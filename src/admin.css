@@ -1208,7 +1208,8 @@
   background: #f8f7f9;
 }
 .vz-image-preview img,
-.vz-image-preview video {
+.vz-image-preview video,
+.vz-image-preview iframe {
   width: 100%;
   height: 100%;
   object-fit: contain;

@@ -46,6 +46,7 @@ import {
   type SocialPlatform,
   type VideoProjectType,
 } from "@/lib/projects";
+import { resolveVideoEmbed } from "@/lib/video";
 import { initialConfig, useCMS } from "@/lib/cms";
 import adminCss from "@/admin.css?url";
 
@@ -1048,11 +1049,21 @@ function AdminPage() {
                               : { promoVideos: videos },
                           );
                         },
-                        "https://…",
+                        "YouTube / Vimeo URL or direct MP4 / WebM URL",
                       )}
                       {video && (
                         <div className="vz-image-preview">
-                          <video src={video} controls playsInline />
+                          {resolveVideoEmbed(video) ? (
+                            <iframe
+                              src={resolveVideoEmbed(video) ?? undefined}
+                              title={`Video preview ${index + 1}`}
+                              loading="lazy"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                            />
+                          ) : (
+                            <video src={video} controls playsInline />
+                          )}
                         </div>
                       )}
                       <button
