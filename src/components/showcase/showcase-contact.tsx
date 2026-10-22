@@ -1,15 +1,44 @@
 import { Phone } from "lucide-react";
 import type { FormEvent } from "react";
+import { useState } from "react";
 import worldMap from "@/assets/bg-2-e496b57f-842e-4cf1-8733-ba70e093aea4.png";
 import type { Language } from "./types";
 import { getPageCopy, useCMS } from "@/lib/cms";
 
 export function ShowcaseContact({ language }: { language: Language }) {
   const { config } = useCMS();
+  const [submission, setSubmission] = useState<"idle" | "sending" | "success" | "error">("idle");
   const contactPhone =
     config.contact.phone || getPageCopy(config, "contact", "phoneFallback", language);
   const copy = (key: string) => getPageCopy(config, "common", key, language);
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => event.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (submission === "sending") return;
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    setSubmission("sending");
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          email: data.get("email"),
+          subject: data.get("subject"),
+          message: data.get("message"),
+          website: data.get("website"),
+        }),
+      });
+      const result = (await response.json()) as { sent?: boolean };
+      if (!response.ok || result.sent !== true)
+        throw new Error("Contact message could not be sent.");
+      form.reset();
+      setSubmission("success");
+    } catch {
+      setSubmission("error");
+    }
+  };
   return (
     <section className="contact-section" id="contact" aria-labelledby="contact-title">
       <div className="section-inner contact-layout">
@@ -21,7 +50,7 @@ export function ShowcaseContact({ language }: { language: Language }) {
           <div className="contact-phone-icon">
             <Phone aria-hidden="true" />
           </div>
-          <a className="contact-phone" href={`tel:${contactPhone}`}>
+          <a className="contact-phone" href={`tel:${contactPhone.replace(/[^\d+]/g, "")}`}>
             {contactPhone}
           </a>
           <div className="contact-info-copy">
@@ -53,12 +82,21 @@ export function ShowcaseContact({ language }: { language: Language }) {
           <div className="contact-eyebrow">{copy("contactEyebrow")}</div>
           <h2 id="contact-title">{copy("contactHeading")}</h2>
           <form className="contact-form" onSubmit={handleSubmit}>
+            <input
+              className="contact-field-honeypot"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
             <label className="sr-only" htmlFor="contact-name">
               {copy("contactName")}
             </label>
             <input
               id="contact-name"
               name="name"
+              required
+              maxLength={120}
               autoComplete="name"
               placeholder={copy("contactName")}
             />
@@ -70,6 +108,8 @@ export function ShowcaseContact({ language }: { language: Language }) {
               id="contact-email"
               name="email"
               type="email"
+              required
+              maxLength={254}
               autoComplete="email"
               placeholder={copy("contactEmail")}
             />
@@ -81,6 +121,7 @@ export function ShowcaseContact({ language }: { language: Language }) {
               className="contact-field-wide"
               id="contact-subject"
               name="subject"
+              maxLength={160}
               placeholder={copy("contactSubject")}
             />
 
@@ -91,14 +132,32 @@ export function ShowcaseContact({ language }: { language: Language }) {
               className="contact-field-wide"
               id="contact-message"
               name="message"
+              required
+              maxLength={5000}
               placeholder={copy("contactMessage")}
               rows={5}
             />
 
-            <button className="contact-submit contact-field-wide" type="submit" disabled>
-              {copy("contactSubmit")}
+            <button
+              className="contact-submit contact-field-wide"
+              type="submit"
+              disabled={submission === "sending"}
+            >
+              {submission === "sending"
+                ? getPageCopy(config, "common", "contactFormSending", language)
+                : copy("contactSubmit")}
             </button>
-            <p className="contact-form-note contact-field-wide">{copy("contactFormNote")}</p>
+            <p
+              className="contact-form-note contact-field-wide"
+              role="status"
+              aria-live="polite"
+            >
+              {submission === "success"
+                ? getPageCopy(config, "common", "contactFormSuccess", language)
+                : submission === "error"
+                  ? getPageCopy(config, "common", "contactFormError", language)
+                  : copy("contactFormNote")}
+            </p>
           </form>
         </div>
       </div>

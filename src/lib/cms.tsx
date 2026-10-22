@@ -171,8 +171,8 @@ export const initialConfig: SiteConfig = {
     enabled: true,
   })),
   contact: {
-    email: "info@viralzoom.com",
-    phone: "",
+    email: "info@viralzoom.agency",
+    phone: "01222291024",
     whatsapp: "",
     address: { en: "Cairo, Egypt", ar: "القاهرة، مصر" },
   },
@@ -295,14 +295,14 @@ export const initialConfig: SiteConfig = {
       ],
     },
     seo: {
-      siteTitle: { en: "Viral Zoom", ar: "فايرال زوم" },
+      siteTitle: { en: "ViralZoom", ar: "ViralZoom" },
       siteDescription: {
         en: "Creative and digital marketing agency.",
         ar: "وكالة إبداعية ورقمية للتسويق والتصميم.",
       },
       homeTitle: {
-        en: "Creative & Digital Marketing | Viral Zoom",
-        ar: "الإبداع والتسويق الرقمي | فايرال زوم",
+        en: "ViralZoom",
+        ar: "ViralZoom",
       },
       homeDescription: {
         en: "Ideas that make your brand impossible to ignore.",
@@ -333,8 +333,14 @@ export const initialConfig: SiteConfig = {
           ar: "اتصل بينا واحكيلنا عن فكرتك الجديدة.",
         },
         contactFormNote: {
-          en: "Message sending will be available soon.",
-          ar: "إرسال الرسائل هيكون متاح قريبًا.",
+          en: "Send us a message and we’ll get back to you soon.",
+          ar: "ابعتلنا رسالتك وهنرد عليك في أقرب وقت.",
+        },
+        contactFormSending: { en: "Sending your message…", ar: "جارٍ إرسال رسالتك…" },
+        contactFormSuccess: { en: "Your message was sent successfully.", ar: "تم إرسال رسالتك بنجاح." },
+        contactFormError: {
+          en: "We couldn’t send your message. Please try again or email us directly.",
+          ar: "ما قدرناش نبعت رسالتك. حاول تاني أو ابعتلنا على الإيميل مباشرة.",
         },
         contactName: { en: "Name", ar: "الاسم" },
         contactEmail: { en: "Email", ar: "البريد الإلكتروني" },
@@ -344,8 +350,8 @@ export const initialConfig: SiteConfig = {
       },
       home: {
         seoTitle: {
-          en: "Creative & Digital Marketing | Viral Zoom",
-          ar: "الإبداع والتسويق الرقمي | فايرال زوم",
+          en: "ViralZoom",
+          ar: "ViralZoom",
         },
         seoDescription: {
           en: "Ideas that make your brand impossible to ignore.",
@@ -578,7 +584,7 @@ export const initialConfig: SiteConfig = {
         mapCoordinate: { en: "CREATIVE CONNECTIONS — EVERYWHERE", ar: "تواصل إبداعي — في كل مكان" },
         contactSectionLabel: { en: "Contact details", ar: "بيانات التواصل" },
         connectFallback: { en: "Let's connect", ar: "خلّينا نتواصل" },
-        phoneFallback: { en: "01064621943", ar: "01064621943" },
+        phoneFallback: { en: "01222291024", ar: "01222291024" },
         whatsapp: { en: "WhatsApp", ar: "واتساب" },
       },
       serviceDetail: {

@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const configuredOrigin =
   (process.env.PUBLIC_SITE_URL || process.env.VITE_PUBLIC_SITE_URL)?.trim() ||
-  "https://viralzoom.tech";
+  "https://viralzoom.agency";
 
 let origin;
 try {

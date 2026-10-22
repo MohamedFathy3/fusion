@@ -75,6 +75,20 @@ npm start
 
 الخادم يحتاج Node.js 22.5 أو أحدث. يجب أن تكون MySQL قاعدة مشتركة ودائمة، وأن يكون `DATA_DIR` على قرص دائم للوسائط المرفوعة. احتفظ بنسخة احتياطية من جداول MySQL ومجلد `uploads` معًا.
 
+### إرسال رسائل نموذج التواصل
+
+يستخدم نموذج التواصل SMTP لإرسال الرسائل إلى `CONTACT_EMAIL`. أضف إعدادات صندوق البريد في متغيرات بيئة الاستضافة، ولا تضع كلمة مرور البريد في Git:
+
+```env
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=465
+SMTP_USER=info@viralzoom.agency
+SMTP_PASSWORD=كلمة-مرور-صندوق-البريد
+CONTACT_EMAIL=info@viralzoom.agency
+```
+
+`SMTP_USER` هو عنوان صندوق البريد الذي أُنشئ في Hostinger، وليس كلمة مرور حساب الاستضافة. المنفذ 465 يستخدم اتصال SSL/TLS. أعد تشغيل التطبيق بعد إضافة القيم.
+
 لوحة الإدارة: `/admin`. استخدم البريد الموجود في `ADMIN_EMAIL` وكلمة المرور الموجودة في `ADMIN_PASSWORD`. لا تضع كلمة المرور أو `SESSION_SECRET` في Git.
 
 ## API

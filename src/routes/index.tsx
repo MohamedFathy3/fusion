@@ -16,18 +16,20 @@ import { useCMS } from "@/lib/cms";
 import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
 import { loadSiteConfig } from "@/lib/cms-loader";
 
+const HOME_PAGE_TITLE = "ViralZoom";
+
 export const Route = createFileRoute("/")({
   component: Index,
   loader: async () => ({ siteConfig: await loadSiteConfig() }),
   head: ({ loaderData }) => ({
     links: [{ rel: "canonical", href: canonicalUrl("/") }],
     meta: [
-      { title: loaderData?.siteConfig.content.pages.home.seoTitle.en },
+      { title: HOME_PAGE_TITLE },
       {
         name: "description",
         content: loaderData?.siteConfig.content.pages.home.seoDescription.en,
       },
-      { property: "og:title", content: loaderData?.siteConfig.content.pages.home.seoTitle.en },
+      { property: "og:title", content: HOME_PAGE_TITLE },
       {
         property: "og:description",
         content: loaderData?.siteConfig.content.pages.home.seoDescription.en,
@@ -35,7 +37,7 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: canonicalUrl("/") },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: loaderData?.siteConfig.content.pages.home.seoTitle.en },
+      { name: "twitter:title", content: HOME_PAGE_TITLE },
       {
         name: "twitter:description",
         content: loaderData?.siteConfig.content.pages.home.seoDescription.en,
@@ -50,8 +52,17 @@ export const Route = createFileRoute("/")({
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: HOME_PAGE_TITLE,
+          url: canonicalUrl("/"),
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
           "@type": "Organization",
-          name: loaderData?.siteConfig.brand.name,
+          name: HOME_PAGE_TITLE,
           url: canonicalUrl("/"),
           email: loaderData?.siteConfig.contact.email,
           logo: loaderData?.siteConfig.brand.logo,

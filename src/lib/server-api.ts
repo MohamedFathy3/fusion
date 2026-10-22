@@ -4,6 +4,7 @@ import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, extname, resolve, sep } from "node:path";
 import { env } from "node:process";
+import { createTransport } from "nodemailer";
 import { initialConfig, type EditableItem, type SiteConfig } from "@/lib/cms";
 
 const DATA_DIR = resolve(env["DATA_DIR"] || "data");
@@ -226,11 +227,24 @@ async function loadConfigFromDatabase(): Promise<SiteConfig> {
   const itemRows = await db.contentItem.findMany({
     orderBy: [{ collection: "asc" }, { position: "asc" }, { itemId: "asc" }],
   });
+  const parsedContact: unknown = JSON.parse(contact as string);
+  if (!parsedContact || typeof parsedContact !== "object" || Array.isArray(parsedContact))
+    throw new Error("MySQL contact settings are invalid");
+  const contactSettings = parsedContact as SiteConfig["contact"];
+  let contactChanged = false;
+  if (contactSettings.email === "info@viralzoom.com") {
+    contactSettings.email = "info@viralzoom.agency";
+    contactChanged = true;
+  }
+  if (!contactSettings.phone || contactSettings.phone === "01064621943") {
+    contactSettings.phone = "01222291024";
+    contactChanged = true;
+  }
   const config: SiteConfig = {
     brand: JSON.parse(brand as string),
     hero: JSON.parse(hero as string),
     sections: JSON.parse(sections as string),
-    contact: JSON.parse(contact as string),
+    contact: contactSettings,
     content: JSON.parse(content as string),
     services: [],
     portfolio: [],
@@ -242,6 +256,12 @@ async function loadConfigFromDatabase(): Promise<SiteConfig> {
     (config[collection] as EditableItem[]).push(JSON.parse(item.content) as EditableItem);
   }
   if (!validConfig(config)) throw new Error("MySQL site content is invalid");
+  if (contactChanged) {
+    await db.siteSettings.update({
+      where: { id: 1 },
+      data: { contact: JSON.stringify(contactSettings) },
+    });
+  }
   return config;
 }
 
@@ -374,6 +394,7 @@ function mimeExtension(type: string) {
 
 const uploadCache = new Map<string, { type: string; size: number }>();
 const failedLogins = new Map<string, { count: number; expires: number }>();
+const contactAttempts = new Map<string, { count: number; expires: number }>();
 const typeByExtension: Record<string, string> = {
   ".jpg": "image/jpeg",
   ".png": "image/png",
@@ -479,6 +500,103 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
   }
 
   if (!url.pathname.startsWith("/api/")) return null;
+
+  if (url.pathname === "/api/contact") {
+    if (method !== "POST") return json({ error: "Method not allowed" }, 405, { Allow: "POST" });
+    if (!request.headers.has("origin") || !sameOrigin(request))
+      return json({ error: "Invalid origin" }, 403);
+
+    let body: unknown;
+    try {
+      body = await readJson(request, 12 * 1024);
+    } catch (error) {
+      const tooLarge = error instanceof Error && error.message === "PAYLOAD_TOO_LARGE";
+      return json(
+        { error: tooLarge ? "Request too large" : "Invalid request" },
+        tooLarge ? 413 : 400,
+      );
+    }
+    if (!body || typeof body !== "object" || Array.isArray(body))
+      return json({ error: "Invalid request" }, 400);
+    const submission = body as Record<string, unknown>;
+    if (typeof submission["website"] === "string" && submission["website"].trim())
+      return json({ sent: true });
+
+    const { name, email, subject, message } = submission;
+    if (
+      typeof name !== "string" ||
+      !name.trim() ||
+      name.length > 120 ||
+      typeof email !== "string" ||
+      email.length > 254 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+      typeof subject !== "string" ||
+      subject.length > 160 ||
+      /[\r\n]/.test(subject) ||
+      typeof message !== "string" ||
+      !message.trim() ||
+      message.length > 5000
+    ) {
+      return json({ error: "Please check the contact form fields." }, 422);
+    }
+
+    const smtpUser = env["SMTP_USER"]?.trim();
+    const smtpPassword = env["SMTP_PASSWORD"];
+    const host = env["SMTP_HOST"]?.trim() || "smtp.hostinger.com";
+    const port = Number(env["SMTP_PORT"] || 465);
+    const recipient = env["CONTACT_EMAIL"]?.trim() || "info@viralzoom.agency";
+    if (
+      !smtpUser ||
+      !smtpPassword ||
+      !host ||
+      !Number.isInteger(port) ||
+      port < 1 ||
+      port > 65535 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)
+    ) {
+      return json({ error: "Contact email is not configured on the server." }, 503);
+    }
+
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const now = Date.now();
+    const recent = contactAttempts.get(ip);
+    if (recent && recent.expires > now && recent.count >= 5)
+      return json({ error: "Too many messages. Please try again later." }, 429);
+    if (contactAttempts.size > 10000) {
+      for (const [key, attempt] of contactAttempts) {
+        if (attempt.expires <= now) contactAttempts.delete(key);
+      }
+    }
+    contactAttempts.set(
+      ip,
+      recent && recent.expires > now
+        ? { count: recent.count + 1, expires: recent.expires }
+        : { count: 1, expires: now + 10 * 60 * 1000 },
+    );
+
+    try {
+      const transport = createTransport({
+        host,
+        port,
+        secure: port === 465,
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
+        auth: { user: smtpUser, pass: smtpPassword },
+      });
+      await transport.sendMail({
+        from: smtpUser,
+        to: recipient,
+        replyTo: { name: name.trim(), address: email.trim() },
+        subject: `Website contact: ${subject.trim() || "New message"}`,
+        text: `Name: ${name.trim()}\nEmail: ${email.trim()}\n\n${message.trim()}`,
+      });
+      return json({ sent: true });
+    } catch (error) {
+      console.error("Contact email delivery failed:", error);
+      return json({ error: "Your message could not be delivered. Please try again later." }, 502);
+    }
+  }
 
   if (url.pathname === "/api/auth/session" && method === "GET") {
     return json({ authenticated: hasSession(request) });
@@ -643,4 +761,3 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
 
   return json({ error: "Not found" }, 404);
 }
-

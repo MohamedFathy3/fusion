@@ -251,6 +251,14 @@ function ProjectsPage() {
                       key={`${project.slug}-${index}`}
                       aria-label={`${project.localizedName?.[language] ?? project.name} ${index + 1}`}
                     >
+                      <Link
+                        className="projects-reel-project-link"
+                        to="/projects/$slug"
+                        params={{ slug: project.slug }}
+                      >
+                        {copy("openProject")}
+                        <ArrowUpRight aria-hidden="true" />
+                      </Link>
                       {resolveVideoEmbed(src) ? (
                         <iframe
                           src={resolveVideoEmbed(src) ?? undefined}
@@ -279,26 +287,33 @@ function ProjectsPage() {
               )
             ) : showVideoGrid ? (
               <div className="projects-video-grid">
-                {videoFeed.map(({ project, src, index }) => (
-                  <article className="projects-video-card" key={`${project.slug}-${index}`}>
-                    {resolveVideoEmbed(src) ? (
-                      <iframe
-                        src={resolveVideoEmbed(src) ?? undefined}
-                        title={`${project.localizedName?.[language] ?? project.name} ${index + 1}`}
-                        loading="lazy"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                      />
-                    ) : (
-                      <video src={src} controls playsInline preload="metadata" />
-                    )}
-                    <div className="projects-card-copy">
-                      <h2>{project.localizedName?.[language] ?? project.name}</h2>
-                      <p>{project.description[language]}</p>
-                    </div>
-                  </article>
-                ))}
+                {videoFeed.map(({ project, src, index }) => {
+                  const title = (project.localizedName?.[language] ?? project.name).trim();
+                  const description = project.description[language].trim();
+
+                  return (
+                    <article className="projects-video-card" key={`${project.slug}-${index}`}>
+                      {resolveVideoEmbed(src) ? (
+                        <iframe
+                          src={resolveVideoEmbed(src) ?? undefined}
+                          title={`${title || "Project video"} ${index + 1}`}
+                          loading="lazy"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <video src={src} controls playsInline preload="metadata" />
+                      )}
+                      {(title || description) && (
+                        <div className="projects-video-copy">
+                          {title && <h2>{title}</h2>}
+                          {description && <p>{description}</p>}
+                        </div>
+                      )}
+                    </article>
+                  );
+                })}
                 {!videoFeed.length && (
                   <p className="projects-video-empty">
                     {ar

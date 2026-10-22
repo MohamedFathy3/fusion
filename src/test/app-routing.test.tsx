@@ -25,6 +25,9 @@ describe("App routing", () => {
   it("provides bilingual CMS copy for each public page", () => {
     const config = mergeSiteConfig(initialConfig);
 
+    expect(config.content.pages.home.seoTitle).toEqual({ en: "ViralZoom", ar: "ViralZoom" });
+    expect(config.contact.email).toBe("info@viralzoom.agency");
+    expect(config.contact.phone).toBe("01222291024");
     expect(getPageCopy(config, "about", "heroTitle", "en")).toBe("We turn bold ideas");
     expect(getPageCopy(config, "about", "heroTitle", "ar")).toBe("نحوّل الأفكار");
     expect(getPageCopy(config, "services", "heroTitle", "en")).toBe("Services that");
