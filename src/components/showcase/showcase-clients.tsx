@@ -69,7 +69,7 @@ export function ShowcaseClients({ language }: { language: Language }) {
               <img
                 key={client.id}
                 src={client.image}
-                className="w-full rounded-sm"
+                className="client-logo client-logo-grid"
                 alt={
                   client.name[language] ||
                   t(`Client brand ${index + 1}`, `العلامة التجارية ${index + 1}`)

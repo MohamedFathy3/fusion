@@ -3,7 +3,12 @@ import { createRouter, rootRouteId } from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
-import { projectCategories, projectHasCategory, projects } from "@/lib/projects";
+import {
+  filterProjectsByCategory,
+  projectCategories,
+  projectHasCategory,
+  projects,
+} from "@/lib/projects";
 import { getPageCopy, initialConfig, mergeSiteConfig, projectItemsFromConfig } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
 import { resolveVideoEmbed } from "@/lib/video";
@@ -75,10 +80,31 @@ describe("App routing", () => {
     );
   });
 
+  it("excludes video production projects from the all projects filter", () => {
+    const videoProject = projectItemsFromConfig([
+      {
+        ...initialConfig.portfolio[0]!,
+        id: "video-all-filter-test",
+        projectCategory: "video",
+      },
+    ])[0];
+    if (!videoProject) throw new Error("Expected a video project for the all-projects filter");
+
+    const allProjects = [...projectItemsFromConfig(initialConfig.portfolio), videoProject];
+    const allCategoryProjects = filterProjectsByCategory(allProjects, "all");
+    const videoCategoryProjects = filterProjectsByCategory(allProjects, "video");
+
+    expect(allCategoryProjects.some((project) => projectHasCategory(project, "video"))).toBe(false);
+    expect(videoCategoryProjects.length).toBeGreaterThan(0);
+    expect(videoCategoryProjects.every((project) => projectHasCategory(project, "video"))).toBe(true);
+    expect(allCategoryProjects.length + videoCategoryProjects.length).toBe(allProjects.length);
+  });
+
   it("supports multiple Reels and Promo videos per video-production project", () => {
     const item = {
       ...initialConfig.portfolio[0]!,
       id: "video-showcase-test",
+      link: "https://example.com/project",
       projectCategory: "video" as const,
       reelsVideos: ["https://cdn.example.com/reel-one.mp4", "https://cdn.example.com/reel-two.mp4"],
       promoVideos: ["https://cdn.example.com/promo-one.mp4"],
@@ -87,6 +113,7 @@ describe("App routing", () => {
 
     expect(projectCategories.some((category) => category.id === "video")).toBe(true);
     expect(project?.category).toBe("video");
+    expect(project?.link).toBe("https://example.com/project");
     expect(project && projectHasCategory(project, "video")).toBe(true);
     expect(project?.reelsVideos).toHaveLength(2);
     expect(project?.promoVideos).toHaveLength(1);

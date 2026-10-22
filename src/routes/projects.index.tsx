@@ -7,6 +7,7 @@ import poster from "@/assets/poster.jpg.asset.json";
 import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import {
+  filterProjectsByCategory,
   projectCategories,
   projectHasCategory,
   projects,
@@ -17,6 +18,16 @@ import { getPageCopy, projectItemsFromConfig, useCMS } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
 import { loadSiteConfig } from "@/lib/cms-loader";
 import { resolveVideoEmbed } from "@/lib/video";
+
+function isExternalProjectLink(link: string | undefined): link is string {
+  if (!link) return false;
+  try {
+    const url = new URL(link);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
@@ -71,11 +82,7 @@ function ProjectsPage() {
     [config.portfolio, ready],
   );
   const visibleProjects = useMemo(
-    () =>
-      allProjects.filter((project) => {
-        if (activeCategory !== "all" && !projectHasCategory(project, activeCategory)) return false;
-        return true;
-      }),
+    () => filterProjectsByCategory(allProjects, activeCategory),
     [activeCategory, allProjects],
   );
   const videoFeed = visibleProjects.flatMap(
@@ -194,7 +201,7 @@ function ProjectsPage() {
               {availableCategories.map((category) => {
                 const count =
                   category.id === "all"
-                    ? allProjects.length
+                    ? filterProjectsByCategory(allProjects, "all").length
                     : allProjects.filter((project) => projectHasCategory(project, category.id))
                         .length;
                 const selected = activeCategory === category.id;
@@ -251,14 +258,28 @@ function ProjectsPage() {
                       key={`${project.slug}-${index}`}
                       aria-label={`${project.localizedName?.[language] ?? project.name} ${index + 1}`}
                     >
-                      <Link
-                        className="projects-reel-project-link"
-                        to="/projects/$slug"
-                        params={{ slug: project.slug }}
-                      >
-                        {copy("openProject")}
-                        <ArrowUpRight aria-hidden="true" />
-                      </Link>
+                      {isExternalProjectLink(
+                        project.kind === "external" ? project.url : project.link,
+                      ) ? (
+                        <a
+                          className="projects-reel-project-link"
+                          href={project.kind === "external" ? project.url : project.link}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {copy("openProject")}
+                          <ArrowUpRight aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <Link
+                          className="projects-reel-project-link"
+                          to="/projects/$slug"
+                          params={{ slug: project.slug }}
+                        >
+                          {copy("openProject")}
+                          <ArrowUpRight aria-hidden="true" />
+                        </Link>
+                      )}
                       {resolveVideoEmbed(src) ? (
                         <iframe
                           src={resolveVideoEmbed(src) ?? undefined}

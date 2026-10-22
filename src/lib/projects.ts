@@ -28,6 +28,7 @@ type ProjectContent = {
   localizedName?: { en: string; ar: string };
   category: ProjectCategoryId;
   additionalCategories?: ProjectCategoryId[];
+  link?: string;
   reelsVideos?: string[];
   promoVideos?: string[];
   image: string;
@@ -271,6 +272,17 @@ export function projectHasCategory(project: Project, categoryId: ProjectCategory
   }
   return (
     project.category === categoryId || project.additionalCategories?.includes(categoryId) === true
+  );
+}
+
+export function filterProjectsByCategory(
+  items: Project[],
+  categoryId: ProjectCategoryId | "all",
+) {
+  return items.filter((project) =>
+    categoryId === "all"
+      ? !projectHasCategory(project, "video")
+      : projectHasCategory(project, categoryId),
   );
 }
 

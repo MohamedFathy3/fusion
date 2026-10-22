@@ -700,6 +700,7 @@ export function projectItemsFromConfig(items: EditableItem[]): Project[] {
         category,
         ...(extra ? { additionalCategories: extra } : {}),
         kind: "case-study" as const,
+        ...(item.link ? { link: item.link } : {}),
         image: item.image,
         description: item.description,
         ...(gallery ? { imageGallery: gallery } : {}),
