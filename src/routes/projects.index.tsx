@@ -315,9 +315,30 @@ function ProjectsPage() {
                 {videoFeed.map(({ project, src, index }) => {
                   const title = (project.localizedName?.[language] ?? project.name).trim();
                   const description = project.description[language].trim();
+                  const projectLink = project.kind === "external" ? project.url : project.link;
 
                   return (
                     <article className="projects-video-card" key={`${project.slug}-${index}`}>
+                      {isExternalProjectLink(projectLink) ? (
+                        <a
+                          className="projects-reel-project-link"
+                          href={projectLink}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {copy("openProject")}
+                          <ArrowUpRight aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <Link
+                          className="projects-reel-project-link"
+                          to="/projects/$slug"
+                          params={{ slug: project.slug }}
+                        >
+                          {copy("openProject")}
+                          <ArrowUpRight aria-hidden="true" />
+                        </Link>
+                      )}
                       {resolveVideoEmbed(src) ? (
                         <iframe
                           src={resolveVideoEmbed(src) ?? undefined}
