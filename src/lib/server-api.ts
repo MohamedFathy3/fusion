@@ -541,7 +541,7 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
     }
 
     const smtpUser = env["SMTP_USER"]?.trim();
-    const smtpPassword = env["SMTP_PASSWORD"] || ':1P2VI!Doku';
+    const smtpPassword = env["SMTP_PASSWORD"] || ':1P2VI!Dokugitf';
     const host = env["SMTP_HOST"]?.trim() || "smtp.hostinger.com";
     const port = Number(env["SMTP_PORT"] || 465);
     const recipient = env["CONTACT_EMAIL"]?.trim() || "info@viralzoom.agency";
