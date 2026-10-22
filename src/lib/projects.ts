@@ -286,6 +286,15 @@ export function filterProjectsByCategory(
   );
 }
 
+export function isVideoMediaUrl(url: string) {
+  if (/^(?:blob:|data:video\/)/i.test(url)) return true;
+  try {
+    return /\.(?:mp4|webm|mov|m4v)$/i.test(new URL(url, "https://viralzoom.tech").pathname);
+  } catch {
+    return false;
+  }
+}
+
 export const projectCategories = [
   { id: "all", en: "All", ar: "الكل" },
   { id: "social-media", en: "Social media", ar: "السوشيال ميديا" },

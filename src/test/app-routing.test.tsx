@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { routeTree } from "@/routeTree.gen";
 import {
   filterProjectsByCategory,
+  isVideoMediaUrl,
   projectCategories,
   projectHasCategory,
   projects,
@@ -98,6 +99,14 @@ describe("App routing", () => {
     expect(videoCategoryProjects.length).toBeGreaterThan(0);
     expect(videoCategoryProjects.every((project) => projectHasCategory(project, "video"))).toBe(true);
     expect(allCategoryProjects.length + videoCategoryProjects.length).toBe(allProjects.length);
+  });
+
+  it("identifies video media URLs without excluding image URLs", () => {
+    expect(isVideoMediaUrl("/media/video/reel.mp4")).toBe(true);
+    expect(isVideoMediaUrl("https://cdn.example.com/reel.webm?token=123")).toBe(true);
+    expect(isVideoMediaUrl("blob:https://viralzoom.tech/video-id")).toBe(true);
+    expect(isVideoMediaUrl("/media/portfolio/project.webp")).toBe(false);
+    expect(isVideoMediaUrl("https://cdn.example.com/client-logo.svg")).toBe(false);
   });
 
   it("supports multiple Reels and Promo videos per video-production project", () => {

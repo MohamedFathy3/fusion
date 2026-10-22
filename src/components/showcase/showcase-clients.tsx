@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import type { Language } from "./types";
 import { translate } from "./types";
 import { getPageCopy, useCMS } from "@/lib/cms";
+import { isVideoMediaUrl } from "@/lib/projects";
 
 export function ShowcaseClients({ language }: { language: Language }) {
   const { config } = useCMS();
-  const clients = config.clients.filter((client) => client.enabled);
+  const clients = config.clients.filter(
+    (client) => client.enabled && client.image && !isVideoMediaUrl(client.image),
+  );
   const [showAllClients, setShowAllClients] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const clientsRef = useRef<HTMLDivElement>(null);

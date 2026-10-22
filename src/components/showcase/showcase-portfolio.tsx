@@ -1,11 +1,18 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { getPageCopy, useCMS } from "@/lib/cms";
+import { isVideoMediaUrl } from "@/lib/projects";
 import type { Language } from "./types";
 
 export function ShowcasePortfolio({ language }: { language: Language }) {
   const { config } = useCMS();
-  const projects = config.portfolio.filter((project) => project.enabled);
+  const projects = config.portfolio.filter(
+    (project) =>
+      project.enabled &&
+      project.projectCategory !== "video" &&
+      !project.additionalCategories?.includes("video") &&
+      !isVideoMediaUrl(project.image),
+  );
   const copy = (key: string) => getPageCopy(config, "home", key, language);
 
   return (

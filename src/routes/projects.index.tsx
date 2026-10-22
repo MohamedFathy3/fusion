@@ -8,6 +8,7 @@ import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import {
   filterProjectsByCategory,
+  isVideoMediaUrl,
   projectCategories,
   projectHasCategory,
   projects,
@@ -93,6 +94,9 @@ function ProjectsPage() {
   );
   const showVideoFeed = activeCategory === "video" && activeVideoType === "reels";
   const showVideoGrid = activeCategory === "video" && activeVideoType === "promo-video";
+  const featuredProjects = filterProjectsByCategory(allProjects, "all")
+    .filter((project) => !isVideoMediaUrl(project.image))
+    .slice(0, 3);
   const availableCategories = projectCategories.filter(
     (category) =>
       category.id === "all" ||
@@ -179,7 +183,7 @@ function ProjectsPage() {
               <p className="projects-intro-copy">{copy("heroDescription")}</p>
             </div>
             <div className="projects-hero-art" aria-label={copy("featuredLabel")}>
-              {allProjects.slice(0, 3).map((project, index) => (
+              {featuredProjects.map((project, index) => (
                 <div
                   className={`projects-hero-image projects-hero-image-${index + 1}`}
                   key={project.slug}
