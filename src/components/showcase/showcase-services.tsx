@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import homeCardImage from "@/assets/viralzoom-home-card-replacement.png";
 import { Button } from "@/components/ui/button";
 import { getPageCopy, useCMS } from "@/lib/cms";
 import type { Language } from "./types";
@@ -136,7 +137,7 @@ export function ShowcaseServices({ language }: { language: Language }) {
             <div className="services-intro-image-wrap">
               <img
                 className="services-intro-image"
-                src={copy("serviceImage")}
+                src={homeCardImage}
                 alt={copy("serviceImageAlt")}
               />
               <span className="services-image-caption">{copy("serviceImageCaption")}</span>

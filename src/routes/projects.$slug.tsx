@@ -280,7 +280,6 @@ function ProjectDetailPage() {
                     <span className="section-eyebrow">{copy("socialEyebrow")}</span>
                     <h2>{copy("socialTitle")}</h2>
                   </div>
-                  <span className="social-sample-note">{copy("metricsNote")}</span>
                 </div>
 
                 <div className="social-post-grid">

@@ -319,38 +319,40 @@ function ProjectsPage() {
 
                   return (
                     <article className="projects-video-card" key={`${project.slug}-${index}`}>
-                      {isExternalProjectLink(projectLink) ? (
-                        <a
-                          className="projects-reel-project-link"
-                          href={projectLink}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {copy("openProject")}
-                          <ArrowUpRight aria-hidden="true" />
-                        </a>
-                      ) : (
-                        <Link
-                          className="projects-reel-project-link"
-                          to="/projects/$slug"
-                          params={{ slug: project.slug }}
-                        >
-                          {copy("openProject")}
-                          <ArrowUpRight aria-hidden="true" />
-                        </Link>
-                      )}
-                      {resolveVideoEmbed(src) ? (
-                        <iframe
-                          src={resolveVideoEmbed(src) ?? undefined}
-                          title={`${title || "Project video"} ${index + 1}`}
-                          loading="lazy"
-                          referrerPolicy="strict-origin-when-cross-origin"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          allowFullScreen
-                        />
-                      ) : (
-                        <video src={src} controls playsInline preload="metadata" />
-                      )}
+                      <div className="projects-video-frame">
+                        {resolveVideoEmbed(src) ? (
+                          <iframe
+                            src={resolveVideoEmbed(src) ?? undefined}
+                            title={`${title || "Project video"} ${index + 1}`}
+                            loading="lazy"
+                            referrerPolicy="strict-origin-when-cross-origin"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <video src={src} controls playsInline preload="metadata" />
+                        )}
+                        {isExternalProjectLink(projectLink) ? (
+                          <a
+                            className="projects-reel-project-link"
+                            href={projectLink}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {copy("openProject")}
+                            <ArrowUpRight aria-hidden="true" />
+                          </a>
+                        ) : (
+                          <Link
+                            className="projects-reel-project-link"
+                            to="/projects/$slug"
+                            params={{ slug: project.slug }}
+                          >
+                            {copy("openProject")}
+                            <ArrowUpRight aria-hidden="true" />
+                          </Link>
+                        )}
+                      </div>
                       {(title || description) && (
                         <div className="projects-video-copy">
                           {title && <h2>{title}</h2>}

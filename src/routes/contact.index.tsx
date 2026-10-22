@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownLeft } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import worldMap from "@/assets/bg-2-e496b57f-842e-4cf1-8733-ba70e093aea4.png";
+import contactHeroImage from "@/assets/viralzoom-contact-us-realistic.png";
 import { ShowcaseContact, ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { canonicalUrl } from "@/lib/seo";
@@ -101,7 +102,11 @@ function ContactPage() {
       />
       <main>
         <section className="contact-page-hero" aria-labelledby="contact-page-title">
-          <img className="contact-page-hero-image" src={copy("heroImage")} alt={copy("heroAlt")} />
+          <img
+            className="contact-page-hero-image"
+            src={contactHeroImage}
+            alt={copy("heroAlt")}
+          />
           <div className="contact-page-hero-shade" />
           <div className="contact-page-hero-content">
             <p className="section-eyebrow">{copy("heroEyebrow")}</p>

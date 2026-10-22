@@ -7,6 +7,7 @@ import type { Language, SectionId } from "@/components/showcase/types";
 import { canonicalUrl } from "@/lib/seo";
 import { getPageCopy, useCMS } from "@/lib/cms";
 import { loadSiteConfig } from "@/lib/cms-loader";
+import serviceHeroImage from "@/assets/service.png";
 
 export const Route = createFileRoute("/services/")({
   component: ServicesPage,
@@ -116,7 +117,11 @@ function ServicesPage() {
       />
       <main>
         <section className="services-page-hero" aria-labelledby="services-page-title">
-          <img className="services-page-hero-image" src={copy("heroImage")} alt={copy("heroAlt")} />
+          <img
+            className="services-page-hero-image"
+            src={serviceHeroImage}
+            alt={copy("heroAlt")}
+          />
           <div className="services-page-hero-shade" />
           <div className="services-page-hero-content">
             <p className="services-page-hero-eyebrow">{copy("heroEyebrow")}</p>

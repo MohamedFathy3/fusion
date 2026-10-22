@@ -15,6 +15,7 @@ import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import { canonicalUrl } from "@/lib/seo";
 import { getPageCopy, useCMS } from "@/lib/cms";
 import { loadSiteConfig } from "@/lib/cms-loader";
+import aboutHeroImage from "@/assets/about.png";
 export const Route = createFileRoute("/about/")({
   component: AboutPage,
   loader: async () => ({ siteConfig: await loadSiteConfig() }),
@@ -123,7 +124,7 @@ function AboutPage() {
               </a>
             </div>
             <div className="about-hero-art">
-              <img src={copy("heroImage")} alt={copy("heroImageAlt")} />
+              <img src={aboutHeroImage} alt={copy("heroImageAlt")} />
               <span className="about-hero-art-caption">{copy("heroCaption")}</span>
               <span className="about-hero-art-stamp" aria-hidden="true">
                 VZ
