@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useRouterState,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
@@ -15,6 +16,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CMSProvider } from "../lib/cms";
 import { loadSiteConfig } from "../lib/cms-loader";
+import fusionLogo from "../assets/logo.png";
+import { ShowcaseWhatsApp } from "../components/showcase/showcase-whatsapp";
 
 function NotFoundComponent() {
   return (
@@ -81,8 +84,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "application-name", content: "ViralZoom" },
-      { property: "og:site_name", content: "ViralZoom" },
+      { name: "application-name", content: "Fusion X.tech" },
+      { property: "og:site_name", content: "Fusion X.tech" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -91,9 +94,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon", sizes: "64x64" },
-      { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "64x64" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" },
+      { rel: "icon", href: fusionLogo, type: "image/png" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -115,7 +120,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html:
-              'try { document.documentElement.classList.toggle("dark", localStorage.getItem("viral-zoom-theme") !== "light"); } catch { document.documentElement.classList.add("dark"); }',
+              'try { document.documentElement.classList.toggle("dark", localStorage.getItem("fusionxtech-theme") !== "light"); } catch { document.documentElement.classList.add("dark"); }',
           }}
         />
         <HeadContent />
@@ -131,6 +136,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { siteConfig } = Route.useLoaderData();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -150,6 +156,7 @@ function RootComponent() {
       <CMSProvider serverConfig={siteConfig}>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        {!pathname.startsWith("/admin") && <ShowcaseWhatsApp />}
       </CMSProvider>
     </QueryClientProvider>
   );

@@ -13,6 +13,17 @@ import {
 import { getPageCopy, initialConfig, mergeSiteConfig, projectItemsFromConfig } from "@/lib/cms";
 import { canonicalUrl } from "@/lib/seo";
 import { resolveVideoEmbed } from "@/lib/video";
+import { getWhatsAppHref } from "@/lib/whatsapp";
+
+const projectFixture = {
+  id: "test-project",
+  name: { en: "Test project", ar: "مشروع تجريبي" },
+  description: { en: "Test description", ar: "وصف تجريبي" },
+  image: "",
+  enabled: true,
+  projectKind: "case-study" as const,
+  projectCategory: "branding" as const,
+};
 
 // Match routes without running loaders or rendering: loaders may need a server or
 // network the test run lacks, and jsdom never loads the stylesheets React waits on.
@@ -31,16 +42,42 @@ describe("App routing", () => {
   it("provides bilingual CMS copy for each public page", () => {
     const config = mergeSiteConfig(initialConfig);
 
-    expect(config.content.pages.home.seoTitle).toEqual({ en: "ViralZoom", ar: "ViralZoom" });
-    expect(config.contact.email).toBe("info@viralzoom.agency");
-    expect(config.contact.phone).toBe("01222291024");
-    expect(getPageCopy(config, "about", "heroTitle", "en")).toBe("We turn bold ideas");
-    expect(getPageCopy(config, "about", "heroTitle", "ar")).toBe("نحوّل الأفكار");
-    expect(getPageCopy(config, "services", "heroTitle", "en")).toBe("Services that");
-    expect(getPageCopy(config, "projects", "heroTitle", "ar")).toBe(
-      "كل مشروع في محفظتنا الإبداعية.",
-    );
+    expect(config.content.pages.home.seoTitle).toEqual({
+      en: "Fusion X.tech",
+      ar: "Fusion X.tech",
+    });
+    expect(config.contact.email).toBe("");
+    expect(config.contact.phone).toBe("01064621943");
+    expect(config.hero.video).toContain("Software_company_hero_video");
+    expect(config.hero.poster).toContain("Websites");
+    expect(getPageCopy(config, "about", "heroTitle", "en")).toBe("Technology that");
+    expect(getPageCopy(config, "about", "heroTitle", "ar")).toBe("تقنية");
+    expect(getPageCopy(config, "services", "heroTitle", "en")).toBe("Technology for");
+    expect(getPageCopy(config, "projects", "heroTitle", "ar")).toBe("منتجات رقمية");
     expect(getPageCopy(config, "contact", "heroTitle", "en")).toBe("Let's talk");
+  });
+
+  it("publishes imported website and UI/UX projects with client logos by default", () => {
+    const defaultProjects = projectItemsFromConfig(initialConfig.portfolio);
+
+    expect(initialConfig.sections.portfolio).toBe(true);
+    expect(initialConfig.sections.clients).toBe(true);
+    expect(defaultProjects).toHaveLength(31);
+    expect(defaultProjects.filter((project) => project.category === "websites")).toHaveLength(25);
+    expect(defaultProjects.filter((project) => project.category === "ui-ux")).toHaveLength(6);
+    expect(defaultProjects.every((project) => project.kind === "external")).toBe(true);
+    expect(defaultProjects.every((project) => project.image.startsWith("https://"))).toBe(true);
+    expect(initialConfig.clients).toHaveLength(20);
+    expect(initialConfig.clients.every((client) => client.image.startsWith("https://"))).toBe(true);
+  });
+
+  it("builds WhatsApp links from international and Egyptian local numbers", () => {
+    expect(getWhatsAppHref("01064621943")).toBe("https://wa.me/201064621943");
+    expect(getWhatsAppHref("+966 50 123 4567")).toBe("https://wa.me/966501234567");
+    expect(getWhatsAppHref("https://wa.me/201064621943")).toBe("https://wa.me/201064621943");
+    expect(getWhatsAppHref("")).toBeNull();
+    expect(getWhatsAppHref("123")).toBeNull();
+    expect(getWhatsAppHref("https://example.com")).toBeNull();
   });
 
   it("matches a page for / instead of falling back to not found", () => {
@@ -57,11 +94,12 @@ describe("App routing", () => {
     expect(router.matchRoutes("/admin").at(-1)?.routeId).toBe("/admin");
   });
 
-  it("matches the about, contact, services and projects indexes and their server-renderable detail routes", () => {
+  it("matches the about, contact, ERP, services and projects routes", () => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
 
     expect(router.matchRoutes("/about").at(-1)?.routeId).toBe("/about/");
     expect(router.matchRoutes("/contact").at(-1)?.routeId).toBe("/contact/");
+    expect(router.matchRoutes("/erp").at(-1)?.routeId).toBe("/erp");
     expect(router.matchRoutes("/services").at(-1)?.routeId).toBe("/services/");
     expect(router.matchRoutes("/services/seo").at(-1)?.routeId).toBe("/services/$slug");
     expect(router.matchRoutes("/projects").at(-1)?.routeId).toBe("/projects/");
@@ -84,7 +122,7 @@ describe("App routing", () => {
   it("excludes video production projects from the all projects filter", () => {
     const videoProject = projectItemsFromConfig([
       {
-        ...initialConfig.portfolio[0]!,
+        ...projectFixture,
         id: "video-all-filter-test",
         projectCategory: "video",
       },
@@ -97,21 +135,23 @@ describe("App routing", () => {
 
     expect(allCategoryProjects.some((project) => projectHasCategory(project, "video"))).toBe(false);
     expect(videoCategoryProjects.length).toBeGreaterThan(0);
-    expect(videoCategoryProjects.every((project) => projectHasCategory(project, "video"))).toBe(true);
+    expect(videoCategoryProjects.every((project) => projectHasCategory(project, "video"))).toBe(
+      true,
+    );
     expect(allCategoryProjects.length + videoCategoryProjects.length).toBe(allProjects.length);
   });
 
   it("identifies video media URLs without excluding image URLs", () => {
     expect(isVideoMediaUrl("/media/video/reel.mp4")).toBe(true);
     expect(isVideoMediaUrl("https://cdn.example.com/reel.webm?token=123")).toBe(true);
-    expect(isVideoMediaUrl("blob:https://viralzoom.tech/video-id")).toBe(true);
+    expect(isVideoMediaUrl("blob:https://fusionteck.online/video-id")).toBe(true);
     expect(isVideoMediaUrl("/media/portfolio/project.webp")).toBe(false);
     expect(isVideoMediaUrl("https://cdn.example.com/client-logo.svg")).toBe(false);
   });
 
   it("supports multiple Reels and Promo videos per video-production project", () => {
     const item = {
-      ...initialConfig.portfolio[0]!,
+      ...projectFixture,
       id: "video-showcase-test",
       link: "https://example.com/project",
       projectCategory: "video" as const,
@@ -152,15 +192,14 @@ describe("App routing", () => {
     expect(project.socialMediaShowcase.communityGrowth.length).toBeGreaterThan(0);
   });
 
-  it("uses the verified viralzoom.tech origin for canonical URLs", () => {
+  it("uses fusionteck.online for canonical URLs", () => {
     expect(canonicalUrl("/services/website-design")).toBe(
-      "https://viralzoom.tech/services/website-design",
+      "https://fusionteck.online/services/website-design",
     );
   });
 
   it("does not publish dashboard duplicate-copy records in the public project list", () => {
-    const original = initialConfig.portfolio[0];
-    if (!original) throw new Error("Expected an initial portfolio project");
+    const original = projectFixture;
     const copy = {
       ...original,
       id: "duplicate-copy-test",

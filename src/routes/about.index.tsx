@@ -15,7 +15,7 @@ import { ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import { canonicalUrl } from "@/lib/seo";
 import { getPageCopy, useCMS } from "@/lib/cms";
 import { loadSiteConfig } from "@/lib/cms-loader";
-import aboutHeroImage from "@/assets/about.png";
+import aboutHeroImage from "@/assets/fusionxtech-about-section.webp";
 export const Route = createFileRoute("/about/")({
   component: AboutPage,
   loader: async () => ({ siteConfig: await loadSiteConfig() }),
@@ -47,8 +47,8 @@ function AboutPage() {
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
-      setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
+      setDarkMode(localStorage.getItem("fusionxtech-theme") !== "light");
+      setLanguage(localStorage.getItem("fusionxtech-language") === "ar" ? "ar" : "en");
     } catch {
       // Keep the default language and dark mode when storage is unavailable.
     }
@@ -72,7 +72,7 @@ function AboutPage() {
     const next = !darkMode;
     setDarkMode(next);
     try {
-      localStorage.setItem("viral-zoom-theme", next ? "dark" : "light");
+      localStorage.setItem("fusionxtech-theme", next ? "dark" : "light");
     } catch {
       // The switch still works without storage.
     }
@@ -82,7 +82,7 @@ function AboutPage() {
     const next = ar ? "en" : "ar";
     setLanguage(next);
     try {
-      localStorage.setItem("viral-zoom-language", next);
+      localStorage.setItem("fusionxtech-language", next);
     } catch {
       // The switch still works without storage.
     }
@@ -127,9 +127,9 @@ function AboutPage() {
               <img src={aboutHeroImage} alt={copy("heroImageAlt")} />
               <span className="about-hero-art-caption">{copy("heroCaption")}</span>
               <span className="about-hero-art-stamp" aria-hidden="true">
-                VZ
+                FX
                 <br />
-                STUDIO
+                TECH
               </span>
             </div>
           </div>
@@ -143,13 +143,13 @@ function AboutPage() {
           <div className="section-inner about-story-inner">
             <div className="about-story-label">
               <span className="section-eyebrow">{copy("storyEyebrow")}</span>
-              <span className="about-story-index">01 / VZ</span>
+              <span className="about-story-index">01 / FX</span>
             </div>
             <div className="about-story-copy">
               <h2 id="about-story-title">{copy("storyTitle")}</h2>
               <p>{copy("storyParagraph1")}</p>
               <p>{copy("storyParagraph2")}</p>
-              <Link className="about-inline-link" to="/projects">
+              <Link className="about-inline-link" to="/" hash="contact">
                 {copy("storyCta")}
                 {ar ? <ArrowLeft aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
               </Link>

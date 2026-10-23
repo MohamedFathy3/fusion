@@ -1,14 +1,12 @@
 import { createHmac, randomBytes, timingSafeEqual, randomUUID } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { basename, extname, resolve, sep } from "node:path";
+import { dirname, extname, resolve, sep } from "node:path";
 import { env } from "node:process";
-import { createTransport } from "nodemailer";
 import { initialConfig, type EditableItem, type SiteConfig } from "@/lib/cms";
 
 const DATA_DIR = resolve(env["DATA_DIR"] || "data");
-const LEGACY_CONTENT_FILE = resolve(DATA_DIR, "site-content.json");
 const UPLOADS_DIR = resolve(DATA_DIR, "uploads");
 const COOKIE_NAME = "vz_admin";
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
@@ -86,132 +84,16 @@ function requireAdmin(request: Request) {
   return sameOrigin(request) && hasSession(request);
 }
 
-function localAssetPath(filename: string): string | null {
-  if (filename === "viral-zoom-logo.png") return "/media/viral-zoom-logo.svg";
-  if (filename === "viral-zoom-logo-white.png") return "/media/viral-zoom-logo-white.svg";
-  if (filename === "viral-zoom-hero.mp4") return "/media/video/social-campaign-reel.mp4";
-  if (filename === "viral-zoom-hero.webm") return "/media/video/social-campaign-reel.webm";
-  if (filename === "viral-zoom-poster.jpg") return "/media/video/social-campaign-poster.jpg";
-  const client = /^client-(\d+)\.jpg$/.exec(filename);
-  if (client) return `/media/clients/client-${client[1]}.svg`;
-  const portfolio = /^portfolio-(\d+)\.jpg$/.exec(filename);
-  if (portfolio) {
-    const index = Number(portfolio[1]);
-    if (index >= 0 && index < 6)
-      return `/media/campaign/social-${String(index + 1).padStart(2, "0")}.webp`;
-  }
-  const staticAssets: Record<string, string> = {
-    "social.jpg": "/media/campaign/social-07.webp",
-    "events.jpg": "/media/campaign/social-08.webp",
-    "animation.jpg": "/media/campaign/social-03.webp",
-    "printing.jpg": "/media/campaign/social-05.webp",
-    "seo.jpg": "/media/campaign/meta-sample-01.webp",
-    "video.jpg": "/media/video/social-campaign-poster.jpg",
-    "website.jpg": "/media/campaign/social-02.webp",
-  };
-  return staticAssets[filename] ?? null;
-}
-
-function rewriteLegacyMedia(value: unknown): { value: unknown; changed: boolean } {
-  if (typeof value === "string") {
-    const legacy = value.startsWith("/__l5e/assets-v1/") ? localAssetPath(basename(value)) : null;
-    if (legacy) return { value: legacy, changed: true };
-    const starPlus = /^https:\/\/starplus\.agency\/storage\/images\/portfolios\/([\w.-]+)$/.exec(
-      value,
-    );
-    if (starPlus) return { value: `/media/portfolio/${starPlus[1]}`, changed: true };
-    return { value, changed: false };
-  }
-  if (Array.isArray(value)) {
-    let changed = false;
-    const result = value.map((entry) => {
-      const rewritten = rewriteLegacyMedia(entry);
-      changed ||= rewritten.changed;
-      return rewritten.value;
-    });
-    return { value: result, changed };
-  }
-  if (value && typeof value === "object") {
-    let changed = false;
-    const result: Record<string, unknown> = {};
-    for (const [key, entry] of Object.entries(value)) {
-      const rewritten = rewriteLegacyMedia(entry);
-      changed ||= rewritten.changed;
-      result[key] = rewritten.value;
-    }
-    return { value: result, changed };
-  }
-  return { value, changed: false };
-}
-
-function migrateStoredMedia(document: ContentDocument): {
-  document: ContentDocument;
-  changed: boolean;
-} {
-  const rewritten = rewriteLegacyMedia(document) as { value: ContentDocument; changed: boolean };
-  const config = rewritten.value.config as unknown as Record<string, unknown>;
-  const portfolio = config["portfolio"];
-  let changed = rewritten.changed;
-  if (Array.isArray(portfolio)) {
-    const defaultSocialImages = [
-      "/media/campaign/social-01.webp",
-      "/media/campaign/social-02.webp",
-      "/media/campaign/social-03.webp",
-    ];
-    for (const entry of portfolio) {
-      if (!entry || typeof entry !== "object") continue;
-      const project = entry as Record<string, unknown>;
-      if (
-        project["slug"] !== "social-media-growth-concept" &&
-        project["id"] !== "social-media-growth-concept"
-      )
-        continue;
-      const showcase = project["socialMediaShowcase"];
-      if (!showcase || typeof showcase !== "object") continue;
-      const media = showcase as Record<string, unknown>;
-      const performanceImages = media["performanceImages"];
-      if (
-        Array.isArray(performanceImages) &&
-        performanceImages.length === defaultSocialImages.length &&
-        performanceImages.every((image, index) => image === defaultSocialImages[index])
-      ) {
-        media["performanceImages"] = [
-          "/media/campaign/meta-sample-01.webp",
-          "/media/campaign/meta-sample-02.webp",
-          "/media/campaign/meta-sample-03.webp",
-        ];
-        changed = true;
-      }
-    }
-  }
-  return { document: rewritten.value, changed };
-}
-
 async function getDatabase(): Promise<PrismaClient> {
   if (database) return database;
-  if (!env["DATABASE_URL"] && env["MYSQL_URL"]) {
-    env["DATABASE_URL"] = env["MYSQL_URL"];
-  }
-  if (!env["DATABASE_URL"]) {
-    const user = encodeURIComponent(env["MYSQL_USER"] || "root");
-    const password = encodeURIComponent(env["MYSQL_PASSWORD"] || "");
-    const host = env["MYSQL_HOST"] || "127.0.0.1";
-    const port = env["MYSQL_PORT"] || "3306";
-    const databaseName = encodeURIComponent(env["MYSQL_DATABASE"] || "viralzoom");
-    env["DATABASE_URL"] = `mysql://${user}:${password}@${host}:${port}/${databaseName}`;
-  }
-  const connectionUrl = env["DATABASE_URL"] || env["MYSQL_URL"];
-  const parsed = connectionUrl ? new URL(connectionUrl) : null;
-  const adapter = new PrismaMariaDb({
-    host: parsed?.hostname || env["MYSQL_HOST"] || "127.0.0.1",
-    port: Number(parsed?.port || env["MYSQL_PORT"] || 3306),
-    user: decodeURIComponent(parsed?.username || env["MYSQL_USER"] || "root"),
-    password: decodeURIComponent(parsed?.password || env["MYSQL_PASSWORD"] || ""),
-    database: decodeURIComponent(
-      parsed?.pathname.replace(/^\//, "") || env["MYSQL_DATABASE"] || "viralzoom",
-    ),
-    connectionLimit: Number(env["MYSQL_CONNECTION_LIMIT"] || 10),
-  });
+  const connectionUrl = env["DATABASE_URL"] || `file:${resolve(DATA_DIR, "fusionxtech.sqlite")}`;
+  if (!connectionUrl.startsWith("file:"))
+    throw new Error(
+      "DATABASE_URL must point to a SQLite file (use file:./data/fusionxtech.sqlite).",
+    );
+  await mkdir(DATA_DIR, { recursive: true });
+  await mkdir(dirname(resolve(connectionUrl.slice("file:".length))), { recursive: true });
+  const adapter = new PrismaBetterSqlite3({ url: connectionUrl });
   database = new PrismaClient({ adapter });
   return database;
 }
@@ -219,27 +101,18 @@ async function getDatabase(): Promise<PrismaClient> {
 async function loadConfigFromDatabase(): Promise<SiteConfig> {
   const db = await getDatabase();
   const settings = await db.siteSettings.findUnique({ where: { id: 1 } });
-  if (!settings) throw new Error("MySQL site settings are missing");
+  if (!settings) throw new Error("SQLite site settings are missing");
   const { brand, hero, sections, contact, content } = settings;
   if (![brand, hero, sections, contact, content].every((value) => typeof value === "string")) {
-    throw new Error("MySQL site settings have invalid values");
+    throw new Error("SQLite site settings have invalid values");
   }
   const itemRows = await db.contentItem.findMany({
     orderBy: [{ collection: "asc" }, { position: "asc" }, { itemId: "asc" }],
   });
   const parsedContact: unknown = JSON.parse(contact as string);
   if (!parsedContact || typeof parsedContact !== "object" || Array.isArray(parsedContact))
-    throw new Error("MySQL contact settings are invalid");
+    throw new Error("SQLite contact settings are invalid");
   const contactSettings = parsedContact as SiteConfig["contact"];
-  let contactChanged = false;
-  if (contactSettings.email === "info@viralzoom.com") {
-    contactSettings.email = "info@viralzoom.agency";
-    contactChanged = true;
-  }
-  if (!contactSettings.phone || contactSettings.phone === "01064621943") {
-    contactSettings.phone = "01222291024";
-    contactChanged = true;
-  }
   const config: SiteConfig = {
     brand: JSON.parse(brand as string),
     hero: JSON.parse(hero as string),
@@ -252,16 +125,10 @@ async function loadConfigFromDatabase(): Promise<SiteConfig> {
   };
   for (const item of itemRows) {
     const collection = collections[item.collection as CollectionName];
-    if (!collection) throw new Error(`Unknown MySQL content collection: ${item.collection}`);
+    if (!collection) throw new Error(`Unknown SQLite content collection: ${item.collection}`);
     (config[collection] as EditableItem[]).push(JSON.parse(item.content) as EditableItem);
   }
-  if (!validConfig(config)) throw new Error("MySQL site content is invalid");
-  if (contactChanged) {
-    await db.siteSettings.update({
-      where: { id: 1 },
-      data: { contact: JSON.stringify(contactSettings) },
-    });
-  }
+  if (!validConfig(config)) throw new Error("SQLite site content is invalid");
   return config;
 }
 
@@ -306,25 +173,26 @@ async function initializeStore() {
   await mkdir(UPLOADS_DIR, { recursive: true });
   const db = await getDatabase();
   const existing = await db.siteSettings.findUnique({ where: { id: 1 } });
-  if (existing) return;
-
-  let document: ContentDocument;
-  try {
-    const parsed = JSON.parse(await readFile(LEGACY_CONTENT_FILE, "utf8")) as ContentDocument;
-    if (!parsed || typeof parsed !== "object" || !validConfig(parsed.config))
-      throw new Error("Invalid content document");
-    const migrated = migrateStoredMedia(parsed);
-    document = {
-      config: {
-        ...migrated.document.config,
-        content: migrated.document.config.content ?? initialConfig.content,
-      },
-    };
-  } catch (error) {
-    if ((error as { code?: string }).code !== "ENOENT") throw error;
-    document = { config: initialConfig };
+  if (!existing) {
+    await persistStore({ config: initialConfig });
+    return;
   }
-  await persistStore(document);
+
+  const config = await loadConfigFromDatabase();
+  if ((config.content.showcaseSeedVersion ?? 0) >= 1) return;
+
+  const shouldSeedShowcase = config.portfolio.length === 0 && config.clients.length === 0;
+  await persistStore({
+    config: {
+      ...config,
+      sections: shouldSeedShowcase
+        ? { ...config.sections, portfolio: true, clients: true }
+        : config.sections,
+      portfolio: shouldSeedShowcase ? initialConfig.portfolio : config.portfolio,
+      clients: shouldSeedShowcase ? initialConfig.clients : config.clients,
+      content: { ...config.content, showcaseSeedVersion: 1 },
+    },
+  });
 }
 async function ensureStore(): Promise<ContentDocument> {
   if (!storeInitialization) {
@@ -405,7 +273,7 @@ const typeByExtension: Record<string, string> = {
 };
 
 function publicOrigin() {
-  const configured = env["PUBLIC_SITE_URL"]?.trim() || "https://viralzoom.tech";
+  const configured = env["PUBLIC_SITE_URL"]?.trim() || "https://fusionteck.online";
   try {
     const url = new URL(configured);
     return url.protocol === "https:" && url.pathname === "/" && !url.username && !url.password
@@ -471,7 +339,7 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
   }
   if (url.pathname === "/api/health" && method === "GET") {
     await ensureStore();
-    return json({ ok: true, runtime: "node", storage: "mysql" });
+    return json({ ok: true, runtime: "node", storage: "sqlite" });
   }
 
   if (url.pathname.startsWith("/uploads/")) {
@@ -519,8 +387,8 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
     if (!body || typeof body !== "object" || Array.isArray(body))
       return json({ error: "Invalid request" }, 400);
     const submission = body as Record<string, unknown>;
-    if (typeof submission["website"] === "string" && submission["website"].trim())
-      return json({ sent: true });
+    if (typeof submission["faxNumber"] === "string" && submission["faxNumber"].trim())
+      return json({ received: true });
 
     const { name, email, subject, message } = submission;
     if (
@@ -540,23 +408,6 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
       return json({ error: "Please check the contact form fields." }, 422);
     }
 
-    const smtpUser = env["SMTP_USER"]?.trim();
-    const smtpPassword = env["SMTP_PASSWORD"] || ':1P2VI!Dokugitf';
-    const host = env["SMTP_HOST"]?.trim() || "smtp.hostinger.com";
-    const port = Number(env["SMTP_PORT"] || 465);
-    const recipient = env["CONTACT_EMAIL"]?.trim() || "info@viralzoom.agency";
-    if (
-      !smtpUser ||
-      !smtpPassword ||
-      !host ||
-      !Number.isInteger(port) ||
-      port < 1 ||
-      port > 65535 ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)
-    ) {
-      return json({ error: "Contact email is not configured on the server." }, 503);
-    }
-
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const now = Date.now();
     const recent = contactAttempts.get(ip);
@@ -574,28 +425,55 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
         : { count: 1, expires: now + 10 * 60 * 1000 },
     );
 
-    try {
-      const transport = createTransport({
-        host,
-        port,
-        secure: port === 465,
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
-        auth: { user: smtpUser, pass: smtpPassword },
+    const db = await getDatabase();
+    await db.contactMessage.create({
+      data: {
+        name: name.trim(),
+        email: email.trim(),
+        subject: subject.trim() || "New message",
+        message: message.trim(),
+      },
+    });
+    return json({ received: true });
+  }
+
+  if (url.pathname === "/api/inbox") {
+    if (!requireAdmin(request)) return json({ error: "Unauthorized" }, 401);
+    if (method !== "GET") return json({ error: "Method not allowed" }, 405, { Allow: "GET" });
+    const db = await getDatabase();
+    const messages = await db.contactMessage.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 200,
+    });
+    return json(messages);
+  }
+
+  const inboxMessage = url.pathname.match(/^\/api\/inbox\/(\d+)$/);
+  if (inboxMessage) {
+    if (!requireAdmin(request)) return json({ error: "Unauthorized" }, 401);
+    const id = Number(inboxMessage[1]);
+    if (!Number.isSafeInteger(id) || id < 1) return json({ error: "Not found" }, 404);
+    const db = await getDatabase();
+    if (method === "PATCH") {
+      let body: unknown;
+      try {
+        body = await readJson(request, 8192);
+      } catch {
+        return json({ error: "Invalid request" }, 400);
+      }
+      if (!body || typeof body !== "object" || !("read" in body) || typeof body.read !== "boolean")
+        return json({ error: "Invalid read status" }, 422);
+      const result = await db.contactMessage.updateMany({
+        where: { id },
+        data: { read: body.read },
       });
-      await transport.sendMail({
-        from: smtpUser,
-        to: recipient,
-        replyTo: { name: name.trim(), address: email.trim() },
-        subject: `Website contact: ${subject.trim() || "New message"}`,
-        text: `Name: ${name.trim()}\nEmail: ${email.trim()}\n\n${message.trim()}`,
-      });
-      return json({ sent: true });
-    } catch (error) {
-      console.error("Contact email delivery failed:", error);
-      return json({ error: "Your message could not be delivered. Please try again later." }, 502);
+      return result.count ? json({ updated: id }) : json({ error: "Not found" }, 404);
     }
+    if (method === "DELETE") {
+      const result = await db.contactMessage.deleteMany({ where: { id } });
+      return result.count ? json({ deleted: id }) : json({ error: "Not found" }, 404);
+    }
+    return json({ error: "Method not allowed" }, 405, { Allow: "PATCH, DELETE" });
   }
 
   if (url.pathname === "/api/auth/session" && method === "GET") {

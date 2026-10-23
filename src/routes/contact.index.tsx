@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownLeft } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import worldMap from "@/assets/bg-2-e496b57f-842e-4cf1-8733-ba70e093aea4.png";
-import contactHeroImage from "@/assets/viralzoom-contact-us-realistic.png";
+import contactHeroImage from "@/assets/fusionxtech-contact-section.webp";
 import { ShowcaseContact, ShowcaseFooter, ShowcaseHeader } from "@/components/showcase";
 import type { Language, SectionId } from "@/components/showcase/types";
 import { canonicalUrl } from "@/lib/seo";
@@ -40,8 +40,8 @@ function ContactPage() {
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
-      setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
+      setDarkMode(localStorage.getItem("fusionxtech-theme") !== "light");
+      setLanguage(localStorage.getItem("fusionxtech-language") === "ar" ? "ar" : "en");
     } catch {
       // Keep the default language and dark mode when storage is unavailable.
     }
@@ -65,7 +65,7 @@ function ContactPage() {
     const next = !darkMode;
     setDarkMode(next);
     try {
-      localStorage.setItem("viral-zoom-theme", next ? "dark" : "light");
+      localStorage.setItem("fusionxtech-theme", next ? "dark" : "light");
     } catch {
       // The switch still works without storage.
     }
@@ -75,7 +75,7 @@ function ContactPage() {
     const next = ar ? "en" : "ar";
     setLanguage(next);
     try {
-      localStorage.setItem("viral-zoom-language", next);
+      localStorage.setItem("fusionxtech-language", next);
     } catch {
       // The switch still works without storage.
     }
@@ -102,11 +102,7 @@ function ContactPage() {
       />
       <main>
         <section className="contact-page-hero" aria-labelledby="contact-page-title">
-          <img
-            className="contact-page-hero-image"
-            src={contactHeroImage}
-            alt={copy("heroAlt")}
-          />
+          <img className="contact-page-hero-image" src={contactHeroImage} alt={copy("heroAlt")} />
           <div className="contact-page-hero-shade" />
           <div className="contact-page-hero-content">
             <p className="section-eyebrow">{copy("heroEyebrow")}</p>
@@ -122,7 +118,7 @@ function ContactPage() {
             </a>
           </div>
           <span className="contact-page-hero-index" aria-hidden="true">
-            VZ — 01
+            FX — 01
           </span>
         </section>
 
@@ -140,7 +136,7 @@ function ContactPage() {
               <p>{copy("mapDescription")}</p>
             </div>
             <span className="contact-map-mark" aria-hidden="true">
-              VZ
+              FX
               <ArrowDownLeft />
             </span>
             <span className="contact-map-coordinate" aria-hidden="true">

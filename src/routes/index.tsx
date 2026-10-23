@@ -16,7 +16,7 @@ import { useCMS } from "@/lib/cms";
 import { absoluteSiteAsset, canonicalUrl } from "@/lib/seo";
 import { loadSiteConfig } from "@/lib/cms-loader";
 
-const HOME_PAGE_TITLE = "ViralZoom";
+const HOME_PAGE_TITLE = "Fusion X.tech";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -84,8 +84,8 @@ function Index() {
     let nextDarkMode = true;
     let nextLanguage: Language = "en";
     try {
-      nextDarkMode = localStorage.getItem("viral-zoom-theme") !== "light";
-      nextLanguage = localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en";
+      nextDarkMode = localStorage.getItem("fusionxtech-theme") !== "light";
+      nextLanguage = localStorage.getItem("fusionxtech-language") === "ar" ? "ar" : "en";
     } catch {
       // Continue with English and light mode if browser storage is unavailable.
     }
@@ -110,7 +110,7 @@ function Index() {
     const next = !darkMode;
     setDarkMode(next);
     try {
-      localStorage.setItem("viral-zoom-theme", next ? "dark" : "light");
+      localStorage.setItem("fusionxtech-theme", next ? "dark" : "light");
     } catch {
       // The switch still works without storage.
     }
@@ -128,7 +128,7 @@ function Index() {
   if (!ready)
     return (
       <div className="cms-load-gate" role="status">
-        <strong className="cms-load-brand">VZ</strong>
+        <strong className="cms-load-brand">FX</strong>
         <span className="cms-load-spinner" aria-hidden="true" />
       </div>
     );
@@ -145,7 +145,7 @@ function Index() {
           const next = ar ? "en" : "ar";
           setLanguage(next);
           try {
-            localStorage.setItem("viral-zoom-language", next);
+            localStorage.setItem("fusionxtech-language", next);
           } catch {
             // The switch still works without storage.
           }

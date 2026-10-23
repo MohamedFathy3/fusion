@@ -1,13 +1,25 @@
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { execFileSync, spawn } from "node:child_process";
+import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { join, relative } from "node:path";
 import { createServer } from "node:net";
 import { randomUUID } from "node:crypto";
 
 const root = process.cwd();
-const dataDir = await mkdtemp(join(tmpdir(), "viral-zoom-api-"));
+await mkdir(join(root, "data"), { recursive: true });
+const dataDir = await mkdtemp(join(root, "data", "api-test-"));
+const databaseUrl = `file:${relative(root, join(dataDir, "nested", "db", "fusionxtech.sqlite")).replaceAll("\\", "/")}`;
+const databaseEnv = { ...process.env, DATABASE_URL: databaseUrl, DATA_DIR: dataDir };
+try {
+  execFileSync(process.execPath, [join(root, "scripts", "migrate-database.mjs")], {
+    cwd: root,
+    env: databaseEnv,
+    stdio: "inherit",
+  });
+} catch (error) {
+  await rm(dataDir, { recursive: true, force: true });
+  throw error;
+}
 const port = await new Promise((resolve, reject) => {
   const server = createServer();
   server.once("error", reject);
@@ -17,31 +29,39 @@ const port = await new Promise((resolve, reject) => {
   });
 });
 const password = `integration-${randomUUID()}-Strong!`;
-const server = spawn(process.execPath, [".output/server/index.mjs"], {
-  cwd: root,
-  env: {
-    ...process.env,
-    HOST: "127.0.0.1",
-    PORT: String(port),
-    NITRO_HOST: "127.0.0.1",
-    NITRO_PORT: String(port),
-    ADMIN_EMAIL: "admin@admin.com",
-    ADMIN_PASSWORD: password,
-    SESSION_SECRET: randomUUID() + randomUUID(),
-    DATA_DIR: dataDir,
-    MYSQL_URL: process.env.MYSQL_URL,
-    MYSQL_HOST: process.env.MYSQL_HOST,
-    MYSQL_PORT: process.env.MYSQL_PORT,
-    MYSQL_USER: process.env.MYSQL_USER,
-    MYSQL_PASSWORD: process.env.MYSQL_PASSWORD,
-    MYSQL_DATABASE: process.env.MYSQL_DATABASE,
-    PUBLIC_SITE_URL: "https://viralzoom-test.invalid",
-  },
-  stdio: ["ignore", "pipe", "pipe"],
-});
 let serverOutput = "";
-server.stdout.on("data", (data) => (serverOutput += data));
-server.stderr.on("data", (data) => (serverOutput += data));
+const sessionSecret = randomUUID() + randomUUID();
+function startServer() {
+  const child = spawn(process.execPath, [".output/server/index.mjs"], {
+    cwd: root,
+    env: {
+      ...process.env,
+      HOST: "127.0.0.1",
+      PORT: String(port),
+      NITRO_HOST: "127.0.0.1",
+      NITRO_PORT: String(port),
+      ADMIN_EMAIL: "admin@admin.com",
+      ADMIN_PASSWORD: password,
+      SESSION_SECRET: sessionSecret,
+      DATA_DIR: dataDir,
+      DATABASE_URL: databaseUrl,
+      PUBLIC_SITE_URL: "https://fusionteck-test.invalid",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  child.stdout.on("data", (data) => (serverOutput += data));
+  child.stderr.on("data", (data) => (serverOutput += data));
+  return child;
+}
+async function stopServer(child) {
+  child.kill("SIGTERM");
+  await new Promise((resolve) => {
+    if (child.exitCode !== null) return resolve();
+    child.once("exit", resolve);
+    setTimeout(resolve, 2_000).unref();
+  });
+}
+let server = startServer();
 const base = `http://127.0.0.1:${port}`;
 
 async function waitUntilReady() {
@@ -69,15 +89,48 @@ try {
   const health = await fetch(`${base}/api/health`).then((response) => response.json());
   assert.equal(health.ok, true);
   assert.equal(health.runtime, "node");
-  assert.equal(health.storage, "mysql");
+  assert.equal(health.storage, "sqlite");
 
   const publicConfig = await fetch(`${base}/api/site`).then((response) => response.json());
   assert.equal(
     publicConfig.sections.services,
-    false,
-    "Services should be hidden by default on the homepage",
+    true,
+    "Technology services should be shown on the homepage",
   );
-  assert.ok(publicConfig.portfolio.length > 0, "Public content should include published projects");
+  assert.equal(publicConfig.brand.name, "Fusion X.tech");
+  assert.equal(publicConfig.sections.portfolio, true);
+  assert.equal(publicConfig.sections.clients, true);
+  assert.equal(
+    publicConfig.portfolio.length,
+    31,
+    "Imported websites and UI/UX projects should be published",
+  );
+  assert.equal(
+    publicConfig.clients.length,
+    20,
+    "Verified project client logos should be published",
+  );
+  assert.equal(
+    publicConfig.portfolio.filter((project) => project.projectCategory === "websites").length,
+    25,
+  );
+  assert.equal(
+    publicConfig.portfolio.filter((project) => project.projectCategory === "ui-ux").length,
+    6,
+  );
+  const homePage = await fetch(base).then((response) => response.text());
+  assert.ok(homePage.includes("Fusion X.tech"), "Homepage should render the new brand");
+  assert.ok(!homePage.includes("Viral Zoom"), "Homepage should not contain the previous brand");
+  assert.ok(homePage.includes('type="video/mp4"'), "Homepage hero should render an MP4 video");
+  assert.ok(
+    !homePage.includes("whatsapp-float"),
+    "Floating WhatsApp button should be hidden without a number",
+  );
+  const servicePage = await fetch(`${base}/services/web-app-development`).then((response) =>
+    response.text(),
+  );
+  assert.ok(servicePage.includes("Websites &amp; Applications"));
+  assert.ok(servicePage.includes("Fusion X.tech"));
 
   const deniedWrite = await fetch(`${base}/api/site`, {
     method: "PUT",
@@ -100,7 +153,7 @@ try {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      origin: "https://viralzoom-test.invalid",
+      origin: "https://fusionteck-test.invalid",
     },
     body: JSON.stringify({ email: "admin@admin.com", password }),
   });
@@ -111,19 +164,54 @@ try {
   const adminConfig = await fetch(`${base}/api/site`, { headers: { cookie } }).then((response) =>
     response.json(),
   );
-  assert.ok(
-    adminConfig.portfolio.length >= publicConfig.portfolio.length,
-    "Admin should see the full project collection",
+  assert.equal(adminConfig.portfolio.length, 31, "Admin should see all imported projects");
+  assert.equal(adminConfig.clients.length, 20, "Admin should see all imported client logos");
+
+  const contact = await fetch(`${base}/api/contact`, {
+    method: "POST",
+    headers: { "content-type": "application/json", origin: base },
+    body: JSON.stringify({
+      name: "Integration Visitor",
+      email: "visitor@example.com",
+      subject: "Website project",
+      message: "Please contact me about a new site.",
+      website: "https://fusionteck.online/",
+    }),
+  });
+  await expectStatus(contact, 200, "Contact message receipt");
+  assert.deepEqual(await contact.json(), { received: true });
+  await expectStatus(await fetch(`${base}/api/inbox`), 401, "Unauthenticated inbox access");
+  const inbox = await fetch(`${base}/api/inbox`, { headers: { cookie } }).then((response) =>
+    response.json(),
   );
+  assert.equal(inbox.length, 1);
+  assert.equal(inbox[0].name, "Integration Visitor");
+  assert.equal(inbox[0].read, false);
+  const markRead = await fetch(`${base}/api/inbox/${inbox[0].id}`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json", cookie },
+    body: JSON.stringify({ read: true }),
+  });
+  await expectStatus(markRead, 200, "Mark inbox message as read");
+  const deleteMessage = await fetch(`${base}/api/inbox/${inbox[0].id}`, {
+    method: "DELETE",
+    headers: { cookie },
+  });
+  await expectStatus(deleteMessage, 200, "Delete inbox message");
+  const emptyInbox = await fetch(`${base}/api/inbox`, { headers: { cookie } }).then((response) =>
+    response.json(),
+  );
+  assert.equal(emptyInbox.length, 0, "Deleted inbox message should no longer be listed");
 
   const savedConfig = structuredClone(adminConfig);
   savedConfig.sections.services = true;
+  savedConfig.contact.whatsapp = "01064621943";
   const save = await fetch(`${base}/api/site`, {
     method: "PUT",
     headers: {
       "content-type": "application/json",
       cookie,
-      origin: "https://viralzoom-test.invalid",
+      origin: "https://fusionteck-test.invalid",
     },
     body: JSON.stringify({ config: savedConfig }),
   });
@@ -132,6 +220,11 @@ try {
     (response) => response.json(),
   );
   assert.equal(persistedConfig.sections.services, true, "CMS content should persist on the server");
+  const whatsappHomePage = await fetch(base).then((response) => response.text());
+  assert.ok(
+    whatsappHomePage.includes('href="https://wa.me/201064621943"'),
+    "A configured local WhatsApp number should render a working floating link",
+  );
 
   const project = {
     id: "integration-test-project",
@@ -170,19 +263,40 @@ try {
   assert.equal(media.headers.get("content-type"), "image/png");
 
   const sitemap = await fetch(`${base}/sitemap.xml`).then((response) => response.text());
-  assert.ok(sitemap.includes("https://viralzoom-test.invalid/projects/integration-test-project"));
+  assert.ok(sitemap.includes("https://fusionteck-test.invalid/projects/integration-test-project"));
   const robots = await fetch(`${base}/robots.txt`).then((response) => response.text());
   assert.ok(robots.includes("Disallow: /admin"));
 
+  const legacyConfig = structuredClone(persistedConfig);
+  legacyConfig.portfolio = [];
+  legacyConfig.clients = [];
+  legacyConfig.sections.portfolio = false;
+  legacyConfig.sections.clients = false;
+  legacyConfig.content.showcaseSeedVersion = 0;
+  const saveLegacyConfig = await fetch(`${base}/api/site`, {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+      cookie,
+      origin: "https://fusionteck-test.invalid",
+    },
+    body: JSON.stringify({ config: legacyConfig }),
+  });
+  await expectStatus(saveLegacyConfig, 200, "Legacy content fixture save");
+  await stopServer(server);
+  serverOutput = "";
+  server = startServer();
+  await waitUntilReady();
+  const migratedConfig = await fetch(`${base}/api/site`).then((response) => response.json());
+  assert.equal(migratedConfig.sections.portfolio, true);
+  assert.equal(migratedConfig.sections.clients, true);
+  assert.equal(migratedConfig.portfolio.length, 31, "Existing empty sites should receive defaults");
+  assert.equal(migratedConfig.clients.length, 20, "Existing sites should receive client logos");
+
   console.log(
-    "API integration passed: MySQL persistence, health, guest write protection, admin session, persisted CMS edits, project CRUD, media upload, dynamic sitemap and robots rules.",
+    "API integration passed: SQLite persistence, inbox receipt and access control, admin session, CMS edits, project CRUD, media upload, sitemap and robots rules.",
   );
 } finally {
-  server.kill("SIGTERM");
-  await new Promise((resolve) => {
-    if (server.exitCode !== null) return resolve();
-    server.once("exit", resolve);
-    setTimeout(resolve, 2_000).unref();
-  });
+  await stopServer(server);
   await rm(dataDir, { recursive: true, force: true });
 }

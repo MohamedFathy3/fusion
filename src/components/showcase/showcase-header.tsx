@@ -9,15 +9,16 @@ import { translate } from "./types";
 type Props = {
   language: Language;
   darkMode: boolean;
-  activeSection: SectionId | "about" | "contact";
+  activeSection: SectionId | "about" | "contact" | "erp";
   onNavigate: (id: SectionId) => void;
   onToggleTheme: () => void;
   onLanguageChange: () => void;
 };
 
-const navigation: { id: SectionId | "about"; key: string }[] = [
+const navigation: { id: SectionId | "about" | "erp"; key: string }[] = [
   { id: "home", key: "navHome" },
   { id: "about", key: "navAbout" },
+  { id: "erp", key: "Fusion X ERP" },
   { id: "contact", key: "navContact" },
   { id: "services", key: "navServices" },
   { id: "portfolio", key: "navProjects" },
@@ -48,7 +49,7 @@ export function ShowcaseHeader({
         <Button
           variant="ghost"
           className="h-auto justify-start p-0"
-          aria-label="Viral Zoom home"
+          aria-label={`${config.brand.name} home`}
           onClick={() => navigate("home")}
         >
           <img
@@ -58,37 +59,48 @@ export function ShowcaseHeader({
           />
         </Button>
         <nav className="desktop-nav" aria-label={t("Main navigation", "القائمة الرئيسية")}>
-          {navigation.map((item) =>
-            item.id === "about" ||
-            item.id === "contact" ||
-            item.id === "services" ||
-            item.id === "portfolio" ? (
-              <Link
-                to={
-                  item.id === "about"
-                    ? "/about"
-                    : item.id === "contact"
-                      ? "/contact"
-                      : item.id === "services"
-                        ? "/services"
-                        : "/projects"
-                }
-                key={item.id}
-                className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`}
-              >
-                {getPageCopy(config, "common", item.key, language)}
-              </Link>
-            ) : (
-              <Button
-                variant="ghost"
-                key={item.id}
-                className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`}
-                onClick={() => navigate(item.id as SectionId)}
-              >
-                {getPageCopy(config, "common", item.key, language)}
-              </Button>
-            ),
-          )}
+          {navigation
+            .filter((item) => {
+              if (item.id === "portfolio") return config.sections.portfolio;
+              if (item.id === "clients") return config.sections.clients;
+              return true;
+            })
+            .map((item) =>
+              item.id === "about" ||
+              item.id === "erp" ||
+              item.id === "contact" ||
+              item.id === "services" ||
+              item.id === "portfolio" ? (
+                <Link
+                  to={
+                    item.id === "about"
+                      ? "/about"
+                      : item.id === "erp"
+                        ? "/erp"
+                        : item.id === "contact"
+                          ? "/contact"
+                          : item.id === "services"
+                            ? "/services"
+                            : "/projects"
+                  }
+                  key={item.id}
+                  className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`}
+                >
+                  {item.id === "erp"
+                    ? t("Fusion X ERP", "Fusion X ERP")
+                    : getPageCopy(config, "common", item.key, language)}
+                </Link>
+              ) : (
+                <Button
+                  variant="ghost"
+                  key={item.id}
+                  className={`nav-item px-0 ${activeSection === item.id ? "active" : ""}`}
+                  onClick={() => navigate(item.id as SectionId)}
+                >
+                  {getPageCopy(config, "common", item.key, language)}
+                </Button>
+              ),
+            )}
         </nav>
         <div className="header-actions">
           <Button
@@ -131,6 +143,7 @@ export function ShowcaseHeader({
         <nav className="mobile-nav">
           {navigation.map((item) =>
             item.id === "about" ||
+            item.id === "erp" ||
             item.id === "contact" ||
             item.id === "services" ||
             item.id === "portfolio" ? (
@@ -138,17 +151,21 @@ export function ShowcaseHeader({
                 to={
                   item.id === "about"
                     ? "/about"
-                    : item.id === "contact"
-                      ? "/contact"
-                      : item.id === "services"
-                        ? "/services"
-                        : "/projects"
+                    : item.id === "erp"
+                      ? "/erp"
+                      : item.id === "contact"
+                        ? "/contact"
+                        : item.id === "services"
+                          ? "/services"
+                          : "/projects"
                 }
                 key={item.id}
                 className="mobile-nav-link"
                 onClick={() => setMenuOpen(false)}
               >
-                {getPageCopy(config, "common", item.key, language)}
+                {item.id === "erp"
+                  ? t("Fusion X ERP", "Fusion X ERP")
+                  : getPageCopy(config, "common", item.key, language)}
               </Link>
             ) : (
               <Button key={item.id} variant="ghost" onClick={() => navigate(item.id as SectionId)}>

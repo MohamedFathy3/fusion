@@ -30,16 +30,15 @@ export const Route = createFileRoute("/projects/$slug")({
   head: ({ loaderData }) => {
     const data = loaderData ?? { slug: "project", project: null };
     const title = data.project?.name ?? data.slug.replaceAll("-", " ");
-    const descriptionEn =
-      data.project?.description.en ?? "Creative and digital marketing project by Viral Zoom.";
-    const descriptionAr = data.project?.description.ar ?? "مشروع إبداعي وتسويقي من فايرال زوم.";
+    const descriptionEn = data.project?.description.en ?? "A digital product by Fusion X.tech.";
+    const descriptionAr = data.project?.description.ar ?? "منتج رقمي من Fusion X.tech.";
     const pageUrl = canonicalUrl(`/projects/${encodeURIComponent(data.slug)}`);
     return {
       links: [{ rel: "canonical", href: pageUrl }],
       meta: [
-        { title: `${title} — Viral Zoom Projects` },
+        { title: `${title} — Fusion X.tech Projects` },
         { name: "description", content: descriptionAr.slice(0, 160) },
-        { property: "og:title", content: `${title} — Viral Zoom` },
+        { property: "og:title", content: `${title} — Fusion X.tech` },
         { property: "og:url", content: pageUrl },
         { property: "og:description", content: descriptionEn.slice(0, 160) },
         ...(data.project
@@ -47,7 +46,7 @@ export const Route = createFileRoute("/projects/$slug")({
           : []),
         { property: "og:type", content: "article" },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: `${title} — Viral Zoom` },
+        { name: "twitter:title", content: `${title} — Fusion X.tech` },
         { name: "twitter:description", content: descriptionEn.slice(0, 160) },
         ...(data.project
           ? [{ name: "twitter:image", content: absoluteSiteAsset(data.project.image) }]
@@ -63,7 +62,7 @@ export const Route = createFileRoute("/projects/$slug")({
             name: title,
             description: descriptionEn,
             ...(data.project ? { image: data.project.image } : {}),
-            creator: { "@type": "Organization", name: "Viral Zoom" },
+            creator: { "@type": "Organization", name: "Fusion X.tech" },
           }),
         },
       ],
@@ -181,8 +180,8 @@ function ProjectDetailPage() {
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
-      setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
+      setDarkMode(localStorage.getItem("fusionxtech-theme") !== "light");
+      setLanguage(localStorage.getItem("fusionxtech-language") === "ar" ? "ar" : "en");
     } catch {
       // Keep the default language and dark mode when storage is unavailable.
     }
@@ -199,13 +198,13 @@ function ProjectDetailPage() {
   }, [language, ar]);
 
   useEffect(() => {
-    document.title = `${projectName} — Viral Zoom Projects`;
+    document.title = `${projectName} — Fusion X.tech Projects`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute("content", project.description[language].slice(0, 160));
     document
       .querySelector('meta[property="og:title"]')
-      ?.setAttribute("content", `${projectName} — Viral Zoom`);
+      ?.setAttribute("content", `${projectName} — Fusion X.tech`);
     document
       .querySelector('meta[property="og:description"]')
       ?.setAttribute("content", project.description[language].slice(0, 160));
@@ -215,7 +214,7 @@ function ProjectDetailPage() {
     const next = !darkMode;
     setDarkMode(next);
     try {
-      localStorage.setItem("viral-zoom-theme", next ? "dark" : "light");
+      localStorage.setItem("fusionxtech-theme", next ? "dark" : "light");
     } catch {
       // The switch still works without storage.
     }
@@ -229,7 +228,7 @@ function ProjectDetailPage() {
     const next = ar ? "en" : "ar";
     setLanguage(next);
     try {
-      localStorage.setItem("viral-zoom-language", next);
+      localStorage.setItem("fusionxtech-language", next);
     } catch {
       // The switch still works without storage.
     }

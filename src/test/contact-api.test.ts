@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { handleApiRequest } from "@/lib/server-api";
 
-const contactUrl = "https://viralzoom.tech/api/contact";
+const contactUrl = "https://fusionteck.online/api/contact";
 
-function contactRequest(payload: unknown, origin = "https://viralzoom.tech") {
+function contactRequest(payload: unknown, origin = "https://fusionteck.online") {
   return new Request(contactUrl, {
     method: "POST",
     headers: { origin, "content-type": "application/json" },
@@ -20,11 +20,11 @@ describe("Contact API", () => {
     expect(response?.status).toBe(403);
   });
 
-  it("accepts the honeypot response without sending email", async () => {
-    const response = await handleApiRequest(contactRequest({ website: "bot-filled-this" }));
+  it("accepts the honeypot response without storing a message", async () => {
+    const response = await handleApiRequest(contactRequest({ faxNumber: "bot-filled-this" }));
 
     expect(response?.status).toBe(200);
-    await expect(response?.json()).resolves.toEqual({ sent: true });
+    await expect(response?.json()).resolves.toEqual({ received: true });
   });
 
   it("rejects invalid email addresses", async () => {
@@ -38,27 +38,5 @@ describe("Contact API", () => {
     );
 
     expect(response?.status).toBe(422);
-  });
-
-  it("reports missing SMTP credentials instead of claiming delivery", async () => {
-    vi.stubEnv("SMTP_USER", "");
-    vi.stubEnv("SMTP_PASSWORD", "");
-    try {
-      const response = await handleApiRequest(
-        contactRequest({
-          name: "Visitor",
-          email: "visitor@example.com",
-          subject: "Project",
-          message: "Hello",
-        }),
-      );
-
-      expect(response?.status).toBe(503);
-      await expect(response?.json()).resolves.toEqual({
-        error: "Contact email is not configured on the server.",
-      });
-    } finally {
-      vi.unstubAllEnvs();
-    }
   });
 });

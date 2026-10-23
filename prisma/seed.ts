@@ -1,19 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
-const connectionUrl = process.env.DATABASE_URL || process.env.MYSQL_URL;
-const parsed = connectionUrl ? new URL(connectionUrl) : null;
-const adapter = new PrismaMariaDb({
-  host: parsed?.hostname || process.env.MYSQL_HOST || "127.0.0.1",
-  port: Number(parsed?.port || process.env.MYSQL_PORT || 3306),
-  user: decodeURIComponent(parsed?.username || process.env.MYSQL_USER || "root"),
-  password: decodeURIComponent(parsed?.password || process.env.MYSQL_PASSWORD || ""),
-  database: decodeURIComponent(
-    parsed?.pathname.replace(/^\//, "") || process.env.MYSQL_DATABASE || "viralzoom",
-  ),
-  connectionLimit: Number(process.env.MYSQL_CONNECTION_LIMIT || 10),
-});
+const connectionUrl = process.env.DATABASE_URL || "file:./data/fusionxtech.sqlite";
+const adapter = new PrismaBetterSqlite3({ url: connectionUrl });
 const prisma = new PrismaClient({ adapter });
 const contentPath =
   process.env.DEFAULT_CONTENT_FILE ||
@@ -77,7 +67,7 @@ try {
     await tx.contentItem.createMany({ data: rows });
   });
   console.log(
-    `Seeded MySQL with Prisma: ${config.services.length} services, ${config.portfolio.length} projects, ${config.clients.length} clients.`,
+    `Seeded SQLite with Prisma: ${config.services.length} services, ${config.portfolio.length} projects, ${config.clients.length} clients.`,
   );
 } finally {
   await prisma.$disconnect();

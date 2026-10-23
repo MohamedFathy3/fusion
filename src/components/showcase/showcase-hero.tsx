@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import hero from "@/assets/hero.mp4.asset.json";
 import heroWebm from "@/assets/hero.webm.asset.json";
 import whiteLogo from "@/assets/logo-white.png.asset.json";
-import poster from "@/assets/poster.jpg.asset.json";
+import defaultHeroVideo from "@/assets/Software_company_hero_video_crea…_20261023184930.mp4?url";
+import defaultHeroPoster from "@/assets/Websites & Applications Tech Workspace.png";
 import type { Language } from "./types";
 import { getPageCopy, useCMS } from "@/lib/cms";
 
@@ -13,6 +14,8 @@ export function ShowcaseHero({ language }: { language: Language }) {
   const [playing, setPlaying] = useState(true);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const videoSource = config.hero.video || defaultHeroVideo;
+  const posterSource = config.hero.poster || defaultHeroPoster;
 
   const toggleVideo = async () => {
     const video = videoRef.current;
@@ -36,20 +39,25 @@ export function ShowcaseHero({ language }: { language: Language }) {
       <h1 className="sr-only">
         {config.brand.name} — {config.hero.title[language]}
       </h1>
-      <video
-        ref={videoRef}
-        className="hero-video"
-        autoPlay
-        muted={muted}
-        loop
-        playsInline
-        poster={config.hero.poster || poster.url}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-      >
-        {config.hero.video === hero.url ? <source src={heroWebm.url} type="video/webm" /> : null}
-        <source src={config.hero.video || hero.url} type="video/mp4" />
-      </video>
+      {videoSource ? (
+        <video
+          ref={videoRef}
+          className="hero-video"
+          autoPlay
+          muted={muted}
+          loop
+          playsInline
+          preload="metadata"
+          poster={posterSource}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+        >
+          {videoSource === hero.url ? <source src={heroWebm.url} type="video/webm" /> : null}
+          <source src={videoSource} type="video/mp4" />
+        </video>
+      ) : (
+        <div className="hero-video hero-static" aria-hidden="true" />
+      )}
       <svg
         className="video-waves"
         viewBox="0 0 1440 180"

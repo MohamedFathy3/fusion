@@ -27,15 +27,15 @@ export const Route = createFileRoute("/services/$slug")({
   head: ({ loaderData }) => {
     const data = loaderData ?? { slug: "service", service: null };
     const title = data.service?.title.ar ?? data.slug;
-    const descriptionEn = data.service?.description.en ?? "Viral Zoom digital services.";
-    const descriptionAr = data.service?.description.ar ?? "خدمات فايرال زوم الرقمية.";
+    const descriptionEn = data.service?.description.en ?? "Fusion X.tech digital services.";
+    const descriptionAr = data.service?.description.ar ?? "خدمات Fusion X.tech الرقمية.";
     const pageUrl = canonicalUrl(`/services/${encodeURIComponent(data.slug)}`);
     return {
       links: [{ rel: "canonical", href: pageUrl }],
       meta: [
-        { title: `${title} | Viral Zoom` },
+        { title: `${title} | Fusion X.tech` },
         { name: "description", content: `${descriptionAr} ${descriptionEn}`.slice(0, 160) },
-        { property: "og:title", content: `${title} | Viral Zoom` },
+        { property: "og:title", content: `${title} | Fusion X.tech` },
         { property: "og:url", content: pageUrl },
         { property: "og:description", content: descriptionEn.slice(0, 160) },
         ...(data.service
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/services/$slug")({
           : []),
         { property: "og:type", content: "article" },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: `${title} | Viral Zoom` },
+        { name: "twitter:title", content: `${title} | Fusion X.tech` },
         { name: "twitter:description", content: descriptionAr.slice(0, 160) },
         ...(data.service
           ? [{ name: "twitter:image", content: absoluteSiteAsset(data.service.image) }]
@@ -59,7 +59,7 @@ export const Route = createFileRoute("/services/$slug")({
             name: data.service?.title.en ?? data.slug,
             description: descriptionEn,
             ...(data.service ? { image: data.service.image } : {}),
-            provider: { "@type": "Organization", name: "Viral Zoom" },
+            provider: { "@type": "Organization", name: "Fusion X.tech" },
           }),
         },
       ],
@@ -96,8 +96,8 @@ function ShowServicePage() {
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
-      setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
+      setDarkMode(localStorage.getItem("fusionxtech-theme") !== "light");
+      setLanguage(localStorage.getItem("fusionxtech-language") === "ar" ? "ar" : "en");
     } catch {
       // Keep the default language and dark mode when storage is unavailable.
     }
@@ -114,13 +114,13 @@ function ShowServicePage() {
   }, [language, ar]);
 
   useEffect(() => {
-    document.title = `${service.title.ar} | Viral Zoom`;
+    document.title = `${service.title.ar} | Fusion X.tech`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute("content", service.description.ar.slice(0, 160));
     document
       .querySelector('meta[property="og:title"]')
-      ?.setAttribute("content", `${service.title.ar} | Viral Zoom`);
+      ?.setAttribute("content", `${service.title.ar} | Fusion X.tech`);
     document
       .querySelector('meta[property="og:description"]')
       ?.setAttribute("content", service.description.ar.slice(0, 160));
@@ -130,7 +130,7 @@ function ShowServicePage() {
     const next = !darkMode;
     setDarkMode(next);
     try {
-      localStorage.setItem("viral-zoom-theme", next ? "dark" : "light");
+      localStorage.setItem("fusionxtech-theme", next ? "dark" : "light");
     } catch {
       // The switch still works without storage.
     }
@@ -175,7 +175,7 @@ function ShowServicePage() {
           const next = ar ? "en" : "ar";
           setLanguage(next);
           try {
-            localStorage.setItem("viral-zoom-language", next);
+            localStorage.setItem("fusionxtech-language", next);
           } catch {
             // The switch still works without storage.
           }

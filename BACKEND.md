@@ -1,102 +1,44 @@
-# Backend وتشغيل Oasis Web Design
+# تشغيل Fusion X.tech
 
-يقدّم backend بـ **Node.js** صفحات التطبيق وواجهات API من الأصل نفسه. محتوى CMS يُحفظ في **MySQL** داخل جدولي `site_settings` و`content_items`، والملفات المرفوعة في `DATA_DIR/uploads/`؛ لذلك يرى جميع الزوار التعديلات نفسها. لا تُخزّن بيانات المحتوى أو جلسة المدير في `localStorage`.
+الخادم مبني على Node.js ويقدم الموقع وواجهات API من الأصل نفسه. يستخدم Prisma مع SQLite، وتحفظ بيانات الموقع ورسائل التواصل في ملف قاعدة بيانات محلي. ملفات الرفع موجودة في `DATA_DIR/uploads/`.
 
-## إعداد MySQL وPrisma والبيانات الافتراضية
+## إعداد قاعدة البيانات
 
-1. أنشئ قاعدة البيانات من لوحة الاستضافة أولًا؛ المستخدم المشترك لا يحتاج ولا يملك عادة صلاحية `CREATE DATABASE`.
-
-2. انسخ `.env.example` إلى `.env` وضع بيانات الاتصال وكلمة مرور المدير. يجب أن يحتوي `.env` على `DATABASE_URL`، مثل:
-
-```env
-DATABASE_URL="mysql://viralzoom:PASSWORD@localhost:3306/viralzoom_oasis_web"
-```
-
-3. ثبّت الحزم وطبّق migrations:
+انسخ `.env.example` إلى `.env`، واضبط كلمة مرور الإدارة و`SESSION_SECRET` ثم نفّذ:
 
 ```bash
 npm ci
 npx prisma generate
-npx prisma migrate deploy
+npm run dev
 ```
 
-4. حمّل البيانات الافتراضية عبر Prisma:
+يطبّق `npm run dev` ترحيلات SQLite تلقائيًا وينشئ مجلد قاعدة البيانات عند الحاجة. المسار الافتراضي هو `data/fusionxtech.sqlite`، ويمكن تغييره عبر `DATABASE_URL` مثل `file:./data/fusionxtech.sqlite` أو `DATA_DIR`. لتطبيق الترحيلات يدويًا استخدم `npm run db:migrate`.
 
-```bash
-npx prisma db seed
-```
-
-في الاستضافة المشتركة، لا تستخدم `prisma migrate dev` على السيرفر. هذا الأمر مخصص للتطوير المحلي فقط.
-
-### الاستيراد من phpMyAdmin
-
-قاعدة البيانات التي يستخدمها الإعداد الافتراضي هي `viralzoom`. للاستيراد من phpMyAdmin:
-
-1. أنشئ أو اختر قاعدة `viralzoom`.
-2. من تبويب **Import**، ارفع `database/viralzoom_phpmyadmin_shared_host.sql` ثم نفّذ الاستيراد. هذا الملف لا ينشئ قاعدة البيانات أو يختارها تلقائيًا، ولذلك يعمل مع الاستضافات التي لا تسمح بذلك.
-3. على MySQL محلي بصلاحية إنشاء قواعد البيانات، يمكن بدلًا منه استيراد `database/viralzoom_phpmyadmin.sql`؛ فهو ينشئ ويختار قاعدة `viralzoom`.
-
-ملفا SQL ينشئان الجداول ويستوردان المحتوى الافتراضي، ويستبدلان محتوى `site_settings` و`content_items`. خذ نسخة احتياطية قبل الاستيراد إذا كانت القاعدة تحتوي على تعديلات تريد الاحتفاظ بها. ملفات الوسائط المرفوعة ليست ضمن قاعدة البيانات.
-
-إذا استوردت الجداول يدويًا وتريد تشغيل أوامر Prisma migrations بعد ذلك لأول مرة، سجّل الـ migration الحالية كـ baseline ثم تحقق:
-
-```bash
-npx prisma migrate resolve --applied 20261020142000_init_mysql
-npm run db:migrate
-```
-
-الطريقة القديمة ما زالت متاحة كخيار احتياطي:
-
-```bash
-mysql -u root -p < database/schema.sql
-```
-
-```bash
-mysql -u oasis_web -p oasis_web < database/seed.sql
-```
-
-أو استخدم سكربت MySQL القديم:
-
-```bash
-npm run db:seed:legacy
-```
-
-يمكن بدل المتغيرات المنفصلة استخدام `MYSQL_URL=mysql://user:password@host:3306/oasis_web`.
-
-يستخدم التطبيق Prisma Client مع MariaDB adapter. ويدعم أيضًا `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE` و`MYSQL_CONNECTION_LIMIT` كبديل متوافق؛ لكن أوامر Prisma تحتاج `DATABASE_URL`. يظل `database/default-site-content.json` نسخة البيانات الافتراضية القابلة لإعادة الـ seed.
-
-## تشغيل وبناء الإنتاج
+## الإنتاج والدومين
 
 ```bash
 npm ci
+npx prisma generate
 npm run build
 npm start
 ```
 
-الخادم يحتاج Node.js 22.5 أو أحدث. يجب أن تكون MySQL قاعدة مشتركة ودائمة، وأن يكون `DATA_DIR` على قرص دائم للوسائط المرفوعة. احتفظ بنسخة احتياطية من جداول MySQL ومجلد `uploads` معًا.
+يطبّق `npm start` الترحيلات المعلّقة تلقائيًا قبل بدء الخادم. استخدم Node.js 22.5 أو أحدث، واجعل ملف SQLite ومجلد `uploads` على تخزين دائم. SQLite مناسبة لخادم تطبيق واحد؛ لا تضع الملف على قرص مؤقت أو تشغّل عدة نسخ مستقلة من التطبيق على قواعد بيانات منفصلة. خذ نسخًا احتياطية من ملف القاعدة ومجلد الرفع معًا.
 
-### إرسال رسائل نموذج التواصل
+الدومين العام المعتمد في canonical وsitemap هو `https://fusionteck.online`. اضبط `PUBLIC_SITE_URL` بهذا العنوان في الاستضافة، ثم أضف سجلات DNS المطلوبة لدى مسجل الدومين لتوجيهه إلى مزود الاستضافة؛ تغيير الكود وحده لا يغيّر DNS.
 
-يستخدم نموذج التواصل SMTP لإرسال الرسائل إلى `CONTACT_EMAIL`. أضف إعدادات صندوق البريد في متغيرات بيئة الاستضافة، ولا تضع كلمة مرور البريد في Git:
+## لوحة التحكم والرسائل
 
-```env
-SMTP_HOST=smtp.hostinger.com
-SMTP_PORT=465
-SMTP_USER=info@viralzoom.agency
-SMTP_PASSWORD=كلمة-مرور-صندوق-البريد
-CONTACT_EMAIL=info@viralzoom.agency
-```
+لوحة الإدارة على `/admin`. عيّن `ADMIN_EMAIL` و`ADMIN_PASSWORD` و`SESSION_SECRET` بقيم آمنة في إعدادات بيئة الخادم، ولا تحفظ كلمات المرور في Git. رسائل نموذج التواصل تُسجل في SQLite وتظهر في تبويب **صندوق الرسائل** داخل لوحة التحكم، مع إمكانية تحديدها كمقروءة أو حذفها. لا يتطلب الموقع إعداد SMTP.
 
-`SMTP_USER` هو عنوان صندوق البريد الذي أُنشئ في Hostinger، وليس كلمة مرور حساب الاستضافة. المنفذ 465 يستخدم اتصال SSL/TLS. أعد تشغيل التطبيق بعد إضافة القيم.
+## واجهات API والاختبار
 
-لوحة الإدارة: `/admin`. استخدم البريد الموجود في `ADMIN_EMAIL` وكلمة المرور الموجودة في `ADMIN_PASSWORD`. لا تضع كلمة المرور أو `SESSION_SECRET` في Git.
-
-## API
-
-تبقى واجهات API نفسها: `/api/site`, `/api/services`, `/api/projects`, `/api/clients`, `/api/uploads`, `/api/auth/*`, `/api/health`, بالإضافة إلى sitemap وrobots الديناميكيين. كل عمليات القراءة العامة تعرض العناصر المنشورة فقط، بينما التعديل يتطلب جلسة المدير.
-
-لاختبار API الكامل، جهّز قاعدة MySQL اختبارية ثم شغّل:
+تشمل الواجهات `/api/site`, `/api/services`, `/api/projects`, `/api/clients`, `/api/contact`, `/api/inbox`, `/api/uploads`, `/api/auth/*` و`/api/health`، إضافة إلى sitemap وrobots الديناميكيين. القراءة العامة تعرض المحتوى المنشور فقط؛ وتحتاج إدارة الرسائل والمحتوى إلى جلسة مدير.
 
 ```bash
-npm run build && MYSQL_DATABASE=oasis_web_test npm run test:api
+npm test
+npm run build
+npm run test:api
 ```
+
+يجهّز اختبار API قاعدة SQLite مؤقتة، ويختبر حفظ رسائل التواصل وصلاحية الوصول إلى صندوق الوارد.

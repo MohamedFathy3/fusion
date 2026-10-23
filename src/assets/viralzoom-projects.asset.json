@@ -1,0 +1,532 @@
+{
+  "source": "https://viralzoom.tech/projects",
+  "projects": [
+    {
+      "id": "tlg-wsa-elite",
+      "name": {
+        "en": "TLG WSA Elite",
+        "ar": "TLG WSA Elite"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/BBBHXXM6IcoIs21zOYRBwK7mfCYiiuPrlv1RLdi7.jpg"
+      },
+      "url": "https://tlg.wsa-elite.com/",
+      "description": {
+        "en": "A platform for booking exhibition stands and sponsorships",
+        "ar": "منصة لحجز بارتشن المعارض وخدماتها."
+      }
+    },
+    {
+      "id": "wsa-pay",
+      "name": {
+        "en": "WSA Pay",
+        "ar": "WSA Pay"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/4V6DLpTberDCb4gFQuWtlK9XOfzAyHjc08BI9mFp.jpg"
+      },
+      "url": "https://wsapay.wsa-elite.com/",
+      "description": {
+        "en": "A secure platform for business payments and invoice settlements",
+        "ar": "منصة آمنة لإدارة المدفوعات وتسوية الفواتير بين الشركات"
+      }
+    },
+    {
+      "id": "dr-ahmed-hussein",
+      "name": {
+        "en": "Dr. Ahmed Hussein",
+        "ar": "Dr. Ahmed Hussein"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/Sbw2kZxwUxgxUV26JhbLOQZEU83MFPXM0q863OGA.png"
+      },
+      "url": "https://drahmedhusseinbio.com/",
+      "description": {
+        "en": "An online learning platform specializing in Arabic language courses for middle and high school students.",
+        "ar": "منصة تعليمية متخصصة في شرح اللغة العربية للمراحل الإعدادية والثانوية"
+      }
+    },
+    {
+      "id": "selim-farag-group",
+      "name": {
+        "en": "Selim Farag Group",
+        "ar": "Selim Farag Group"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/JE9JkAUu5OWzH0Xxdl67atWv1zwDFDSvaIpQ48xN.png"
+      },
+      "url": "https://selimfaraggroup.com/",
+      "description": {
+        "en": "مجموعة متخصصة في التطوير العقاري والإنشاءات والخدمات",
+        "ar": "مجموعة متخصصة في التطوير العقاري والإنشاءات والخدمات"
+      }
+    },
+    {
+      "id": "mahmoud-adel",
+      "name": {
+        "en": "Arabista",
+        "ar": "???????"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/uploads/5860c4d0-8f0e-41e8-bfe2-8b2eb5489693.png"
+      },
+      "url": "https://mrmahmoudadel.com/",
+      "description": {
+        "en": "An online learning platform specializing in Arabic language courses for middle and high school students.",
+        "ar": "منصة تعليمية متخصصة في شرح اللغة العربية للمراحل الإعدادية والثانوية"
+      }
+    },
+    {
+      "id": "oec-ksa",
+      "name": {
+        "en": "OEC KSA",
+        "ar": "OEC KSA"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/lCFV6KICtI7wt1SRD3kF6OoJUBcJtuht9dGsuWpU.png"
+      },
+      "url": "https://oec-ksa.com/",
+      "description": {
+        "en": "A company specializing in engineering development",
+        "ar": "شركة متخصصة في التطوير الهندسي"
+      }
+    },
+    {
+      "id": "cornerstone-marine",
+      "name": {
+        "en": "Cornerstone Marine",
+        "ar": "Cornerstone Marine"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/jc69xtXysr8IvbQh6pLMZAphKHTdkzVffSYGpsNa.jpg"
+      },
+      "url": "https://cornerstonemarine.com/",
+      "description": {
+        "en": "A company specializing in international shipping, sea and air freight, and customs clearance",
+        "ar": "شركة متخصصة في خدمات الشحن الدولي والنقل البحري والجوي والتخليص الجمركي"
+      }
+    },
+    {
+      "id": "wsa-elite",
+      "name": {
+        "en": "WSA Elite",
+        "ar": "WSA Elite"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/SVHwHIGNP5Gw7gavm7Qz3wVpWsWPtT9L1bTuuO30.jpg"
+      },
+      "url": "https://wsa-elite.com/",
+      "description": {
+        "en": "A global network connecting freight forwarders and logistics companies to build business partnerships.",
+        "ar": "شبكة عالمية لربط شركات الشحن والخدمات اللوجستية وتعزيز التعاون بينها"
+      }
+    },
+    {
+      "id": "iam-software-publishing",
+      "name": {
+        "en": "IAM Software Publishing",
+        "ar": "IAM Software Publishing"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/hygoYlcd9i8jVlEtzTcJm9iX4Iw4p7bB5AocokfP.png"
+      },
+      "url": "https://iamsoftwarepublishing.net/",
+      "description": {
+        "en": "A website project from the Star Plus portfolio.",
+        "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+      }
+    },
+    {
+      "id": "teachers-market",
+      "name": {
+        "en": "Teachers Market",
+        "ar": "Teachers Market"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/62g3gJbvhsFSRSJWXBXT32sEJUT3RrjM5NjjTYAJ.png"
+      },
+      "url": "https://teachersmarkettest.dentin.cloud/",
+      "description": {
+        "en": "A website project from the Star Plus portfolio.",
+        "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+      }
+    },
+    {
+      "id": "obour-house",
+      "name": {
+        "en": "Obour House",
+        "ar": "Obour House"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/jtjLubELcGhfcs8PieVEHTmTBc5gqX6MDrfu7zMm.png"
+      },
+      "url": "https://obourhouse.solunile.com/",
+      "description": {
+        "en": "An online platform for showcasing and managing real estate and housing services",
+        "ar": "منصة إلكترونية لعرض وإدارة العقارات والخدمات السكنية"
+      }
+    },
+    {
+      "id": "ln-federation",
+      "name": {
+        "en": "LN Federation",
+        "ar": "LN Federation"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/rZ47qNj7yfrhqMt4gtupV3ZDO37xtNd752oK0NeJ.png"
+      },
+      "url": "https://www.lnfederation.org/",
+      "description": {
+        "en": "A global federation uniting freight and logistics networks to strengthen collaboration and business opportunities.",
+        "ar": "اتحاد عالمي يجمع شبكات الشحن والخدمات اللوجستية لتعزيز التعاون وتوسيع فرص الأعمال"
+      }
+    },
+    {
+      "id": "wsa-events",
+      "name": {
+        "en": "WSA Events",
+        "ar": "WSA Events"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/ZN9nsumsExwsQSqX78rVuP55lRbXFP7sbxCe3erA.png"
+      },
+      "url": "https://events.wsa-network.com/",
+      "description": {
+        "en": "A platform for organizing and managing WSA global network events and conferences",
+        "ar": "منصة لتنظيم وإدارة فعاليات ومؤتمرات شبكة WSA العالمية"
+      }
+    },
+    {
+      "id": "raya-stu",
+      "name": {
+        "en": "Raya Stu",
+        "ar": "Raya Stu"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/zH2ZlbPBkFYrE2yesnGBaMeDhPuvF8TicYMwILwl.png"
+      },
+      "url": "https://rayastu.com/",
+      "description": {
+        "en": "An educational platform providing academic guidance and study support for students",
+        "ar": "منصة تعليمية متخصصة في تقديم خدمات الاستشارات والدعم الدراسي للطلاب"
+      }
+    },
+    {
+      "id": "team-hashash",
+      "name": {
+        "en": "Team Hashash",
+        "ar": "Team Hashash"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/bp63JCWhk3N0U1VLcYCsUs35WWrCprn70dGxUxdP.png"
+      },
+      "url": "https://www.teamhashash.com/",
+      "description": {
+        "en": "An academy specializing in kickboxing, fitness, and self-defense training",
+        "ar": "أكاديمية متخصصة في الكيك بوكسينج واللياقة البدنية والدفاع عن النفس"
+      }
+    },
+    {
+      "id": "4sw-app",
+      "name": {
+        "en": "4SW",
+        "ar": "4SW"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/RrCOflmTXwWmLeQ4w0xlqWLpjtNauxdxQkGxWVGo.png"
+      },
+      "url": "https://4sw.app/",
+      "description": {
+        "en": "An online marketplace for buying, selling, and swapping new and used products",
+        "ar": "منصة إلكترونية للبيع والشراء وتبديل المنتجات الجديدة والمستعملة"
+      }
+    },
+    {
+      "id": "saudi-qb",
+      "name": {
+        "en": "Saudi QB",
+        "ar": "Saudi QB"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/SOnhXSJ4DC9u5VXSAoMV9LQkcPz32hAnwNvjnbQq.png"
+      },
+      "url": "https://ar.saudiqb.com/",
+      "description": {
+        "en": "An investment company specializing in investment, business management, and startup development.",
+        "ar": "شركة استثمارية متخصصة في الاستثمار وإدارة الأعمال ودعم الشركات الناشئة"
+      }
+    },
+    {
+      "id": "eve-gym",
+      "name": {
+        "en": "Eve Gym",
+        "ar": "Eve Gym"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/plInu3DTNiuV7DnAE1SvCwx3VXmSoSKZz6jqEr0U.png"
+      },
+      "url": "https://evegym.com/",
+      "description": {
+        "en": "Eve’s Gym is a women-only fitness center offering workouts, swimming classes, and wellness services.",
+        "ar": "إيفز جيم، مركز لياقة بدنية للسيدات يقدم تدريبات رياضية وسباحة وخدمات للياقة والصحة"
+      }
+    },
+    {
+      "id": "ta3limy",
+      "name": {
+        "en": "Ta3limy",
+        "ar": "Ta3limy"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/Ikjiycf6Ch3tfCuGx0WeJ6zpztCPddlv0XZK1s5E.png"
+      },
+      "url": "https://ta3limy.com/",
+      "description": {
+        "en": "A free learning platform offering skill development, school education, and entrepreneurship courses",
+        "ar": "منصة تعليمية مجانية تقدم دورات لتطوير المهارات والتعليم المدرسي وريادة الأعمال"
+      }
+    },
+    {
+      "id": "air-cairo",
+      "name": {
+        "en": "Air Cairo",
+        "ar": "Air Cairo"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/M85BzcZe2LK7BPyFyPq5yDxMEMk0e29RokfyI5Bd.jpg"
+      },
+      "url": "https://aircairo.com/en-eg/",
+      "description": {
+        "en": "Air Cairo is an Egyptian airline offering domestic and international flights at competitive fares",
+        "ar": "إير كايرو، شركة طيران مصرية تقدم رحلات داخلية ودولية بأسعار تنافسية"
+      }
+    },
+    {
+      "id": "fast-track-shipping",
+      "name": {
+        "en": "Fast Track Shipping",
+        "ar": "Fast Track Shipping"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/4JibBNE0y9y858DCakEeeRUxDFdG3Txtd04rWBed.jpg"
+      },
+      "url": "https://fast-track-shipping.com/",
+      "description": {
+        "en": "A company specializing in international shipping, sea and air freight, and customs clearance",
+        "ar": "شركة متخصصة في خدمات الشحن الدولي والنقل البحري والجوي والتخليص الجمركي"
+      }
+    },
+    {
+      "id": "branderaa",
+      "name": {
+        "en": "Branderaa",
+        "ar": "Branderaa"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/oyDDSyc9qmEXdElPv1lOMYMrU3kqjCCDa9TKIT5t.jpg"
+      },
+      "url": "https://branderaa.com/",
+      "description": {
+        "en": "A digital marketing agency specializing in social media management, branding, and website and app development.",
+        "ar": "شركة متخصصة في التسويق الإلكتروني، وإدارة السوشيال ميديا، وتصميم المواقع والتطبيقات"
+      }
+    },
+    {
+      "id": "tatweer-azat",
+      "name": {
+        "en": "Tatweer Azat",
+        "ar": "Tatweer Azat"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/VAP0ry4gkMD1btwqrNBOt0I5b7kNY5LJx8cW7nPL.jpg"
+      },
+      "url": "https://tatweerazat.com/",
+      "description": {
+        "en": "An international self-development academy offering training courses and consultations in personal development and mental health.",
+        "ar": "الأكاديمية الدولية لتطوير الذات، تقدم دورات تدريبية واستشارات في التنمية البشرية والصحة النفسية"
+      }
+    },
+    {
+      "id": "4eshopping",
+      "name": {
+        "en": "4eShopping",
+        "ar": "4eShopping"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/GTDEDC7QFKBpFKBz89qWfoZ1Key8jnB8Gkc0DTMi.jpg"
+      },
+      "url": "https://4eshopping.com/ar",
+      "description": {
+        "en": "An e-commerce platform for pharmaceutical and medical supplies distribution to pharmacies",
+        "ar": "منصة إلكترونية لشراء وتوزيع الأدوية والمستلزمات الطبية للصيدليات"
+      }
+    },
+    {
+      "id": "freight-gate",
+      "name": {
+        "en": "Freight Gate",
+        "ar": "Freight Gate"
+      },
+      "category": "websites",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/rSG9XPnqTMZXEBAWPgkTeJNHiFeZy8DlJXTYH7n4.jpg"
+      },
+      "url": "https://freight-gate.com/",
+      "description": {
+        "en": "A company specializing in international shipping, sea and air freight, and customs clearance",
+        "ar": "شركة متخصصة في خدمات الشحن الدولي والنقل البحري والجوي والتخليص الجمركي"
+      }
+    },
+    {
+      "id": "pharmacy-user-design",
+      "name": {
+        "en": "Pharmacy User",
+        "ar": "Pharmacy User"
+      },
+      "category": "ui-ux",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/kNalyfPZr3NFGmLfiSFXWiIeAOekzTtPhjhs6EYT.png"
+      },
+      "url": "https://www.figma.com/design/TTmBkPCiXNqQiE8ghCl135/pharmacy-user?node-id=0-1&p=f&t=838Jti4AMgUXlM1q-0",
+      "description": {
+        "en": "A UI/UX design project from the Star Plus portfolio.",
+        "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
+      }
+    },
+    {
+      "id": "travel-booking-design",
+      "name": {
+        "en": "Travel Booking",
+        "ar": "Travel Booking"
+      },
+      "category": "ui-ux",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/mVdgrumhnXYQkGpqOpMDb9RWd5QBXmvwpBYsdPJv.png"
+      },
+      "url": "https://www.figma.com/design/yhL47dglUPXzirAh1v8EuV/Travel-booking-project?node-id=0-1&p=f&t=EHxhNXWGEMuCuABm-0",
+      "description": {
+        "en": "A UI/UX design project from the Star Plus portfolio.",
+        "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
+      }
+    },
+    {
+      "id": "veterinary-design",
+      "name": {
+        "en": "Veterinary Design",
+        "ar": "Veterinary Design"
+      },
+      "category": "ui-ux",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/mjTgdIsB3aozkQLOGmP45I4zElztn31AFHEVF9Wn.png"
+      },
+      "url": "https://www.figma.com/design/WDgj13EozoQNxUZhrWl8qx/%D8%A8%D9%8A%D8%B7%D8%B1%D9%8A?node-id=4-1438&p=f&t=jjvaCKYnabCTcFDf-0",
+      "description": {
+        "en": "A UI/UX design project from the Star Plus portfolio.",
+        "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
+      }
+    },
+    {
+      "id": "nahla-design",
+      "name": {
+        "en": "Nahla Design",
+        "ar": "Nahla Design"
+      },
+      "category": "ui-ux",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/nPMPMlZRvOoSUNwYyrqHCFVbK0E9pkrf3fltGfWG.png"
+      },
+      "url": "https://www.figma.com/design/0sWM1dz55WFWOlBXII3N3p/%D9%86%D8%AD%D9%84%D8%A9?node-id=0-1&p=f&t=QcDbRp58PnAzsQci-0",
+      "description": {
+        "en": "A UI/UX design project from the Star Plus portfolio.",
+        "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
+      }
+    },
+    {
+      "id": "trendyol-design",
+      "name": {
+        "en": "Trendyol Design",
+        "ar": "Trendyol Design"
+      },
+      "category": "ui-ux",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/xoMq59jZO4LEfmRoQSGUpnE2fy1UxzLvY8bzOIlx.png"
+      },
+      "url": "https://www.figma.com/design/Nh2UsW9hJFYdJxdrfEI256/%D8%AA%D8%B1%D9%8A%D9%86%D8%AF%D9%8A%D9%88%D9%84?node-id=0-1&p=f&t=vmUtX1xm04HhxtAm-0",
+      "description": {
+        "en": "A UI/UX design project from the Star Plus portfolio.",
+        "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
+      }
+    },
+    {
+      "id": "socaliz-design",
+      "name": {
+        "en": "Socaliz Design",
+        "ar": "Socaliz Design"
+      },
+      "category": "ui-ux",
+      "image": {
+        "version": 1,
+        "url": "https://viralzoom.tech/media/portfolio/Wl9zca9Ts2HxgrwNkQpk6da4JQoaM3jsfL5UClRw.png"
+      },
+      "url": "https://www.figma.com/design/ZqegbGGSSQA5iBBoPWyKOA/socaliz_Last_version?node-id=0-1&p=f&t=CMgbPvGK4XoKm4Zk-0",
+      "description": {
+        "en": "A UI/UX design project from the Star Plus portfolio.",
+        "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
+      }
+    }
+  ]
+}

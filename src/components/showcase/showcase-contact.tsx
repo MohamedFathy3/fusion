@@ -4,12 +4,13 @@ import { useState } from "react";
 import worldMap from "@/assets/bg-2-e496b57f-842e-4cf1-8733-ba70e093aea4.png";
 import type { Language } from "./types";
 import { getPageCopy, useCMS } from "@/lib/cms";
+import { getWhatsAppHref } from "@/lib/whatsapp";
 
 export function ShowcaseContact({ language }: { language: Language }) {
   const { config } = useCMS();
   const [submission, setSubmission] = useState<"idle" | "sending" | "success" | "error">("idle");
-  const contactPhone =
-    config.contact.phone || getPageCopy(config, "contact", "phoneFallback", language);
+  const contactPhone = config.contact.phone;
+  const whatsappHref = getWhatsAppHref(config.contact.whatsapp);
   const copy = (key: string) => getPageCopy(config, "common", key, language);
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -27,12 +28,12 @@ export function ShowcaseContact({ language }: { language: Language }) {
           email: data.get("email"),
           subject: data.get("subject"),
           message: data.get("message"),
-          website: data.get("website"),
+          faxNumber: data.get("faxNumber"),
         }),
       });
-      const result = (await response.json()) as { sent?: boolean };
-      if (!response.ok || result.sent !== true)
-        throw new Error("Contact message could not be sent.");
+      const result = (await response.json()) as { received?: boolean };
+      if (!response.ok || result.received !== true)
+        throw new Error("Contact message could not be saved.");
       form.reset();
       setSubmission("success");
     } catch {
@@ -50,9 +51,11 @@ export function ShowcaseContact({ language }: { language: Language }) {
           <div className="contact-phone-icon">
             <Phone aria-hidden="true" />
           </div>
-          <a className="contact-phone" href={`tel:${contactPhone.replace(/[^\d+]/g, "")}`}>
-            {contactPhone}
-          </a>
+          {contactPhone && (
+            <a className="contact-phone" href={`tel:${contactPhone.replace(/[^\d+]/g, "")}`}>
+              {contactPhone}
+            </a>
+          )}
           <div className="contact-info-copy">
             <h3>
               {config.contact.address[language] ||
@@ -66,11 +69,11 @@ export function ShowcaseContact({ language }: { language: Language }) {
             ) : (
               copy("contactFallback")
             )}
-            {config.contact.whatsapp && (
+            {whatsappHref && (
               <>
                 {" "}
                 ·{" "}
-                <a href={config.contact.whatsapp} target="_blank" rel="noreferrer">
+                <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
                   {getPageCopy(config, "contact", "whatsapp", language)}
                 </a>
               </>
@@ -84,7 +87,7 @@ export function ShowcaseContact({ language }: { language: Language }) {
           <form className="contact-form" onSubmit={handleSubmit}>
             <input
               className="contact-field-honeypot"
-              name="website"
+              name="faxNumber"
               tabIndex={-1}
               autoComplete="off"
               aria-hidden="true"
@@ -147,11 +150,7 @@ export function ShowcaseContact({ language }: { language: Language }) {
                 ? getPageCopy(config, "common", "contactFormSending", language)
                 : copy("contactSubmit")}
             </button>
-            <p
-              className="contact-form-note contact-field-wide"
-              role="status"
-              aria-live="polite"
-            >
+            <p className="contact-form-note contact-field-wide" role="status" aria-live="polite">
               {submission === "success"
                 ? getPageCopy(config, "common", "contactFormSuccess", language)
                 : submission === "error"

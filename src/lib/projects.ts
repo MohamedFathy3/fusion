@@ -275,10 +275,7 @@ export function projectHasCategory(project: Project, categoryId: ProjectCategory
   );
 }
 
-export function filterProjectsByCategory(
-  items: Project[],
-  categoryId: ProjectCategoryId | "all",
-) {
+export function filterProjectsByCategory(items: Project[], categoryId: ProjectCategoryId | "all") {
   return items.filter((project) =>
     categoryId === "all"
       ? !projectHasCategory(project, "video")
@@ -289,7 +286,7 @@ export function filterProjectsByCategory(
 export function isVideoMediaUrl(url: string) {
   if (/^(?:blob:|data:video\/)/i.test(url)) return true;
   try {
-    return /\.(?:mp4|webm|mov|m4v)$/i.test(new URL(url, "https://viralzoom.tech").pathname);
+    return /\.(?:mp4|webm|mov|m4v)$/i.test(new URL(url, "https://fusionteck.online").pathname);
   } catch {
     return false;
   }

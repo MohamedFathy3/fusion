@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
   useEffect,
+  useCallback,
   useMemo,
   useState,
   type ChangeEvent,
@@ -22,6 +23,7 @@ import {
   FileText,
   Globe2,
   ImagePlus,
+  Inbox,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -53,13 +55,26 @@ import adminCss from "@/admin.css?url";
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
   head: () => ({
-    meta: [{ title: "Admin Studio — Viral Zoom" }, { name: "robots", content: "noindex,nofollow" }],
+    meta: [
+      { title: "Admin Studio — Fusion X.tech" },
+      { name: "robots", content: "noindex,nofollow" },
+    ],
     links: [{ rel: "stylesheet", href: adminCss }],
   }),
 });
 const ADMIN_EMAIL = "admin@admin.com";
 type Lang = "en" | "ar";
-type Section = "overview" | "home" | "pages" | "services" | "portfolio" | "clients" | "settings";
+type Section =
+  "overview" | "home" | "pages" | "services" | "portfolio" | "clients" | "inbox" | "settings";
+type ContactMessage = {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  createdAt: string;
+  read: boolean;
+};
 const labels: Record<
   Lang,
   Record<
@@ -150,6 +165,7 @@ const labels: Record<
     services: "Services",
     portfolio: "Portfolio",
     clients: "Clients",
+    inbox: "Inbox",
     settings: "Settings",
     signIn: "Sign in",
     dashboard: "Control room",
@@ -234,6 +250,7 @@ const labels: Record<
     services: "الخدمات",
     portfolio: "الأعمال",
     clients: "العملاء",
+    inbox: "صندوق الرسائل",
     settings: "الإعدادات",
     signIn: "تسجيل الدخول",
     dashboard: "لوحة التحكم",
@@ -319,6 +336,7 @@ const menuItems: { id: Section; icon: typeof LayoutDashboard }[] = [
   { id: "services", icon: Sparkles },
   { id: "portfolio", icon: ImagePlus },
   { id: "clients", icon: Users },
+  { id: "inbox", icon: Inbox },
   { id: "settings", icon: Settings2 },
 ];
 const pageContentGroups = [
@@ -353,8 +371,42 @@ function AdminPage() {
   );
   const [videoEditorType, setVideoEditorType] = useState<VideoProjectType>("reels");
   const [saved, setSaved] = useState(false);
+  const [inboxMessages, setInboxMessages] = useState<ContactMessage[]>([]);
+  const [inboxError, setInboxError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => setDraft(cms.config), [cms.config]);
+  const refreshInbox = useCallback(async () => {
+    const response = await fetch("/api/inbox", { credentials: "same-origin" });
+    const result = (await response.json()) as ContactMessage[] | { error?: string };
+    if (!response.ok || !Array.isArray(result))
+      throw new Error(!Array.isArray(result) ? result.error : "Could not load messages.");
+    setInboxMessages(result);
+    setInboxError("");
+  }, []);
+  const updateInboxMessage = async (message: ContactMessage, remove = false) => {
+    const response = await fetch(`/api/inbox/${message.id}`, {
+      method: remove ? "DELETE" : "PATCH",
+      credentials: "same-origin",
+      headers: remove ? undefined : { "content-type": "application/json" },
+      ...(remove ? {} : { body: JSON.stringify({ read: !message.read }) }),
+    });
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) throw new Error(result.error || "Could not update message.");
+    if (remove) {
+      setInboxMessages((messages) => messages.filter((item) => item.id !== message.id));
+    } else {
+      setInboxMessages((messages) =>
+        messages.map((item) => (item.id === message.id ? { ...item, read: !item.read } : item)),
+      );
+    }
+  };
+  useEffect(() => {
+    if (authed) {
+      void refreshInbox().catch((error: unknown) => {
+        setInboxError(error instanceof Error ? error.message : "Could not load messages.");
+      });
+    }
+  }, [authed, refreshInbox]);
   useEffect(() => {
     let mounted = true;
     fetch("/api/auth/session", { credentials: "same-origin" })
@@ -515,15 +567,15 @@ function AdminPage() {
     return (
       <div className="vz-login" dir={rtl ? "rtl" : "ltr"}>
         <div className="vz-login-visual">
-          <a href="/" className="vz-mark" aria-label="Viral Zoom">
-            <img src={draft.brand.whiteLogo || draft.brand.logo} alt="Viral Zoom" />
+          <a href="/" className="vz-mark" aria-label={draft.brand.name}>
+            <img src={draft.brand.whiteLogo || draft.brand.logo} alt={draft.brand.name} />
           </a>
           <div className="vz-visual-copy">
-            <span className="vz-kicker">CREATIVE × CONTROL</span>
+            <span className="vz-kicker">FUSION X.TECH · ADMIN</span>
             <img
               className="vz-login-logo"
               src={draft.brand.whiteLogo || draft.brand.logo}
-              alt="Viral Zoom"
+              alt={draft.brand.name}
             />
             <p>
               {lang === "ar"
@@ -540,7 +592,7 @@ function AdminPage() {
         <section className="vz-login-panel">
           <div className="vz-login-head">
             <a className="vz-wordmark" href="/">
-              <img src={draft.brand.logo} alt="Viral Zoom" />
+              <img src={draft.brand.logo} alt={draft.brand.name} />
             </a>
             <button className="vz-lang-button" onClick={() => setLang(rtl ? "en" : "ar")}>
               <Globe2 size={15} />
@@ -582,7 +634,7 @@ function AdminPage() {
             </div>
           </form>
           <div className="vz-login-bottom">
-            <span>© VIRAL ZOOM</span>
+            <span>© FUSION X.TECH</span>
             <a href="/">
               {t.back}
               <ArrowUpRight size={13} />
@@ -596,7 +648,7 @@ function AdminPage() {
     <aside className={`vz-sidebar${mobileOpen ? " is-open" : ""}`}>
       <div className="vz-sidebar-brand">
         <a className="vz-brand-lockup" href="/">
-          <img src={draft.brand.logo} alt="Viral Zoom" />
+          <img src={draft.brand.logo} alt={draft.brand.name} />
           <small>CONTROL STUDIO</small>
         </a>
         <button className="vz-mobile-close" onClick={() => setMobileOpen(false)}>
@@ -626,6 +678,9 @@ function AdminPage() {
             <Icon size={17} />
             <span>{t[id]}</span>
             {id === "services" && <em>{count.services}</em>}
+            {id === "inbox" && inboxMessages.filter((message) => !message.read).length > 0 && (
+              <em>{inboxMessages.filter((message) => !message.read).length}</em>
+            )}
           </button>
         ))}
       </nav>
@@ -1683,6 +1738,91 @@ function AdminPage() {
         {listEditor(editorGroup)}
       </>
     );
+  else if (section === "inbox")
+    body = (
+      <>
+        <PageIntro
+          eyebrow="05 / MESSAGES"
+          title={t.inbox}
+          desc={
+            lang === "ar"
+              ? "رسائل نموذج التواصل محفوظة هنا داخل لوحة التحكم."
+              : "Messages sent through the contact form are stored here."
+          }
+        />
+        {inboxError && <div className="vz-error">{inboxError}</div>}
+        {inboxMessages.length === 0 ? (
+          <div className="vz-panel vz-inbox-empty">
+            <Inbox size={28} />
+            <p>{lang === "ar" ? "لا توجد رسائل حتى الآن." : "No messages yet."}</p>
+          </div>
+        ) : (
+          <div className="vz-inbox-list">
+            {inboxMessages.map((message) => (
+              <article
+                className={`vz-panel vz-inbox-message${message.read ? "" : " unread"}`}
+                key={message.id}
+              >
+                <div className="vz-inbox-heading">
+                  <div>
+                    <span className="vz-overline">
+                      {new Date(message.createdAt).toLocaleString(lang === "ar" ? "ar-EG" : "en")}
+                    </span>
+                    <h3>{message.subject}</h3>
+                    <p>
+                      {message.name} · <a href={`mailto:${message.email}`}>{message.email}</a>
+                    </p>
+                  </div>
+                  <span className="vz-inbox-status">
+                    {message.read
+                      ? lang === "ar"
+                        ? "مقروءة"
+                        : "Read"
+                      : lang === "ar"
+                        ? "جديدة"
+                        : "New"}
+                  </span>
+                </div>
+                <p className="vz-inbox-body">{message.message}</p>
+                <div className="vz-inbox-actions">
+                  <button
+                    className="vz-outline-button"
+                    onClick={() =>
+                      void updateInboxMessage(message).catch((error: unknown) =>
+                        setInboxError(
+                          error instanceof Error ? error.message : "Could not update message.",
+                        ),
+                      )
+                    }
+                  >
+                    {message.read
+                      ? lang === "ar"
+                        ? "تحديد كغير مقروءة"
+                        : "Mark unread"
+                      : lang === "ar"
+                        ? "تحديد كمقروءة"
+                        : "Mark read"}
+                  </button>
+                  <button
+                    className="vz-reset-button"
+                    onClick={() =>
+                      void updateInboxMessage(message, true).catch((error: unknown) =>
+                        setInboxError(
+                          error instanceof Error ? error.message : "Could not delete message.",
+                        ),
+                      )
+                    }
+                  >
+                    <Trash2 size={15} />
+                    {t.delete}
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </>
+    );
   else
     body = (
       <>
@@ -1710,12 +1850,12 @@ function AdminPage() {
                 t.accent,
                 draft.brand.accent,
                 (v) => update("brand", { ...draft.brand, accent: v }),
-                "#69499e",
+                "#08bdf3",
               )}
               <div className="vz-colour-row">
                 <span style={{ background: draft.brand.accent }} />
-                <span>#69499E</span>
-                <small>VIRAL ZOOM · AMETHYST</small>
+                <span>#08BDF3</span>
+                <small>FUSION X.TECH · CYAN</small>
               </div>
               {mediaInput(t.logo, draft.brand.logo, (v) =>
                 update("brand", { ...draft.brand, logo: v }),
@@ -1754,7 +1894,7 @@ function AdminPage() {
                 t.whatsapp,
                 draft.contact.whatsapp,
                 (v) => update("contact", { ...draft.contact, whatsapp: v }),
-                "https://wa.me/…",
+                "+20 10 1234 5678",
               )}
               {bilingualFields(t.address, draft.contact.address, (v) =>
                 update("contact", { ...draft.contact, address: v }),
@@ -1830,7 +1970,7 @@ function AdminPage() {
           <div className="vz-content-top">
             {section === "overview" ? null : (
               <span className="vz-page-mark">
-                <img src={draft.brand.logo} alt="Viral Zoom" />
+                <img src={draft.brand.logo} alt={draft.brand.name} />
               </span>
             )}
             <div className="vz-header-save">
@@ -1856,7 +1996,7 @@ function AdminPage() {
           {body}
         </main>
         <footer className="vz-footer">
-          <img src={draft.brand.logo} alt="Viral Zoom" />
+          <img src={draft.brand.logo} alt={draft.brand.name} />
           <span>
             {t.mobile}
             <b> · </b>© 2025

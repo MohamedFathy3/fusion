@@ -1,0 +1,245 @@
+{
+  "source": "public website logos",
+  "clients": [
+    {
+      "id": "tlg-wsa-elite",
+      "name": {
+        "en": "TLG WSA Elite",
+        "ar": "TLG WSA Elite"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://tlg.wsa-elite.com/Logo%20(3).png"
+      },
+      "projectUrl": "https://tlg.wsa-elite.com/"
+    },
+    {
+      "id": "wsa-pay",
+      "name": {
+        "en": "WSA Pay",
+        "ar": "WSA Pay"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://wsapay.wsa-elite.com/WSAPAYLogo-03.png"
+      },
+      "projectUrl": "https://wsapay.wsa-elite.com/"
+    },
+    {
+      "id": "mahmoud-adel",
+      "name": {
+        "en": "Arabista",
+        "ar": "???????"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://api.web-lec.com/storage/media/files/al-shape-cb5f33d6-c280-4783-94d0-d63a859e65ef.png?w=250&q=60"
+      },
+      "projectUrl": "https://mrmahmoudadel.com/"
+    },
+    {
+      "id": "oec-ksa",
+      "name": {
+        "en": "OEC KSA",
+        "ar": "OEC KSA"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://oec-ksa.com/favicon.ico"
+      },
+      "projectUrl": "https://oec-ksa.com/"
+    },
+    {
+      "id": "cornerstone-marine",
+      "name": {
+        "en": "Cornerstone Marine",
+        "ar": "Cornerstone Marine"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://api.cornerstonemarine.com/storage/media/files/logo-8c8051c8-cc08-4ed3-8f0d-f673f284d60c.png"
+      },
+      "projectUrl": "https://cornerstonemarine.com/"
+    },
+    {
+      "id": "wsa-elite",
+      "name": {
+        "en": "WSA Elite",
+        "ar": "WSA Elite"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://api.wsa-network.com/storage/media/files/wsa-elite-logo-c1b115bd-925e-4c52-afc9-8dd784a2a9c6.png"
+      },
+      "projectUrl": "https://wsa-elite.com/"
+    },
+    {
+      "id": "iam-software-publishing",
+      "name": {
+        "en": "IAM Software Publishing",
+        "ar": "IAM Software Publishing"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://iamsoftwarepublishing.net/assets/images/logo.png"
+      },
+      "projectUrl": "https://iamsoftwarepublishing.net/"
+    },
+    {
+      "id": "teachers-market",
+      "name": {
+        "en": "Teachers Market",
+        "ar": "Teachers Market"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://teachersmarkettest.dentin.cloud/favicon.svg"
+      },
+      "projectUrl": "https://teachersmarkettest.dentin.cloud/"
+    },
+    {
+      "id": "ln-federation",
+      "name": {
+        "en": "LN Federation",
+        "ar": "LN Federation"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://apitest.lnfederation.com/storage/media/files/lnf-logo-dark-fec912fd-15ca-48c4-b9da-69378fb910bf.svg"
+      },
+      "projectUrl": "https://www.lnfederation.org/"
+    },
+    {
+      "id": "wsa-events",
+      "name": {
+        "en": "WSA Events",
+        "ar": "WSA Events"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://events.wsa-network.com/favicon.ico"
+      },
+      "projectUrl": "https://events.wsa-network.com/"
+    },
+    {
+      "id": "team-hashash",
+      "name": {
+        "en": "Team Hashash",
+        "ar": "Team Hashash"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://gymsofto.s3.us-east-2.amazonaws.com/images/thlogo2.png"
+      },
+      "projectUrl": "https://www.teamhashash.com/"
+    },
+    {
+      "id": "4sw-app",
+      "name": {
+        "en": "4SW",
+        "ar": "4SW"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://4sw.app/assets/img/4swapp-logo.svg?v=1.1.2"
+      },
+      "projectUrl": "https://4sw.app/"
+    },
+    {
+      "id": "eve-gym",
+      "name": {
+        "en": "Eve Gym",
+        "ar": "Eve Gym"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://evegym.com/wp-content/themes/evegym/assets/img/logo.png"
+      },
+      "projectUrl": "https://evegym.com/"
+    },
+    {
+      "id": "ta3limy",
+      "name": {
+        "en": "Ta3limy",
+        "ar": "Ta3limy"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://ta3limy.com/taleemy-logo-square.jpg"
+      },
+      "projectUrl": "https://ta3limy.com/"
+    },
+    {
+      "id": "air-cairo",
+      "name": {
+        "en": "Air Cairo",
+        "ar": "Air Cairo"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://www.google.com/s2/favicons?domain_url=https%3A%2F%2Faircairo.com&sz=128"
+      },
+      "projectUrl": "https://aircairo.com/en-eg/"
+    },
+    {
+      "id": "fast-track-shipping",
+      "name": {
+        "en": "Fast Track Shipping",
+        "ar": "Fast Track Shipping"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://fast-track-shipping.com/favicon.ico"
+      },
+      "projectUrl": "https://fast-track-shipping.com/"
+    },
+    {
+      "id": "branderaa",
+      "name": {
+        "en": "Branderaa",
+        "ar": "Branderaa"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://branderaa.com/assets/images/logo.png"
+      },
+      "projectUrl": "https://branderaa.com/"
+    },
+    {
+      "id": "tatweer-azat",
+      "name": {
+        "en": "Tatweer Azat",
+        "ar": "Tatweer Azat"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://tatweerazat.com/tatweer/images/logo.png"
+      },
+      "projectUrl": "https://tatweerazat.com/"
+    },
+    {
+      "id": "4eshopping",
+      "name": {
+        "en": "4eShopping",
+        "ar": "4eShopping"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://4eshopping.com/assets/images/1682604590logo%20Size%20Website-01.png"
+      },
+      "projectUrl": "https://4eshopping.com/ar"
+    },
+    {
+      "id": "freight-gate",
+      "name": {
+        "en": "Freight Gate",
+        "ar": "Freight Gate"
+      },
+      "image": {
+        "version": 1,
+        "url": "https://freight-gate.com/favicon.ico"
+      },
+      "projectUrl": "https://freight-gate.com/"
+    }
+  ]
+}

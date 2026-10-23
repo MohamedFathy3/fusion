@@ -1,12 +1,12 @@
-# Oasis Web Design
+# Fusion X.tech
 
-موقع Oasis Web Design ثنائي اللغة (عربي/إنجليزي) مع صفحات ديناميكية وCMS ولوحة إدارة على `/admin`.
+موقع ثنائي اللغة (العربية/الإنجليزية) لشركة Fusion X.tech، مع صفحات ديناميكية ونظام إدارة محتوى ولوحة تحكم على `/admin`. رسائل نموذج التواصل تُحفظ في صندوق الوارد داخل لوحة التحكم.
 
 ## التقنية
 
 - React + TanStack Start + Vite
 - Node.js backend من نفس الأصل
-- MySQL لتخزين إعدادات الموقع والخدمات والمشاريع والعملاء
+- SQLite عبر Prisma لتخزين إعدادات الموقع والخدمات والمشروعات ورسائل التواصل
 - رفع الوسائط إلى `DATA_DIR/uploads/`
 
 ## التشغيل السريع
@@ -14,9 +14,10 @@
 ```bash
 cp .env.example .env
 npm ci
-mysql -u root -p < database/schema.sql
-mysql -u oasis_web -p oasis_web < database/seed.sql
+npx prisma generate
 npm run dev
 ```
 
-تفاصيل إعداد الإنتاج موجودة في [`BACKEND.md`](./BACKEND.md). ملفات قاعدة البيانات الجاهزة موجودة في [`database/schema.sql`](./database/schema.sql) و[`database/default-site-content.json`](./database/default-site-content.json)، وسكربت تعبئة البيانات في [`scripts/seed-mysql.mjs`](./scripts/seed-mysql.mjs).
+يطبّق `npm run dev` ترحيلات SQLite تلقائيًا قبل تشغيل Vite، وينشئ مجلد قاعدة البيانات إذا لم يكن موجودًا. اضبط كلمة مرور الإدارة و`SESSION_SECRET` في `.env` قبل تشغيل الموقع. راجع [BACKEND.md](./BACKEND.md) لإعداد الإنتاج والدومين والنسخ الاحتياطي.
+
+قاعدة البيانات الافتراضية هي `data/fusionxtech.sqlite`. احفظها ومجلد `uploads` على تخزين دائم في الإنتاج.

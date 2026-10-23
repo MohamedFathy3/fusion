@@ -3,27 +3,40 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
 }
 
 model SiteSettings {
-  id       Int    @id @db.UnsignedTinyInt
-  brand    String @db.LongText
-  hero     String @db.LongText
-  sections String @db.LongText
-  contact  String @db.LongText
-  content  String @db.LongText
+  id       Int    @id
+  brand    String
+  hero     String
+  sections String
+  contact  String
+  content  String
 
   @@map("site_settings")
 }
 
 model ContentItem {
-  collection String @db.VarChar(32)
-  itemId     String @map("item_id") @db.VarChar(191)
+  collection String
+  itemId     String @map("item_id")
   position   Int
-  content    String @db.LongText
+  content    String
 
   @@id([collection, itemId])
   @@index([collection, position], map: "content_items_order")
   @@map("content_items")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now()) @map("created_at")
+  read      Boolean  @default(false)
+
+  @@index([createdAt])
+  @@map("contact_messages")
 }

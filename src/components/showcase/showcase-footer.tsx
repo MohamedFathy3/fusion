@@ -15,7 +15,7 @@ export function ShowcaseFooter({ language, logo, onBackToTop }: Props) {
   return (
     <footer className="site-footer">
       <div className="section-inner footer-inner">
-        <img className="footer-logo" src={logo} alt="Viral Zoom" />
+        <img className="footer-logo" src={logo} alt={config.brand.name} />
         <span>
           © 2026 {config.brand.name}. {getPageCopy(config, "common", "footerCopyright", language)}
         </span>

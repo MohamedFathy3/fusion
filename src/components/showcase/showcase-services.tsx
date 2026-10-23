@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import homeCardImage from "@/assets/viralzoom-home-card-replacement.png";
+import homeCardImage from "@/assets/hero_innovative.png";
 import { Button } from "@/components/ui/button";
 import { getPageCopy, useCMS } from "@/lib/cms";
 import type { Language } from "./types";
@@ -143,11 +143,11 @@ export function ShowcaseServices({ language }: { language: Language }) {
               <span className="services-image-caption">{copy("serviceImageCaption")}</span>
             </div>
             <div className="services-image-stamp" aria-hidden="true">
-              <span>VZ</span>
+              <span>FX</span>
               <span>
-                CREATIVE
+                TECH
                 <br />
-                STUDIO
+                SOLUTIONS
               </span>
             </div>
           </div>
@@ -215,7 +215,9 @@ export function ShowcaseServices({ language }: { language: Language }) {
               alt={service.name[language]}
               loading="lazy"
             />
-            <div className="service-number">{String(index + 1).padStart(2, "0")} / VIRAL ZOOM</div>
+            <div className="service-number">
+              {String(index + 1).padStart(2, "0")} / FUSION X.TECH
+            </div>
             <h3>{service.name[language]}</h3>
             <p>{service.description[language]}</p>
             <Button variant="link" className="service-more" asChild>

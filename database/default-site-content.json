@@ -1,483 +1,76 @@
 {
   "config": {
     "brand": {
-      "name": "Viral Zoom",
-      "accent": "#69499e",
-      "logo": "/media/viral-zoom-logo.svg",
-      "whiteLogo": "/media/viral-zoom-logo-white.svg"
+      "name": "Fusion X.tech",
+      "accent": "#08bdf3",
+      "logo": "/src/assets/logo.png",
+      "whiteLogo": "/src/assets/logo.png"
     },
     "hero": {
       "title": {
-        "en": "Creative & Digital Marketing",
-        "ar": "الإبداع والتسويق الرقمي"
+        "en": "Software & Digital Solutions",
+        "ar": "البرمجيات والحلول الرقمية"
       },
       "subtitle": {
-        "en": "Ideas that make your brand impossible to ignore.",
-        "ar": "أفكار تجعل علامتك التجارية مستحيلة التجاهل."
+        "en": "We build practical technology for ambitious businesses.",
+        "ar": "نبني حلولًا تقنية عملية للشركات الطموحة."
       },
-      "video": "/media/video/social-campaign-reel.mp4",
-      "poster": ""
+      "video": "/src/assets/Software_company_hero_video_crea%E2%80%A6_20261023184930.mp4",
+      "poster": "/src/assets/Websites%20&%20Applications%20Tech%20Workspace.png"
     },
     "sections": {
-      "services": false,
+      "services": true,
       "portfolio": true,
       "clients": true,
       "process": true,
-      "banner": true,
+      "banner": false,
       "contact": true
     },
     "services": [
       {
-        "id": "website-design",
+        "id": "web-app-development",
         "name": {
-          "en": "Website Design",
-          "ar": "تصميم مواقع إلكترونية"
+          "en": "Websites & Applications",
+          "ar": "المواقع والتطبيقات"
         },
         "description": {
-          "en": "Viral Zoom plans and designs fast, responsive business websites with clear navigation, accessible layouts and content tailored to your customers. We work from your goals and brand identity through launch, helping Egyptian and Arab businesses turn visits into enquiries.",
-          "ar": "تصمم فايرال زوم مواقع شركات سريعة ومتوافقة مع الجوال، بهيكل واضح ومحتوى يناسب جمهورك. نبدأ من أهداف نشاطك وهويته ونرافقك حتى الإطلاق، لمساعدة الشركات في مصر والمنطقة العربية على تحويل الزيارات إلى استفسارات."
+          "en": "We design and build fast, responsive websites and web applications around your customers and business workflows.",
+          "ar": "نصمم ونطور مواقع وتطبيقات ويب سريعة ومتوافقة مع كل الأجهزة، حسب احتياجات عملك وعملائك."
         },
-        "image": "/media/campaign/social-02.webp",
-        "link": "/services/website-design",
+        "image": "/src/assets/logo.png",
+        "link": "/services/web-app-development",
         "enabled": true
       },
       {
-        "id": "ecommerce-development",
+        "id": "software-solutions",
         "name": {
-          "en": "E-commerce Development",
-          "ar": "تطوير المتاجر الإلكترونية"
+          "en": "Custom Software Solutions",
+          "ar": "حلول برمجية مخصصة"
         },
         "description": {
-          "en": "We build online stores with mobile-first product pages, straightforward browsing and a checkout flow designed around your catalogue and operations. From store structure to launch, we help businesses in Egypt and the Arab region sell online with a consistent brand experience.",
-          "ar": "نطور متاجر إلكترونية بصفحات منتجات مناسبة للموبايل وتصفح واضح وخطوات شراء مبنية على طبيعة منتجاتك وتشغيلك. من تنظيم المتجر إلى إطلاقه، نساعد الشركات في مصر والمنطقة العربية على البيع أونلاين بتجربة متناسقة مع علامتها."
+          "en": "From internal tools to customer-facing platforms, we build software that makes everyday business operations simpler.",
+          "ar": "من أدوات إدارة العمل إلى المنصات الرقمية، نبني برمجيات تسهّل العمليات اليومية وتخدم أهداف شركتك."
         },
-        "image": "/media/campaign/social-02.webp",
-        "link": "/services/ecommerce-development",
+        "image": "/src/assets/logo.png",
+        "link": "/services/software-solutions",
         "enabled": true
       },
       {
-        "id": "digital-marketing",
+        "id": "technology-consulting",
         "name": {
-          "en": "Digital Marketing",
-          "ar": "التسويق الرقمي"
+          "en": "Technology Consulting",
+          "ar": "الاستشارات التقنية"
         },
         "description": {
-          "en": "Our digital marketing service connects content, social media, search and paid campaigns to business goals. We plan audience-focused activity, create useful brand content and use campaign reporting to identify what to improve for Egyptian, Saudi and wider Gulf audiences.",
-          "ar": "نربط في خدمة التسويق الرقمي بين المحتوى والسوشيال ميديا والبحث والإعلانات المدفوعة وبين أهداف النشاط التجاري. نخطط لحملات تناسب الجمهور وننتج محتوى مفيدًا ونتابع النتائج لتحسينها في مصر والسعودية وأسواق الخليج."
+          "en": "Get practical technical guidance to choose the right tools, plan integrations and move your digital projects forward.",
+          "ar": "نساعدك في اختيار الأدوات المناسبة وتخطيط التكاملات واتخاذ قرارات تقنية عملية لتطوير مشروعاتك الرقمية."
         },
-        "image": "/media/campaign/social-07.webp",
-        "link": "/services/digital-marketing",
-        "enabled": true
-      },
-      {
-        "id": "software-development",
-        "name": {
-          "en": "Software Development",
-          "ar": "تطوير البرمجيات"
-        },
-        "description": {
-          "en": "We design and develop custom web platforms and business software around real workflows, user needs and integration requirements. Viral Zoom supports teams from requirements and interface planning through implementation and launch for projects in Egypt and the Arab region.",
-          "ar": "نصمم ونطور منصات ويب وبرمجيات أعمال مخصصة حسب سير العمل واحتياجات المستخدم ومتطلبات التكامل. تدعم فايرال زوم الفرق من تحديد المتطلبات وتخطيط الواجهات إلى التنفيذ والإطلاق للمشروعات في مصر والمنطقة العربية."
-        },
-        "image": "/media/campaign/social-03.webp",
-        "link": "/services/software-development",
-        "enabled": true
-      },
-      {
-        "id": "printing",
-        "name": {
-          "en": "Printing",
-          "ar": "الطباعة"
-        },
-        "description": {
-          "en": "We offer premium printing services that bring your marketing materials to life with unmatched quality. From stunning brochures and posters to custom business cards and promotional products, our advanced printing techniques ensure vibrant, sharp, and professional results. We understand the power of well-crafted print to leave a lasting impression, and our team is committed to delivering materials that enhance your brand’s presence. Whether you're looking to captivate clients or boost brand awareness, our printing solutions are designed to make your message stand out.",
-          "ar": "نقدم خدمات طباعة عالية الجودة تمنح موادك التسويقية حضورًا مميزًا. من البروشورات والبوسترات إلى كروت الأعمال والمنتجات الدعائية، نهتم بكل تفصيلة لتصل رسالة علامتك التجارية بأفضل صورة."
-        },
-        "image": "/media/campaign/social-05.webp",
-        "link": "/services/printing",
-        "enabled": true
-      },
-      {
-        "id": "seo",
-        "name": {
-          "en": "SEO",
-          "ar": "تحسين محركات البحث"
-        },
-        "description": {
-          "en": "We specialize in expert SEO services designed to improve your website’s visibility and drive organic traffic. Our tailored strategies focus on optimizing your content, enhancing site performance, and building quality backlinks to help you rank higher on search engines. With our data-driven approach, we ensure your brand reaches the right audience at the right time. From keyword research to on-page optimization, our SEO solutions are crafted to deliver long-term results and boost your online presence, helping you stay ahead of the competition and grow your business.",
-          "ar": "نساعد موقعك على الظهور أمام الجمهور المناسب وزيادة الزيارات الطبيعية. نعمل على تحسين المحتوى وأداء الموقع، ودراسة الكلمات المفتاحية وبناء روابط قوية لتحقيق نتائج مستدامة."
-        },
-        "image": "/media/campaign/meta-sample-01.webp",
-        "link": "/services/seo",
-        "enabled": true
-      },
-      {
-        "id": "events-management",
-        "name": {
-          "en": "Events Management",
-          "ar": "إدارة الفعاليات"
-        },
-        "description": {
-          "en": "We offer expert event management services that turn your vision into a seamless, unforgettable experience. Whether it’s a corporate conference, product launch, or private celebration, our team handles every detail—planning, logistics, coordination, and execution—ensuring flawless events from start to finish. We focus on creating engaging, memorable experiences that align with your brand’s goals and leave a lasting impact on your audience. Let us take care of the details so you can focus on what matters most: connecting with your guests and achieving your event objectives.",
-          "ar": "نحوّل رؤيتك إلى تجربة متكاملة لا تُنسى. من المؤتمرات وإطلاق المنتجات إلى المناسبات الخاصة، نتولى التخطيط والتنظيم والتنسيق والتنفيذ، لتتفرغ للتواصل مع ضيوفك."
-        },
-        "image": "/media/campaign/social-08.webp",
-        "link": "/services/events-management",
-        "enabled": true
-      },
-      {
-        "id": "animation-video",
-        "name": {
-          "en": "Animation Video",
-          "ar": "فيديوهات الأنيميشن"
-        },
-        "description": {
-          "en": "We create captivating animation videos that bring your ideas to life in a visually engaging way. From explainer videos to promotional animations, our team blends creativity with storytelling to produce content that resonates with your audience. With dynamic visuals and compelling narratives, we craft animations that simplify complex messages and capture attention. Whether for social media, websites, or advertisements, our animation videos are designed to elevate your brand, boost engagement, and leave a lasting impression.",
-          "ar": "نحوّل أفكارك إلى فيديوهات أنيميشن جذابة تجمع الإبداع بالحكاية. نصنع فيديوهات توضيحية وإعلانية تبسّط الرسائل وتلفت الأنظار وتعزز تفاعل جمهورك مع علامتك التجارية."
-        },
-        "image": "/media/campaign/social-03.webp",
-        "link": "/services/animation-video",
-        "enabled": true
-      },
-      {
-        "id": "website-creation",
-        "name": {
-          "en": "Website Creation",
-          "ar": "تصميم المواقع"
-        },
-        "description": {
-          "en": "We specialize in creating stunning, user-friendly websites that not only look great but also drive results. Our team of designers and developers work closely with you to build a customized website that reflects your brand’s identity and meets your business goals. From responsive design to seamless functionality, we ensure your site provides an exceptional user experience across all devices. Whether you're looking for an e-commerce platform, a portfolio, or a corporate site, we deliver websites that engage visitors and convert them into loyal customers.",
-          "ar": "نصمم مواقع عصرية وسهلة الاستخدام تعكس هوية علامتك وتحقق أهدافك. من المتاجر الإلكترونية إلى مواقع الشركات ومعارض الأعمال، نقدم تجربة متكاملة على جميع الأجهزة."
-        },
-        "image": "/media/campaign/social-02.webp",
-        "link": "/services/website-creation",
-        "enabled": true
-      },
-      {
-        "id": "video-production",
-        "name": {
-          "en": "Video Production",
-          "ar": "إنتاج الفيديو"
-        },
-        "description": {
-          "en": "We turn ideas into video content that reflects your brand and connects with your audience.",
-          "ar": "نحول الأفكار إلى محتوى فيديو يعكس هوية علامتك التجارية ويصل إلى جمهورك."
-        },
-        "image": "/media/video/social-campaign-poster.jpg",
-        "link": "/services/video-production",
-        "enabled": true
-      },
-      {
-        "id": "social-media-management",
-        "name": {
-          "en": "Social Media Management",
-          "ar": "إدارة السوشيال ميديا"
-        },
-        "description": {
-          "en": "We provide expert social media management to help your brand thrive in today’s digital world. Our team creates tailored strategies that drive engagement, build community, and boost brand visibility across platforms like Instagram, Facebook, LinkedIn, and more. From content creation and scheduling to community management and analytics, we handle every aspect of your social media presence. With a data-driven approach and creative expertise, we ensure your brand stays relevant, connects with the right audience, and achieves measurable results.",
-          "ar": "نضع استراتيجيات مخصصة لحضور علامتك على إنستجرام وفيسبوك ولينكدإن وغيرها. من صناعة المحتوى وجدولته إلى إدارة المجتمع وتحليل النتائج، نهتم بكل تفاصيل حضورك الرقمي."
-        },
-        "image": "/media/campaign/social-07.webp",
-        "link": "/services/social-media-management",
-        "enabled": true
-      },
-      {
-        "id": "offline-marketing",
-        "name": {
-          "en": "Offline Marketing",
-          "ar": "التسويق الميداني"
-        },
-        "description": {
-          "en": "We believe in the power of offline marketing to create lasting, personal connections with your audience. From print advertisements and direct mail campaigns to event marketing and experiential activations, our team develops strategies that engage customers in the real world. We craft meaningful, memorable experiences that drive brand awareness and loyalty. By combining creative design with strategic planning, we help you reach your target audience through impactful, offline channels that complement your digital efforts and leave a tangible impression.",
-          "ar": "نصنع تواصلًا حقيقيًا مع جمهورك من خلال الإعلانات المطبوعة والفعاليات والتجارب الميدانية. نمزج التخطيط والإبداع لنقدم حملات ملموسة تدعم حضورك الرقمي وتبني ولاء العملاء."
-        },
-        "image": "/media/campaign/social-05.webp",
-        "link": "/services/offline-marketing",
-        "enabled": true
-      },
-      {
-        "id": "google-ads",
-        "name": {
-          "en": "Google Ads",
-          "ar": "إعلانات جوجل"
-        },
-        "description": {
-          "en": "We specialize in Google Ads campaigns that drive targeted traffic and generate measurable results. Our team optimizes every aspect of your campaign—from keyword research and ad creation to bid management and performance tracking. With a focus on maximizing ROI, we ensure your ads reach the right audience at the right time, whether you’re looking to increase website visits, drive conversions, or boost brand awareness. Let us help you leverage the power of Google Ads to grow your business and achieve your marketing goals.",
-          "ar": "نصمم حملات إعلانات جوجل التي تصل إلى الجمهور المناسب وتحقق نتائج قابلة للقياس. نهتم بالكلمات المفتاحية والإعلانات والميزانية ومتابعة الأداء لزيادة الزيارات والتحويلات."
-        },
-        "image": "/media/campaign/meta-sample-01.webp",
-        "link": "/services/google-ads",
-        "enabled": true
-      },
-      {
-        "id": "games-development",
-        "name": {
-          "en": "Games Development",
-          "ar": "تطوير الألعاب"
-        },
-        "description": {
-          "en": "We specialize in game development that blends creativity, technology, and innovation to deliver immersive and engaging experiences. Whether it's mobile games, interactive apps, or custom-branded games, our team of developers, designers, and storytellers work together to bring your vision to life. We focus on creating high-quality, visually captivating games that captivate your audience and keep them coming back for more. With a user-centric approach, we ensure each game is optimized for maximum engagement, providing both entertainment and value to your brand.",
-          "ar": "نمزج الإبداع والتكنولوجيا لصناعة ألعاب وتجارب تفاعلية ممتعة. نطور ألعاب الهاتف وتطبيقات تفاعلية وألعابًا مخصصة للعلامات التجارية، مع التركيز على جودة التصميم وتجربة المستخدم."
-        },
-        "image": "/media/campaign/social-03.webp",
-        "link": "/services/games-development",
+        "image": "/src/assets/logo.png",
+        "link": "/services/technology-consulting",
         "enabled": true
       }
     ],
     "portfolio": [
-      {
-        "id": "bio-derma-group",
-        "name": {
-          "en": "Bio Derma Group",
-          "ar": "Bio Derma Group"
-        },
-        "description": {
-          "en": "A visual identity project created to give Bio Derma Group a clear, consistent presence across its brand touchpoints.",
-          "ar": "مشروع هوية بصرية يمنح Bio Derma Group حضورًا واضحًا ومتناسقًا عبر مختلف نقاط التواصل مع الجمهور."
-        },
-        "image": "/media/campaign/social-01.webp",
-        "link": "/projects/bio-derma-group",
-        "enabled": true,
-        "projectCategory": "branding",
-        "projectKind": "case-study"
-      },
-      {
-        "id": "sarhan-obesity-clinic",
-        "name": {
-          "en": "DR. Mohamed Diaa Sarhan (Sarhan Obesity Clinic)",
-          "ar": "DR. Mohamed Diaa Sarhan (Sarhan Obesity Clinic)"
-        },
-        "description": {
-          "en": "A brand identity direction for Sarhan Obesity Clinic, designed to communicate a professional and recognizable healthcare brand.",
-          "ar": "تصميم هوية بصرية لعيادة د. محمد ضياء سرحان، تعكس صورة احترافية وسهلة التميّز للعلامة الطبية."
-        },
-        "image": "/media/campaign/social-02.webp",
-        "link": "/projects/sarhan-obesity-clinic",
-        "enabled": true,
-        "projectCategory": "branding",
-        "projectKind": "case-study"
-      },
-      {
-        "id": "egy-marks",
-        "name": {
-          "en": "Egy Marks",
-          "ar": "Egy Marks"
-        },
-        "description": {
-          "en": "A brand identity project for Egy Marks, bringing its visual language together in a distinctive and consistent presentation.",
-          "ar": "مشروع هوية بصرية لـ Egy Marks يجمع عناصر العلامة في تقديم مميز ومتناسق."
-        },
-        "image": "/media/campaign/social-03.webp",
-        "link": "/projects/egy-marks",
-        "enabled": true,
-        "projectCategory": "branding",
-        "projectKind": "case-study"
-      },
-      {
-        "id": "el-masia-pack",
-        "name": {
-          "en": "El Masia Pack",
-          "ar": "El Masia Pack"
-        },
-        "description": {
-          "en": "A visual identity project for El Masia Pack, built to help the brand present itself consistently across its materials.",
-          "ar": "مشروع هوية بصرية لـ El Masia Pack يساعد العلامة على الظهور بشكل متناسق عبر موادها المختلفة."
-        },
-        "image": "/media/campaign/social-04.webp",
-        "link": "/projects/el-masia-pack",
-        "enabled": true,
-        "projectCategory": "branding",
-        "projectKind": "case-study"
-      },
-      {
-        "id": "feedmix",
-        "name": {
-          "en": "Feedmix",
-          "ar": "Feedmix"
-        },
-        "description": {
-          "en": "A brand identity project for Feedmix, with a cohesive visual direction for its brand communications.",
-          "ar": "مشروع هوية بصرية لـ Feedmix مع توجه بصري متناسق للتواصل مع جمهور العلامة."
-        },
-        "image": "/media/campaign/social-05.webp",
-        "link": "/projects/feedmix",
-        "enabled": true,
-        "projectCategory": "branding",
-        "projectKind": "case-study"
-      },
-      {
-        "id": "el-fayrouz",
-        "name": {
-          "en": "El Fayrouz",
-          "ar": "El Fayrouz"
-        },
-        "description": {
-          "en": "A visual identity project for El Fayrouz, presenting the brand through a clear and unified look.",
-          "ar": "مشروع هوية بصرية لـ El Fayrouz يقدم العلامة بشكل واضح وموحّد."
-        },
-        "image": "/media/campaign/social-06.webp",
-        "link": "/projects/el-fayrouz",
-        "enabled": true,
-        "projectCategory": "branding",
-        "projectKind": "case-study"
-      },
-      {
-        "id": "social-media-growth-concept",
-        "name": {
-          "en": "Social Media Growth Concept",
-          "ar": "نمو السوشيال ميديا"
-        },
-        "description": {
-          "en": "A concept campaign combining a cohesive brand identity with platform-native social content. Performance figures are illustrative placeholders for this design preview.",
-          "ar": "حملة تجريبية تجمع بين هوية بصرية متناسقة ومحتوى مناسب لكل منصة. أرقام الأداء المعروضة افتراضية لمعاينة التصميم فقط."
-        },
-        "image": "/media/campaign/social-01.webp",
-        "link": "/projects/social-media-growth-concept",
-        "enabled": true,
-        "projectCategory": "social-media",
-        "additionalCategories": [
-          "branding"
-        ],
-        "projectKind": "case-study",
-        "socialMediaShowcase": {
-          "posts": [
-            {
-              "platform": "Instagram",
-              "title": {
-                "en": "Signature moments",
-                "ar": "لحظات مميزة"
-              },
-              "reach": "12.4K",
-              "image": "/media/campaign/social-01.webp"
-            },
-            {
-              "platform": "TikTok",
-              "title": {
-                "en": "Behind the scenes",
-                "ar": "من كواليس العمل"
-              },
-              "reach": "85K",
-              "image": "/media/campaign/social-02.webp"
-            },
-            {
-              "platform": "Facebook",
-              "title": {
-                "en": "A fresh perspective",
-                "ar": "نظرة مختلفة"
-              },
-              "reach": "4.2K",
-              "image": "/media/campaign/social-03.webp"
-            },
-            {
-              "platform": "Snapchat",
-              "title": {
-                "en": "New collection",
-                "ar": "تشكيلة جديدة"
-              },
-              "reach": "8.9K",
-              "image": "/media/campaign/social-04.webp"
-            },
-            {
-              "platform": "Instagram",
-              "title": {
-                "en": "Brand essentials",
-                "ar": "تفاصيل العلامة"
-              },
-              "reach": "3.7K",
-              "image": "/media/campaign/social-05.webp"
-            },
-            {
-              "platform": "TikTok",
-              "title": {
-                "en": "The daily edit",
-                "ar": "اختيارات اليوم"
-              },
-              "reach": "1.2M",
-              "image": "/media/campaign/social-06.webp"
-            },
-            {
-              "platform": "Facebook",
-              "title": {
-                "en": "A closer look",
-                "ar": "تفاصيل أقرب"
-              },
-              "reach": "6.8K",
-              "image": "/media/campaign/social-07.webp"
-            },
-            {
-              "platform": "Instagram",
-              "title": {
-                "en": "Made to be shared",
-                "ar": "تصميم يستحق المشاركة"
-              },
-              "reach": "9.1K",
-              "image": "/media/campaign/social-08.webp"
-            }
-          ],
-          "performanceImages": [
-            "/media/campaign/meta-sample-01.webp",
-            "/media/campaign/meta-sample-02.webp",
-            "/media/campaign/meta-sample-03.webp"
-          ],
-          "video": "/media/video/social-campaign-reel.mp4",
-          "videoPoster": "/media/video/social-campaign-poster.jpg",
-          "communityGrowth": [
-            {
-              "platform": "TikTok",
-              "followers": "+125K",
-              "label": {
-                "en": "new followers",
-                "ar": "متابع جديد"
-              }
-            },
-            {
-              "platform": "Instagram",
-              "followers": "+98K",
-              "label": {
-                "en": "new followers",
-                "ar": "متابع جديد"
-              }
-            },
-            {
-              "platform": "Snapchat",
-              "followers": "+72K",
-              "label": {
-                "en": "new followers",
-                "ar": "متابع جديد"
-              }
-            }
-          ]
-        }
-      },
-      {
-        "id": "social-media-eight-posts",
-        "name": {
-          "en": "Social Media Creative Collection",
-          "ar": "مجموعة تصاميم السوشيال ميديا"
-        },
-        "description": {
-          "en": "An eight-image social media portfolio preview, arranged as a responsive visual gallery. Replace these sample images with the final campaign artwork.",
-          "ar": "معاينة لمعرض سوشيال ميديا مكوّن من 8 صور، مع ترتيب شبكي متجاوب. يمكن استبدال الصور التجريبية بتصميمات الحملة النهائية."
-        },
-        "image": "/media/campaign/social-07.webp",
-        "link": "/projects/social-media-eight-posts",
-        "enabled": true,
-        "projectCategory": "social-media",
-        "additionalCategories": [
-          "branding"
-        ],
-        "projectKind": "case-study",
-        "imageGallery": [
-          "/media/campaign/social-01.webp",
-          "/media/campaign/social-02.webp",
-          "/media/campaign/social-03.webp",
-          "/media/campaign/social-04.webp",
-          "/media/campaign/social-05.webp",
-          "/media/campaign/social-06.webp",
-          "/media/campaign/social-07.webp",
-          "/media/campaign/social-08.webp"
-        ]
-      },
       {
         "id": "tlg-wsa-elite",
         "name": {
@@ -485,10 +78,10 @@
           "ar": "TLG WSA Elite"
         },
         "description": {
-          "en": "A web platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة ويب من معرض أعمال Star Plus."
+          "en": "A platform for booking exhibition stands and sponsorships",
+          "ar": "منصة لحجز بارتشن المعارض وخدماتها."
         },
-        "image": "/media/portfolio/BBBHXXM6IcoIs21zOYRBwK7mfCYiiuPrlv1RLdi7.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/BBBHXXM6IcoIs21zOYRBwK7mfCYiiuPrlv1RLdi7.jpg",
         "link": "https://tlg.wsa-elite.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -502,10 +95,10 @@
           "ar": "WSA Pay"
         },
         "description": {
-          "en": "A web platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة ويب من معرض أعمال Star Plus."
+          "en": "A secure platform for business payments and invoice settlements",
+          "ar": "منصة آمنة لإدارة المدفوعات وتسوية الفواتير بين الشركات"
         },
-        "image": "/media/portfolio/4V6DLpTberDCb4gFQuWtlK9XOfzAyHjc08BI9mFp.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/4V6DLpTberDCb4gFQuWtlK9XOfzAyHjc08BI9mFp.jpg",
         "link": "https://wsapay.wsa-elite.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -519,10 +112,10 @@
           "ar": "Dr. Ahmed Hussein"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "An online learning platform specializing in Arabic language courses for middle and high school students.",
+          "ar": "منصة تعليمية متخصصة في شرح اللغة العربية للمراحل الإعدادية والثانوية"
         },
-        "image": "/media/portfolio/Sbw2kZxwUxgxUV26JhbLOQZEU83MFPXM0q863OGA.png",
+        "image": "https://viralzoom.tech/media/portfolio/Sbw2kZxwUxgxUV26JhbLOQZEU83MFPXM0q863OGA.png",
         "link": "https://drahmedhusseinbio.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -536,10 +129,10 @@
           "ar": "Selim Farag Group"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "مجموعة متخصصة في التطوير العقاري والإنشاءات والخدمات",
+          "ar": "مجموعة متخصصة في التطوير العقاري والإنشاءات والخدمات"
         },
-        "image": "/media/portfolio/JE9JkAUu5OWzH0Xxdl67atWv1zwDFDSvaIpQ48xN.png",
+        "image": "https://viralzoom.tech/media/portfolio/JE9JkAUu5OWzH0Xxdl67atWv1zwDFDSvaIpQ48xN.png",
         "link": "https://selimfaraggroup.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -549,14 +142,14 @@
       {
         "id": "mahmoud-adel",
         "name": {
-          "en": "Mahmoud Adel",
-          "ar": "Mahmoud Adel"
+          "en": "Arabista",
+          "ar": "???????"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "An online learning platform specializing in Arabic language courses for middle and high school students.",
+          "ar": "منصة تعليمية متخصصة في شرح اللغة العربية للمراحل الإعدادية والثانوية"
         },
-        "image": "/media/portfolio/NNkdlWmpzuJXKiSx5L1koyN4C2DXHWpvK6i7N73X.png",
+        "image": "https://viralzoom.tech/uploads/5860c4d0-8f0e-41e8-bfe2-8b2eb5489693.png",
         "link": "https://mrmahmoudadel.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -570,10 +163,10 @@
           "ar": "OEC KSA"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "A company specializing in engineering development",
+          "ar": "شركة متخصصة في التطوير الهندسي"
         },
-        "image": "/media/portfolio/lCFV6KICtI7wt1SRD3kF6OoJUBcJtuht9dGsuWpU.png",
+        "image": "https://viralzoom.tech/media/portfolio/lCFV6KICtI7wt1SRD3kF6OoJUBcJtuht9dGsuWpU.png",
         "link": "https://oec-ksa.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -587,10 +180,10 @@
           "ar": "Cornerstone Marine"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "A company specializing in international shipping, sea and air freight, and customs clearance",
+          "ar": "شركة متخصصة في خدمات الشحن الدولي والنقل البحري والجوي والتخليص الجمركي"
         },
-        "image": "/media/portfolio/jc69xtXysr8IvbQh6pLMZAphKHTdkzVffSYGpsNa.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/jc69xtXysr8IvbQh6pLMZAphKHTdkzVffSYGpsNa.jpg",
         "link": "https://cornerstonemarine.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -604,100 +197,15 @@
           "ar": "WSA Elite"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "A global network connecting freight forwarders and logistics companies to build business partnerships.",
+          "ar": "شبكة عالمية لربط شركات الشحن والخدمات اللوجستية وتعزيز التعاون بينها"
         },
-        "image": "/media/portfolio/SVHwHIGNP5Gw7gavm7Qz3wVpWsWPtT9L1bTuuO30.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/SVHwHIGNP5Gw7gavm7Qz3wVpWsWPtT9L1bTuuO30.jpg",
         "link": "https://wsa-elite.com/",
         "enabled": true,
         "projectCategory": "websites",
         "projectKind": "external",
         "projectUrl": "https://wsa-elite.com/"
-      },
-      {
-        "id": "star-plus-erp",
-        "name": {
-          "en": "Star Plus ERP",
-          "ar": "Star Plus ERP"
-        },
-        "description": {
-          "en": "An ERP platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة ERP من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/yxv9O9xBub0ETJcFwHCzAMf9cmcfO7lxdXDjh6PS.png",
-        "link": "https://erp.starplus.agency/",
-        "enabled": true,
-        "projectCategory": "platforms-apps",
-        "projectKind": "external",
-        "projectUrl": "https://erp.starplus.agency/"
-      },
-      {
-        "id": "tantawi-a2z",
-        "name": {
-          "en": "Tantawi A2Z",
-          "ar": "Tantawi A2Z"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/k8aYxLZJSdsA6mw9oDSeoTvd1c7ki4e3jhFgvcWE.png",
-        "link": "https://play.google.com/store/apps/details?id=com.tantawii.a2z_platform&hl=en",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://play.google.com/store/apps/details?id=com.tantawii.a2z_platform&hl=en"
-      },
-      {
-        "id": "4swapp",
-        "name": {
-          "en": "4Swapp",
-          "ar": "4Swapp"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/SK9DCcNXT90dqdqjOOA65jka0CU4A1mvcNLub1fO.png",
-        "link": "https://play.google.com/store/search?q=4Swapp&c=apps&hl=ar",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://play.google.com/store/search?q=4Swapp&c=apps&hl=ar"
-      },
-      {
-        "id": "cnc-world",
-        "name": {
-          "en": "CNC World",
-          "ar": "CNC World"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/JTyh4Q09JAltXBvBbL20EeS24mjo2VLy4l8BNNKr.png",
-        "link": "https://play.google.com/store/search?q=cnc%20world&c=apps",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://play.google.com/store/search?q=cnc%20world&c=apps"
-      },
-      {
-        "id": "dentin-app",
-        "name": {
-          "en": "Dentin App",
-          "ar": "Dentin App"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/t9ZgjIUB7A7yvlesJMFdHQK8uCV67lMq7YJq4Nhv.png",
-        "link": "https://apps.apple.com/us/app/dentin/id6759228177",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://apps.apple.com/us/app/dentin/id6759228177"
       },
       {
         "id": "iam-software-publishing",
@@ -709,7 +217,7 @@
           "en": "A website project from the Star Plus portfolio.",
           "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
         },
-        "image": "/media/portfolio/hygoYlcd9i8jVlEtzTcJm9iX4Iw4p7bB5AocokfP.png",
+        "image": "https://viralzoom.tech/media/portfolio/hygoYlcd9i8jVlEtzTcJm9iX4Iw4p7bB5AocokfP.png",
         "link": "https://iamsoftwarepublishing.net/",
         "enabled": true,
         "projectCategory": "websites",
@@ -726,7 +234,7 @@
           "en": "A website project from the Star Plus portfolio.",
           "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
         },
-        "image": "/media/portfolio/62g3gJbvhsFSRSJWXBXT32sEJUT3RrjM5NjjTYAJ.png",
+        "image": "https://viralzoom.tech/media/portfolio/62g3gJbvhsFSRSJWXBXT32sEJUT3RrjM5NjjTYAJ.png",
         "link": "https://teachersmarkettest.dentin.cloud/",
         "enabled": true,
         "projectCategory": "websites",
@@ -740,32 +248,15 @@
           "ar": "Obour House"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "An online platform for showcasing and managing real estate and housing services",
+          "ar": "منصة إلكترونية لعرض وإدارة العقارات والخدمات السكنية"
         },
-        "image": "/media/portfolio/jtjLubELcGhfcs8PieVEHTmTBc5gqX6MDrfu7zMm.png",
+        "image": "https://viralzoom.tech/media/portfolio/jtjLubELcGhfcs8PieVEHTmTBc5gqX6MDrfu7zMm.png",
         "link": "https://obourhouse.solunile.com/",
         "enabled": true,
         "projectCategory": "websites",
         "projectKind": "external",
         "projectUrl": "https://obourhouse.solunile.com/"
-      },
-      {
-        "id": "iam-smart-store",
-        "name": {
-          "en": "IAM Smart Store",
-          "ar": "IAM Smart Store"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/Bw49rW1GN3G9WY4Y5wx7rYsPfuDR9Z1UUx5K4Oyf.png",
-        "link": "https://apps.apple.com/us/app/iam-smart-store/id6755937895",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://apps.apple.com/us/app/iam-smart-store/id6755937895"
       },
       {
         "id": "ln-federation",
@@ -774,49 +265,15 @@
           "ar": "LN Federation"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "A global federation uniting freight and logistics networks to strengthen collaboration and business opportunities.",
+          "ar": "اتحاد عالمي يجمع شبكات الشحن والخدمات اللوجستية لتعزيز التعاون وتوسيع فرص الأعمال"
         },
-        "image": "/media/portfolio/rZ47qNj7yfrhqMt4gtupV3ZDO37xtNd752oK0NeJ.png",
+        "image": "https://viralzoom.tech/media/portfolio/rZ47qNj7yfrhqMt4gtupV3ZDO37xtNd752oK0NeJ.png",
         "link": "https://www.lnfederation.org/",
         "enabled": true,
         "projectCategory": "websites",
         "projectKind": "external",
         "projectUrl": "https://www.lnfederation.org/"
-      },
-      {
-        "id": "dentin-platform",
-        "name": {
-          "en": "Dentin Platform",
-          "ar": "Dentin Platform"
-        },
-        "description": {
-          "en": "A web platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة ويب من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/oleCnhHSTcYBsSt9mXjOlqLtolfoFObA3XKmQjYC.png",
-        "link": "https://dentin.cloud/",
-        "enabled": true,
-        "projectCategory": "platforms-apps",
-        "projectKind": "external",
-        "projectUrl": "https://dentin.cloud/"
-      },
-      {
-        "id": "efreeze-app",
-        "name": {
-          "en": "eFreeze App",
-          "ar": "eFreeze App"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/LYkzSougM9jhW3bhMmaahmQ7vyfF53HCV1AMNnv9.png",
-        "link": "https://play.google.com/store/apps/details?id=com.tantawii.efreeze.efreeze&hl=en",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://play.google.com/store/apps/details?id=com.tantawii.efreeze.efreeze&hl=en"
       },
       {
         "id": "wsa-events",
@@ -825,10 +282,10 @@
           "ar": "WSA Events"
         },
         "description": {
-          "en": "An event platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة فعاليات من معرض أعمال Star Plus."
+          "en": "A platform for organizing and managing WSA global network events and conferences",
+          "ar": "منصة لتنظيم وإدارة فعاليات ومؤتمرات شبكة WSA العالمية"
         },
-        "image": "/media/portfolio/ZN9nsumsExwsQSqX78rVuP55lRbXFP7sbxCe3erA.png",
+        "image": "https://viralzoom.tech/media/portfolio/ZN9nsumsExwsQSqX78rVuP55lRbXFP7sbxCe3erA.png",
         "link": "https://events.wsa-network.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -842,10 +299,10 @@
           "ar": "Raya Stu"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "An educational platform providing academic guidance and study support for students",
+          "ar": "منصة تعليمية متخصصة في تقديم خدمات الاستشارات والدعم الدراسي للطلاب"
         },
-        "image": "/media/portfolio/zH2ZlbPBkFYrE2yesnGBaMeDhPuvF8TicYMwILwl.png",
+        "image": "https://viralzoom.tech/media/portfolio/zH2ZlbPBkFYrE2yesnGBaMeDhPuvF8TicYMwILwl.png",
         "link": "https://rayastu.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -859,10 +316,10 @@
           "ar": "Team Hashash"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "An academy specializing in kickboxing, fitness, and self-defense training",
+          "ar": "أكاديمية متخصصة في الكيك بوكسينج واللياقة البدنية والدفاع عن النفس"
         },
-        "image": "/media/portfolio/bp63JCWhk3N0U1VLcYCsUs35WWrCprn70dGxUxdP.png",
+        "image": "https://viralzoom.tech/media/portfolio/bp63JCWhk3N0U1VLcYCsUs35WWrCprn70dGxUxdP.png",
         "link": "https://www.teamhashash.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -876,10 +333,10 @@
           "ar": "4SW"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "An online marketplace for buying, selling, and swapping new and used products",
+          "ar": "منصة إلكترونية للبيع والشراء وتبديل المنتجات الجديدة والمستعملة"
         },
-        "image": "/media/portfolio/RrCOflmTXwWmLeQ4w0xlqWLpjtNauxdxQkGxWVGo.png",
+        "image": "https://viralzoom.tech/media/portfolio/RrCOflmTXwWmLeQ4w0xlqWLpjtNauxdxQkGxWVGo.png",
         "link": "https://4sw.app/",
         "enabled": true,
         "projectCategory": "websites",
@@ -893,10 +350,10 @@
           "ar": "Saudi QB"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "An investment company specializing in investment, business management, and startup development.",
+          "ar": "شركة استثمارية متخصصة في الاستثمار وإدارة الأعمال ودعم الشركات الناشئة"
         },
-        "image": "/media/portfolio/SOnhXSJ4DC9u5VXSAoMV9LQkcPz32hAnwNvjnbQq.png",
+        "image": "https://viralzoom.tech/media/portfolio/SOnhXSJ4DC9u5VXSAoMV9LQkcPz32hAnwNvjnbQq.png",
         "link": "https://ar.saudiqb.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -910,10 +367,10 @@
           "ar": "Eve Gym"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "Eve’s Gym is a women-only fitness center offering workouts, swimming classes, and wellness services.",
+          "ar": "إيفز جيم، مركز لياقة بدنية للسيدات يقدم تدريبات رياضية وسباحة وخدمات للياقة والصحة"
         },
-        "image": "/media/portfolio/plInu3DTNiuV7DnAE1SvCwx3VXmSoSKZz6jqEr0U.png",
+        "image": "https://viralzoom.tech/media/portfolio/plInu3DTNiuV7DnAE1SvCwx3VXmSoSKZz6jqEr0U.png",
         "link": "https://evegym.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -927,66 +384,15 @@
           "ar": "Ta3limy"
         },
         "description": {
-          "en": "An education website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع تعليمي من معرض أعمال Star Plus."
+          "en": "A free learning platform offering skill development, school education, and entrepreneurship courses",
+          "ar": "منصة تعليمية مجانية تقدم دورات لتطوير المهارات والتعليم المدرسي وريادة الأعمال"
         },
-        "image": "/media/portfolio/Ikjiycf6Ch3tfCuGx0WeJ6zpztCPddlv0XZK1s5E.png",
+        "image": "https://viralzoom.tech/media/portfolio/Ikjiycf6Ch3tfCuGx0WeJ6zpztCPddlv0XZK1s5E.png",
         "link": "https://ta3limy.com/",
         "enabled": true,
         "projectCategory": "websites",
         "projectKind": "external",
         "projectUrl": "https://ta3limy.com/"
-      },
-      {
-        "id": "grab-taxi-app",
-        "name": {
-          "en": "Grab Taxi App",
-          "ar": "Grab Taxi App"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/78E59doOQqWXpoFYJXb6gL6Zp7NCSOx9Zcu0H5Na.png",
-        "link": "https://play.google.com/store/apps/details?id=com.grabtaxi.passenger",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://play.google.com/store/apps/details?id=com.grabtaxi.passenger"
-      },
-      {
-        "id": "hakim-clinics",
-        "name": {
-          "en": "Hakim Clinics",
-          "ar": "Hakim Clinics"
-        },
-        "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/JXz9EfNJj2jfCx71oihE6Gwqv6VmRC4VKN1rfnH7.jpg",
-        "link": "https://hakimclinics.com/",
-        "enabled": true,
-        "projectCategory": "websites",
-        "projectKind": "external",
-        "projectUrl": "https://hakimclinics.com/"
-      },
-      {
-        "id": "wsa-events-app",
-        "name": {
-          "en": "WSA Events App",
-          "ar": "WSA Events App"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/21IYFScsDf2tq55NPuhwY8dKxp9u6nAhZMgFHQRs.png",
-        "link": "https://apps.apple.com/us/app/wsa-events/id6560117998",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://apps.apple.com/us/app/wsa-events/id6560117998"
       },
       {
         "id": "air-cairo",
@@ -995,10 +401,10 @@
           "ar": "Air Cairo"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "Air Cairo is an Egyptian airline offering domestic and international flights at competitive fares",
+          "ar": "إير كايرو، شركة طيران مصرية تقدم رحلات داخلية ودولية بأسعار تنافسية"
         },
-        "image": "/media/portfolio/M85BzcZe2LK7BPyFyPq5yDxMEMk0e29RokfyI5Bd.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/M85BzcZe2LK7BPyFyPq5yDxMEMk0e29RokfyI5Bd.jpg",
         "link": "https://aircairo.com/en-eg/",
         "enabled": true,
         "projectCategory": "websites",
@@ -1012,66 +418,15 @@
           "ar": "Fast Track Shipping"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "A company specializing in international shipping, sea and air freight, and customs clearance",
+          "ar": "شركة متخصصة في خدمات الشحن الدولي والنقل البحري والجوي والتخليص الجمركي"
         },
-        "image": "/media/portfolio/4JibBNE0y9y858DCakEeeRUxDFdG3Txtd04rWBed.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/4JibBNE0y9y858DCakEeeRUxDFdG3Txtd04rWBed.jpg",
         "link": "https://fast-track-shipping.com/",
         "enabled": true,
         "projectCategory": "websites",
         "projectKind": "external",
         "projectUrl": "https://fast-track-shipping.com/"
-      },
-      {
-        "id": "pyramids-freight",
-        "name": {
-          "en": "Pyramids Freight",
-          "ar": "Pyramids Freight"
-        },
-        "description": {
-          "en": "A logistics platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة لوجستية من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/SmSkX82QsgNmxI21mudFs0akxjAn96CBjBYPzwgH.png",
-        "link": "https://ts.pyramidsfreight.com/",
-        "enabled": true,
-        "projectCategory": "platforms-apps",
-        "projectKind": "external",
-        "projectUrl": "https://ts.pyramidsfreight.com/"
-      },
-      {
-        "id": "nahla",
-        "name": {
-          "en": "Nahla",
-          "ar": "Nahla"
-        },
-        "description": {
-          "en": "A web platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة ويب من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/kztGv3upzPTVo6SqWxJPNHEeXHKwM3d2mnLu6ahX.png",
-        "link": "https://nahla.deltana-it.com/",
-        "enabled": true,
-        "projectCategory": "platforms-apps",
-        "projectKind": "external",
-        "projectUrl": "https://nahla.deltana-it.com/"
-      },
-      {
-        "id": "trendtech-erp",
-        "name": {
-          "en": "Trendtech ERP",
-          "ar": "Trendtech ERP"
-        },
-        "description": {
-          "en": "An ERP platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة ERP من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/17r0YYEemx5nvFpAI7f72bVL8saQQgsopdzXAjjM.jpg",
-        "link": "https://erppro.trendtech.sd/",
-        "enabled": true,
-        "projectCategory": "platforms-apps",
-        "projectKind": "external",
-        "projectUrl": "https://erppro.trendtech.sd/"
       },
       {
         "id": "branderaa",
@@ -1080,10 +435,10 @@
           "ar": "Branderaa"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "A digital marketing agency specializing in social media management, branding, and website and app development.",
+          "ar": "شركة متخصصة في التسويق الإلكتروني، وإدارة السوشيال ميديا، وتصميم المواقع والتطبيقات"
         },
-        "image": "/media/portfolio/oyDDSyc9qmEXdElPv1lOMYMrU3kqjCCDa9TKIT5t.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/oyDDSyc9qmEXdElPv1lOMYMrU3kqjCCDa9TKIT5t.jpg",
         "link": "https://branderaa.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -1097,66 +452,15 @@
           "ar": "Tatweer Azat"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "An international self-development academy offering training courses and consultations in personal development and mental health.",
+          "ar": "الأكاديمية الدولية لتطوير الذات، تقدم دورات تدريبية واستشارات في التنمية البشرية والصحة النفسية"
         },
-        "image": "/media/portfolio/VAP0ry4gkMD1btwqrNBOt0I5b7kNY5LJx8cW7nPL.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/VAP0ry4gkMD1btwqrNBOt0I5b7kNY5LJx8cW7nPL.jpg",
         "link": "https://tatweerazat.com/",
         "enabled": true,
         "projectCategory": "websites",
         "projectKind": "external",
         "projectUrl": "https://tatweerazat.com/"
-      },
-      {
-        "id": "hakim-health-dashboard",
-        "name": {
-          "en": "Hakim Clinics Health Dashboard",
-          "ar": "Hakim Clinics Health Dashboard"
-        },
-        "description": {
-          "en": "A healthcare dashboard project from the Star Plus portfolio.",
-          "ar": "مشروع لوحة تحكم للرعاية الصحية من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/woZJaJKYRnmwjwUxm5WVd00R1IXSDtOCuTHkbojy.jpg",
-        "link": "https://hakimclinics.com/Dashboard-health",
-        "enabled": true,
-        "projectCategory": "platforms-apps",
-        "projectKind": "external",
-        "projectUrl": "https://hakimclinics.com/Dashboard-health"
-      },
-      {
-        "id": "rentup-tenant",
-        "name": {
-          "en": "Rentup Tenant",
-          "ar": "Rentup Tenant"
-        },
-        "description": {
-          "en": "A tenant platform project from the Star Plus portfolio.",
-          "ar": "مشروع منصة للمستأجرين من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/aqL9NaSbOgQH8jFt9WxZ7sCGXFLpReC6dkNsR1OP.jpg",
-        "link": "https://www.rentup.com.eg/tenant",
-        "enabled": true,
-        "projectCategory": "platforms-apps",
-        "projectKind": "external",
-        "projectUrl": "https://www.rentup.com.eg/tenant"
-      },
-      {
-        "id": "medic-trade-app",
-        "name": {
-          "en": "Medic Trade App",
-          "ar": "Medic Trade App"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/zoorG2g3bUpQj8oJnKdyBl07hGvJgARxP5TvyNHM.png",
-        "link": "https://play.google.com/store/apps/details?id=com.medictrade",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://play.google.com/store/apps/details?id=com.medictrade"
       },
       {
         "id": "4eshopping",
@@ -1165,10 +469,10 @@
           "ar": "4eShopping"
         },
         "description": {
-          "en": "An e-commerce website project from the Star Plus portfolio.",
-          "ar": "مشروع متجر إلكتروني من معرض أعمال Star Plus."
+          "en": "An e-commerce platform for pharmaceutical and medical supplies distribution to pharmacies",
+          "ar": "منصة إلكترونية لشراء وتوزيع الأدوية والمستلزمات الطبية للصيدليات"
         },
-        "image": "/media/portfolio/GTDEDC7QFKBpFKBz89qWfoZ1Key8jnB8Gkc0DTMi.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/GTDEDC7QFKBpFKBz89qWfoZ1Key8jnB8Gkc0DTMi.jpg",
         "link": "https://4eshopping.com/ar",
         "enabled": true,
         "projectCategory": "websites",
@@ -1182,10 +486,10 @@
           "ar": "Freight Gate"
         },
         "description": {
-          "en": "A website project from the Star Plus portfolio.",
-          "ar": "مشروع موقع إلكتروني من معرض أعمال Star Plus."
+          "en": "A company specializing in international shipping, sea and air freight, and customs clearance",
+          "ar": "شركة متخصصة في خدمات الشحن الدولي والنقل البحري والجوي والتخليص الجمركي"
         },
-        "image": "/media/portfolio/rSG9XPnqTMZXEBAWPgkTeJNHiFeZy8DlJXTYH7n4.jpg",
+        "image": "https://viralzoom.tech/media/portfolio/rSG9XPnqTMZXEBAWPgkTeJNHiFeZy8DlJXTYH7n4.jpg",
         "link": "https://freight-gate.com/",
         "enabled": true,
         "projectCategory": "websites",
@@ -1202,7 +506,7 @@
           "en": "A UI/UX design project from the Star Plus portfolio.",
           "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
         },
-        "image": "/media/portfolio/kNalyfPZr3NFGmLfiSFXWiIeAOekzTtPhjhs6EYT.png",
+        "image": "https://viralzoom.tech/media/portfolio/kNalyfPZr3NFGmLfiSFXWiIeAOekzTtPhjhs6EYT.png",
         "link": "https://www.figma.com/design/TTmBkPCiXNqQiE8ghCl135/pharmacy-user?node-id=0-1&p=f&t=838Jti4AMgUXlM1q-0",
         "enabled": true,
         "projectCategory": "ui-ux",
@@ -1219,7 +523,7 @@
           "en": "A UI/UX design project from the Star Plus portfolio.",
           "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
         },
-        "image": "/media/portfolio/mVdgrumhnXYQkGpqOpMDb9RWd5QBXmvwpBYsdPJv.png",
+        "image": "https://viralzoom.tech/media/portfolio/mVdgrumhnXYQkGpqOpMDb9RWd5QBXmvwpBYsdPJv.png",
         "link": "https://www.figma.com/design/yhL47dglUPXzirAh1v8EuV/Travel-booking-project?node-id=0-1&p=f&t=EHxhNXWGEMuCuABm-0",
         "enabled": true,
         "projectCategory": "ui-ux",
@@ -1236,7 +540,7 @@
           "en": "A UI/UX design project from the Star Plus portfolio.",
           "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
         },
-        "image": "/media/portfolio/mjTgdIsB3aozkQLOGmP45I4zElztn31AFHEVF9Wn.png",
+        "image": "https://viralzoom.tech/media/portfolio/mjTgdIsB3aozkQLOGmP45I4zElztn31AFHEVF9Wn.png",
         "link": "https://www.figma.com/design/WDgj13EozoQNxUZhrWl8qx/%D8%A8%D9%8A%D8%B7%D8%B1%D9%8A?node-id=4-1438&p=f&t=jjvaCKYnabCTcFDf-0",
         "enabled": true,
         "projectCategory": "ui-ux",
@@ -1253,29 +557,12 @@
           "en": "A UI/UX design project from the Star Plus portfolio.",
           "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
         },
-        "image": "/media/portfolio/nPMPMlZRvOoSUNwYyrqHCFVbK0E9pkrf3fltGfWG.png",
+        "image": "https://viralzoom.tech/media/portfolio/nPMPMlZRvOoSUNwYyrqHCFVbK0E9pkrf3fltGfWG.png",
         "link": "https://www.figma.com/design/0sWM1dz55WFWOlBXII3N3p/%D9%86%D8%AD%D9%84%D8%A9?node-id=0-1&p=f&t=QcDbRp58PnAzsQci-0",
         "enabled": true,
         "projectCategory": "ui-ux",
         "projectKind": "external",
         "projectUrl": "https://www.figma.com/design/0sWM1dz55WFWOlBXII3N3p/%D9%86%D8%AD%D9%84%D8%A9?node-id=0-1&p=f&t=QcDbRp58PnAzsQci-0"
-      },
-      {
-        "id": "mixi-app",
-        "name": {
-          "en": "Mixi App",
-          "ar": "Mixi App"
-        },
-        "description": {
-          "en": "A mobile app project from the Star Plus portfolio.",
-          "ar": "مشروع تطبيق موبايل من معرض أعمال Star Plus."
-        },
-        "image": "/media/portfolio/zenYKYdvHJAcEcJXzBqnxreiB6z4KLLJSNCY46GW.png",
-        "link": "https://apps.apple.com/us/app/mixi-%D8%AE%D8%B6%D8%A7%D8%B1-%D9%88-%D9%81%D9%88%D8%A7%D9%83%D9%87/id6743544006",
-        "enabled": true,
-        "projectCategory": "mobile-apps",
-        "projectKind": "external",
-        "projectUrl": "https://apps.apple.com/us/app/mixi-%D8%AE%D8%B6%D8%A7%D8%B1-%D9%88-%D9%81%D9%88%D8%A7%D9%83%D9%87/id6743544006"
       },
       {
         "id": "trendyol-design",
@@ -1287,7 +574,7 @@
           "en": "A UI/UX design project from the Star Plus portfolio.",
           "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
         },
-        "image": "/media/portfolio/xoMq59jZO4LEfmRoQSGUpnE2fy1UxzLvY8bzOIlx.png",
+        "image": "https://viralzoom.tech/media/portfolio/xoMq59jZO4LEfmRoQSGUpnE2fy1UxzLvY8bzOIlx.png",
         "link": "https://www.figma.com/design/Nh2UsW9hJFYdJxdrfEI256/%D8%AA%D8%B1%D9%8A%D9%86%D8%AF%D9%8A%D9%88%D9%84?node-id=0-1&p=f&t=vmUtX1xm04HhxtAm-0",
         "enabled": true,
         "projectCategory": "ui-ux",
@@ -1304,7 +591,7 @@
           "en": "A UI/UX design project from the Star Plus portfolio.",
           "ar": "مشروع تصميم UI/UX من معرض أعمال Star Plus."
         },
-        "image": "/media/portfolio/Wl9zca9Ts2HxgrwNkQpk6da4JQoaM3jsfL5UClRw.png",
+        "image": "https://viralzoom.tech/media/portfolio/Wl9zca9Ts2HxgrwNkQpk6da4JQoaM3jsfL5UClRw.png",
         "link": "https://www.figma.com/design/ZqegbGGSSQA5iBBoPWyKOA/socaliz_Last_version?node-id=0-1&p=f&t=CMgbPvGK4XoKm4Zk-0",
         "enabled": true,
         "projectCategory": "ui-ux",
@@ -1314,178 +601,328 @@
     ],
     "clients": [
       {
-        "id": "client-1",
+        "id": "client-tlg-wsa-elite",
         "name": {
-          "en": "Client 1",
-          "ar": "عميل 1"
+          "en": "TLG WSA Elite",
+          "ar": "TLG WSA Elite"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-0.svg",
+        "image": "https://tlg.wsa-elite.com/Logo%20(3).png",
+        "link": "https://tlg.wsa-elite.com/",
         "enabled": true
       },
       {
-        "id": "client-2",
+        "id": "client-wsa-pay",
         "name": {
-          "en": "Client 2",
-          "ar": "عميل 2"
+          "en": "WSA Pay",
+          "ar": "WSA Pay"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-1.svg",
+        "image": "https://wsapay.wsa-elite.com/WSAPAYLogo-03.png",
+        "link": "https://wsapay.wsa-elite.com/",
         "enabled": true
       },
       {
-        "id": "client-3",
+        "id": "client-mahmoud-adel",
         "name": {
-          "en": "Client 3",
-          "ar": "عميل 3"
+          "en": "Arabista",
+          "ar": "???????"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-2.svg",
+        "image": "https://api.web-lec.com/storage/media/files/al-shape-cb5f33d6-c280-4783-94d0-d63a859e65ef.png?w=250&q=60",
+        "link": "https://mrmahmoudadel.com/",
         "enabled": true
       },
       {
-        "id": "client-4",
+        "id": "client-oec-ksa",
         "name": {
-          "en": "Client 4",
-          "ar": "عميل 4"
+          "en": "OEC KSA",
+          "ar": "OEC KSA"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-3.svg",
+        "image": "https://oec-ksa.com/favicon.ico",
+        "link": "https://oec-ksa.com/",
         "enabled": true
       },
       {
-        "id": "client-5",
+        "id": "client-cornerstone-marine",
         "name": {
-          "en": "Client 5",
-          "ar": "عميل 5"
+          "en": "Cornerstone Marine",
+          "ar": "Cornerstone Marine"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-4.svg",
+        "image": "https://api.cornerstonemarine.com/storage/media/files/logo-8c8051c8-cc08-4ed3-8f0d-f673f284d60c.png",
+        "link": "https://cornerstonemarine.com/",
         "enabled": true
       },
       {
-        "id": "client-6",
+        "id": "client-wsa-elite",
         "name": {
-          "en": "Client 6",
-          "ar": "عميل 6"
+          "en": "WSA Elite",
+          "ar": "WSA Elite"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-5.svg",
+        "image": "https://api.wsa-network.com/storage/media/files/wsa-elite-logo-c1b115bd-925e-4c52-afc9-8dd784a2a9c6.png",
+        "link": "https://wsa-elite.com/",
         "enabled": true
       },
       {
-        "id": "client-7",
+        "id": "client-iam-software-publishing",
         "name": {
-          "en": "Client 7",
-          "ar": "عميل 7"
+          "en": "IAM Software Publishing",
+          "ar": "IAM Software Publishing"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-6.svg",
+        "image": "https://iamsoftwarepublishing.net/assets/images/logo.png",
+        "link": "https://iamsoftwarepublishing.net/",
         "enabled": true
       },
       {
-        "id": "client-8",
+        "id": "client-teachers-market",
         "name": {
-          "en": "Client 8",
-          "ar": "عميل 8"
+          "en": "Teachers Market",
+          "ar": "Teachers Market"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-7.svg",
+        "image": "https://teachersmarkettest.dentin.cloud/favicon.svg",
+        "link": "https://teachersmarkettest.dentin.cloud/",
         "enabled": true
       },
       {
-        "id": "client-9",
+        "id": "client-ln-federation",
         "name": {
-          "en": "Client 9",
-          "ar": "عميل 9"
+          "en": "LN Federation",
+          "ar": "LN Federation"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-8.svg",
+        "image": "https://apitest.lnfederation.com/storage/media/files/lnf-logo-dark-fec912fd-15ca-48c4-b9da-69378fb910bf.svg",
+        "link": "https://www.lnfederation.org/",
         "enabled": true
       },
       {
-        "id": "client-10",
+        "id": "client-wsa-events",
         "name": {
-          "en": "Client 10",
-          "ar": "عميل 10"
+          "en": "WSA Events",
+          "ar": "WSA Events"
         },
         "description": {
-          "en": "",
-          "ar": ""
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
         },
-        "image": "/media/clients/client-9.svg",
+        "image": "https://events.wsa-network.com/favicon.ico",
+        "link": "https://events.wsa-network.com/",
+        "enabled": true
+      },
+      {
+        "id": "client-team-hashash",
+        "name": {
+          "en": "Team Hashash",
+          "ar": "Team Hashash"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://gymsofto.s3.us-east-2.amazonaws.com/images/thlogo2.png",
+        "link": "https://www.teamhashash.com/",
+        "enabled": true
+      },
+      {
+        "id": "client-4sw-app",
+        "name": {
+          "en": "4SW",
+          "ar": "4SW"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://4sw.app/assets/img/4swapp-logo.svg?v=1.1.2",
+        "link": "https://4sw.app/",
+        "enabled": true
+      },
+      {
+        "id": "client-eve-gym",
+        "name": {
+          "en": "Eve Gym",
+          "ar": "Eve Gym"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://evegym.com/wp-content/themes/evegym/assets/img/logo.png",
+        "link": "https://evegym.com/",
+        "enabled": true
+      },
+      {
+        "id": "client-ta3limy",
+        "name": {
+          "en": "Ta3limy",
+          "ar": "Ta3limy"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://ta3limy.com/taleemy-logo-square.jpg",
+        "link": "https://ta3limy.com/",
+        "enabled": true
+      },
+      {
+        "id": "client-air-cairo",
+        "name": {
+          "en": "Air Cairo",
+          "ar": "Air Cairo"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://www.google.com/s2/favicons?domain_url=https%3A%2F%2Faircairo.com&sz=128",
+        "link": "https://aircairo.com/en-eg/",
+        "enabled": true
+      },
+      {
+        "id": "client-fast-track-shipping",
+        "name": {
+          "en": "Fast Track Shipping",
+          "ar": "Fast Track Shipping"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://fast-track-shipping.com/favicon.ico",
+        "link": "https://fast-track-shipping.com/",
+        "enabled": true
+      },
+      {
+        "id": "client-branderaa",
+        "name": {
+          "en": "Branderaa",
+          "ar": "Branderaa"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://branderaa.com/assets/images/logo.png",
+        "link": "https://branderaa.com/",
+        "enabled": true
+      },
+      {
+        "id": "client-tatweer-azat",
+        "name": {
+          "en": "Tatweer Azat",
+          "ar": "Tatweer Azat"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://tatweerazat.com/tatweer/images/logo.png",
+        "link": "https://tatweerazat.com/",
+        "enabled": true
+      },
+      {
+        "id": "client-4eshopping",
+        "name": {
+          "en": "4eShopping",
+          "ar": "4eShopping"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://4eshopping.com/assets/images/1682604590logo%20Size%20Website-01.png",
+        "link": "https://4eshopping.com/ar",
+        "enabled": true
+      },
+      {
+        "id": "client-freight-gate",
+        "name": {
+          "en": "Freight Gate",
+          "ar": "Freight Gate"
+        },
+        "description": {
+          "en": "Website project client",
+          "ar": "عميل من مشاريع المواقع"
+        },
+        "image": "https://freight-gate.com/favicon.ico",
+        "link": "https://freight-gate.com/",
         "enabled": true
       }
     ],
     "contact": {
-      "email": "info@viralzoom.agency",
-      "phone": "01222291024",
+      "email": "",
+      "phone": "01064621943",
       "whatsapp": "",
       "address": {
-        "en": "Cairo, Egypt",
-        "ar": "القاهرة، مصر"
+        "en": "",
+        "ar": ""
       }
     },
     "content": {
       "about": {
         "seoTitle": {
-          "en": "About Viral Zoom — Creative & Digital Agency",
-          "ar": "عن فايرال زوم — وكالة إبداعية ورقمية"
+          "en": "About Fusion X.tech — Software & Digital Solutions",
+          "ar": "عن Fusion X.tech — البرمجيات والحلول الرقمية"
         },
         "seoDescription": {
-          "en": "Meet Viral Zoom, a creative and digital agency combining strategy, design and technology to help brands grow.",
-          "ar": "تعرف على فايرال زوم، وكالة إبداعية ورقمية تجمع الاستراتيجية والتصميم والتكنولوجيا لتنمية العلامات التجارية."
+          "en": "Fusion X.tech builds websites, applications and custom software for ambitious businesses.",
+          "ar": "تطور Fusion X.tech المواقع والتطبيقات والحلول البرمجية المخصصة للشركات الطموحة."
         },
         "heroEyebrow": {
-          "en": "ABOUT VIRAL ZOOM",
-          "ar": "عن فايرال زوم"
+          "en": "ABOUT FUSION X.TECH",
+          "ar": "عن Fusion X.tech"
         },
         "heroTitle": {
-          "en": "We turn bold ideas",
-          "ar": "نحوّل الأفكار"
+          "en": "Technology that",
+          "ar": "تقنية"
         },
         "heroTitleAccent": {
-          "en": "into real impact.",
-          "ar": "الجريئة لتأثير حقيقي."
+          "en": "moves business forward.",
+          "ar": "تدفع أعمالك للأمام."
         },
         "heroDescription": {
-          "en": "We are a creative and digital agency bringing strategy, design and technology together to help brands move forward.",
-          "ar": "إحنا وكالة إبداعية ورقمية بنجمع الاستراتيجية والتصميم والتكنولوجيا عشان نساعد العلامات التجارية تتقدم."
+          "en": "We turn business needs into clear, useful digital products and software.",
+          "ar": "نحوّل احتياجات الأعمال إلى منتجات رقمية وبرمجيات واضحة وعملية."
         },
         "heroCta": {
           "en": "Get to know us",
           "ar": "اعرفنا أكتر"
         },
         "heroImageAlt": {
-          "en": "A creative digital project by Viral Zoom",
-          "ar": "مشروع رقمي إبداعي من فايرال زوم"
+          "en": "Fusion X.tech logo",
+          "ar": "شعار Fusion X.tech"
         },
         "heroCaption": {
           "en": "Ideas made visible",
@@ -1496,17 +933,17 @@
           "ar": "مين إحنا"
         },
         "storyTitle": {
-          "en": "A creative partner for brands ready to grow.",
-          "ar": "شريك إبداعي للعلامات اللي مستعدة تكبر."
+          "en": "A technology partner for your next step.",
+          "ar": "شريك تقني لخطوتك القادمة."
         },
         "storyParagraphs": [
           {
-            "en": "At Viral Zoom, we bring creative services and digital solutions together under one roof. From brand identity and content to websites, campaigns and production, we help shape consistent experiences that connect with people.",
-            "ar": "في فايرال زوم، بنجمع الخدمات الإبداعية والحلول الرقمية في مكان واحد. من الهوية والمحتوى للمواقع والحملات والإنتاج، بنساعد في بناء تجارب متناسقة تقرّب علامتك من جمهورها."
+            "en": "Fusion X.tech helps businesses plan and build digital tools that solve real problems. Our work spans websites, web applications, custom software and practical technology consulting.",
+            "ar": "تساعد Fusion X.tech الشركات على تخطيط وبناء أدوات رقمية تحل مشكلات حقيقية، من المواقع وتطبيقات الويب إلى البرمجيات المخصصة والاستشارات التقنية."
           },
           {
-            "en": "Every project starts with understanding what makes your business different. Then we turn that understanding into clear ideas, thoughtful design and work made to support your next step.",
-            "ar": "كل مشروع بيبدأ بفهم اللي بيميّز شغلك. بعدها نحوّل الفهم لأفكار واضحة وتصميم مدروس وشغل يساعدك تاخد خطوتك الجاية."
+            "en": "We focus on understanding your goals first, then choosing a clear, maintainable solution that can grow with your business.",
+            "ar": "نبدأ بفهم أهدافك، ثم نختار حلًا واضحًا وقابلًا للتطوير ليستمر مع نمو أعمالك."
           }
         ],
         "storyCta": {
@@ -1514,16 +951,16 @@
           "ar": "شوف مشاريعنا"
         },
         "valuesEyebrow": {
-          "en": "HOW WE THINK",
-          "ar": "طريقة تفكيرنا"
+          "en": "HOW WE WORK",
+          "ar": "منهجية عملنا"
         },
         "valuesTitle": {
-          "en": "Creative with purpose.",
-          "ar": "إبداع له هدف."
+          "en": "Built around real needs.",
+          "ar": "حلول تبدأ من احتياج حقيقي."
         },
         "valuesDescription": {
-          "en": "Good work is more than a good-looking idea. It should make sense for your brand and move you toward a goal.",
-          "ar": "الشغل الحلو مش مجرد شكل جذاب؛ لازم يناسب علامتك ويقرّبك من هدفك."
+          "en": "Good technology is useful, reliable and designed around the people who use it.",
+          "ar": "التقنية الجيدة عملية وموثوقة ومصممة لتناسب الأشخاص الذين يستخدمونها."
         },
         "values": [
           {
@@ -1562,16 +999,16 @@
           "ar": "منهجيتنا"
         },
         "approachTitle": {
-          "en": "Think clearly. Create boldly. Keep growing.",
-          "ar": "فكّر بوضوح. ابتكر بجرأة. واستمر في التطور."
+          "en": "Understand. Design. Build. Improve.",
+          "ar": "نفهم. نصمم. نطور. ونحسّن."
         },
         "approachDescription": {
-          "en": "We work through a clear cycle: understand the opportunity, create and test ideas, learn from what happens, then build on what works.",
-          "ar": "بنتبع خطوات واضحة: نفهم الفرصة، نبتكر ونختبر الأفكار، نتعلم من النتائج، وبعدها نطوّر اللي أثبت نجاحه."
+          "en": "We work in clear steps: understand the challenge, shape the solution, build and test it, then improve based on what you need.",
+          "ar": "نعمل بخطوات واضحة: نفهم التحدي، ونصمم الحل، ثم نطوره ونختبره ونحسّنه وفق احتياجاتك."
         },
         "ctaEyebrow": {
           "en": "LET'S BUILD WHAT'S NEXT",
-          "ar": "يلا نبدأ خطوتك الجاية"
+          "ar": "لنبدأ خطوتك القادمة"
         },
         "ctaTitle": {
           "en": "Have an idea in mind?",
@@ -1588,99 +1025,890 @@
       },
       "process": {
         "eyebrow": {
-          "en": "THE VIRAL ZOOM METHOD",
-          "ar": "منهجية فايرال زوم"
+          "en": "HOW WE BUILD",
+          "ar": "كيف نطوّر حلولك"
         },
         "title": {
-          "en": "Measure. Ideate. Experiment. Read. Scale.",
-          "ar": "حلّل. ابتكر. جرّب. قيّم. وسّع."
+          "en": "From challenge to working solution.",
+          "ar": "من التحدي إلى حل فعّال."
         },
         "intro": {
-          "en": "A clear, repeatable process for meaningful results.",
-          "ar": "خطوات واضحة ومتكررة لتحقيق نتائج مؤثرة."
+          "en": "A practical process keeps your project clear, focused and ready to grow.",
+          "ar": "منهج عملي يجعل مشروعك واضحًا ومركزًا وقابلًا للتطور."
         },
         "steps": [
           {
             "name": {
-              "en": "Measure",
-              "ar": "حلّل"
+              "en": "Discover",
+              "ar": "نكتشف"
             },
             "description": {
-              "en": "Find the opportunity.",
-              "ar": "نكتشف الفرص المناسبة."
+              "en": "Understand your goals and requirements.",
+              "ar": "نفهم أهدافك ومتطلباتك."
             }
           },
           {
             "name": {
-              "en": "Ideate",
-              "ar": "ابتكر"
+              "en": "Plan",
+              "ar": "نخطط"
             },
             "description": {
-              "en": "Turn insight into ideas.",
-              "ar": "نحوّل الرؤى إلى أفكار."
+              "en": "Choose the right approach and priorities.",
+              "ar": "نحدد النهج والأولويات المناسبة."
             }
           },
           {
             "name": {
-              "en": "Experiment",
-              "ar": "جرّب"
+              "en": "Build",
+              "ar": "نطوّر"
             },
             "description": {
-              "en": "Create. Test. Iterate.",
-              "ar": "نبتكر، نختبر، ونطوّر."
+              "en": "Create and test the solution with care.",
+              "ar": "نبني الحل ونختبره بعناية."
             }
           },
           {
             "name": {
-              "en": "Read",
-              "ar": "حلّل النتائج"
+              "en": "Launch",
+              "ar": "نطلق"
             },
             "description": {
-              "en": "Learn what works.",
-              "ar": "نتعلّم مما يحقق النتائج."
+              "en": "Prepare your product for real users.",
+              "ar": "نجهز منتجك للمستخدمين."
             }
           },
           {
             "name": {
-              "en": "Scale",
-              "ar": "وسّع"
+              "en": "Improve",
+              "ar": "نحسّن"
             },
             "description": {
-              "en": "Do more of what works.",
-              "ar": "نوسّع أثر ما ينجح."
+              "en": "Keep learning and refining over time.",
+              "ar": "نواصل التعلم والتحسين."
             }
           }
         ]
       },
       "seo": {
         "siteTitle": {
-          "en": "ViralZoom",
-          "ar": "ViralZoom"
+          "en": "Fusion X.tech",
+          "ar": "Fusion X.tech"
         },
         "siteDescription": {
-          "en": "Creative and digital marketing agency.",
-          "ar": "وكالة إبداعية ورقمية للتسويق والتصميم."
+          "en": "Websites, applications, custom software and technology consulting.",
+          "ar": "مواقع وتطبيقات وبرمجيات مخصصة واستشارات تقنية."
         },
         "homeTitle": {
-          "en": "ViralZoom",
-          "ar": "ViralZoom"
+          "en": "Fusion X.tech",
+          "ar": "Fusion X.tech"
         },
         "homeDescription": {
-          "en": "Ideas that make your brand impossible to ignore.",
-          "ar": "أفكار تجعل علامتك التجارية مستحيلة التجاهل."
+          "en": "We build practical websites, applications and software solutions for ambitious businesses.",
+          "ar": "نبني مواقع وتطبيقات وحلولًا برمجية عملية للشركات الطموحة."
         },
         "servicesTitle": {
-          "en": "Our Services | Viral Zoom",
-          "ar": "خدماتنا | فايرال زوم"
+          "en": "Technology Services | Fusion X.tech",
+          "ar": "خدمات التقنية | Fusion X.tech"
         },
         "projectsTitle": {
-          "en": "Our Projects | Viral Zoom",
-          "ar": "أعمالنا | فايرال زوم"
+          "en": "Projects | Fusion X.tech",
+          "ar": "المشروعات | Fusion X.tech"
         },
         "contactTitle": {
-          "en": "Contact Viral Zoom",
-          "ar": "تواصل مع فايرال زوم"
+          "en": "Contact Fusion X.tech",
+          "ar": "تواصل مع Fusion X.tech"
         }
+      },
+      "pages": {
+        "common": {
+          "navHome": {
+            "en": "HOME",
+            "ar": "الرئيسية"
+          },
+          "navAbout": {
+            "en": "ABOUT",
+            "ar": "من نحن"
+          },
+          "navContact": {
+            "en": "CONTACT",
+            "ar": "تواصل معنا"
+          },
+          "navServices": {
+            "en": "SERVICES",
+            "ar": "خدماتنا"
+          },
+          "navProjects": {
+            "en": "PROJECTS",
+            "ar": "مشاريعنا"
+          },
+          "navClients": {
+            "en": "OUR CLIENTS",
+            "ar": "عملاؤنا"
+          },
+          "footerCopyright": {
+            "en": "All rights reserved.",
+            "ar": "جميع الحقوق محفوظة."
+          },
+          "footerBackToTop": {
+            "en": "Back to top",
+            "ar": "إلى أعلى"
+          },
+          "contactHeading": {
+            "en": "SEND A MESSAGE",
+            "ar": "ابعتلنا رسالة"
+          },
+          "contactEyebrow": {
+            "en": "LET'S CHAT",
+            "ar": "يلا نتكلم"
+          },
+          "contactIntro": {
+            "en": "Tell us what you are looking to build. Your message will appear in our dashboard inbox.",
+            "ar": "احكيلنا عن الحل اللي محتاجه. رسالتك هتوصل مباشرة إلى صندوق الرسائل في لوحة التحكم."
+          },
+          "contactFallback": {
+            "en": "Use the form to send us a message.",
+            "ar": "استخدم النموذج لإرسال رسالة لفريقنا."
+          },
+          "contactFormNote": {
+            "en": "Your message is delivered securely to our dashboard inbox.",
+            "ar": "رسالتك بتوصل بأمان إلى صندوق الرسائل في لوحة التحكم."
+          },
+          "contactFormSending": {
+            "en": "Sending your message…",
+            "ar": "جارٍ إرسال رسالتك…"
+          },
+          "contactFormSuccess": {
+            "en": "Your message was received. We’ll be in touch soon.",
+            "ar": "وصلتنا رسالتك، وهنكون على تواصل معاك قريبًا."
+          },
+          "contactFormError": {
+            "en": "We couldn’t save your message. Please try again.",
+            "ar": "ما قدرناش نحفظ رسالتك. حاول مرة تانية."
+          },
+          "contactName": {
+            "en": "Name",
+            "ar": "الاسم"
+          },
+          "contactEmail": {
+            "en": "Email",
+            "ar": "البريد الإلكتروني"
+          },
+          "contactSubject": {
+            "en": "Subject",
+            "ar": "الموضوع"
+          },
+          "contactMessage": {
+            "en": "Message",
+            "ar": "اكتب رسالتك"
+          },
+          "contactSubmit": {
+            "en": "Let's Talk",
+            "ar": "يلا نتكلم"
+          }
+        },
+        "home": {
+          "seoTitle": {
+            "en": "Fusion X.tech",
+            "ar": "Fusion X.tech"
+          },
+          "seoDescription": {
+            "en": "We build practical websites, applications and software solutions for ambitious businesses.",
+            "ar": "نبني مواقع وتطبيقات وحلولًا برمجية عملية للشركات الطموحة."
+          },
+          "heroLabel": {
+            "en": "Fusion X.tech software solutions",
+            "ar": "حلول Fusion X.tech التقنية"
+          },
+          "serviceIntroEyebrow": {
+            "en": "Technology built for real work",
+            "ar": "تقنية تخدم احتياجاتك"
+          },
+          "serviceIntroTitle": {
+            "en": "Build smarter.",
+            "ar": "ابنِ بشكل أذكى."
+          },
+          "serviceIntroAccent": {
+            "en": "Move forward.",
+            "ar": "وتقدّم بثقة."
+          },
+          "serviceIntroDescription": {
+            "en": "From websites and applications to tailored software, we turn business needs into dependable digital solutions.",
+            "ar": "من المواقع والتطبيقات إلى البرمجيات المخصصة، نحوّل احتياجات أعمالك إلى حلول رقمية موثوقة."
+          },
+          "serviceIntroCta": {
+            "en": "Explore our services",
+            "ar": "اكتشف خدماتنا"
+          },
+          "serviceIntroCount": {
+            "en": "technology services",
+            "ar": "خدمات تقنية"
+          },
+          "serviceImageAlt": {
+            "en": "Fusion X.tech software solutions",
+            "ar": "حلول Fusion X.tech التقنية"
+          },
+          "serviceImageCaption": {
+            "en": "Technology made practical",
+            "ar": "تقنية عملية تناسب أعمالك"
+          },
+          "serviceAll": {
+            "en": "View all services",
+            "ar": "شوف كل خدماتنا"
+          },
+          "servicePrevious": {
+            "en": "Previous",
+            "ar": "السابق"
+          },
+          "serviceNext": {
+            "en": "Next",
+            "ar": "التالي"
+          },
+          "serviceReadMore": {
+            "en": "Read More",
+            "ar": "اقرأ المزيد"
+          },
+          "serviceSectionLabel": {
+            "en": "Services",
+            "ar": "الخدمات"
+          },
+          "servicesEyebrow": {
+            "en": "WHAT WE DO",
+            "ar": "ماذا نقدم"
+          },
+          "servicesHeading": {
+            "en": "Our Services",
+            "ar": "خدماتنا"
+          },
+          "portfolioEyebrow": {
+            "en": "SELECTED WORK",
+            "ar": "أعمال مختارة"
+          },
+          "portfolioHeading": {
+            "en": "Projects",
+            "ar": "مشاريعنا"
+          },
+          "portfolioAll": {
+            "en": "View all projects",
+            "ar": "عرض كل المشاريع"
+          },
+          "portfolioProjectLabel": {
+            "en": "View project",
+            "ar": "عرض المشروع"
+          },
+          "clientsHeading": {
+            "en": "Our Clients",
+            "ar": "عملاؤنا"
+          },
+          "clientsAll": {
+            "en": "View all Clients",
+            "ar": "عرض كل العملاء"
+          },
+          "clientsCarousel": {
+            "en": "Show carousel",
+            "ar": "عرض متحرك"
+          },
+          "clientsPrevious": {
+            "en": "Clients previous",
+            "ar": "العملاء السابقون"
+          },
+          "clientsNext": {
+            "en": "Clients next",
+            "ar": "العملاء التاليون"
+          },
+          "clientsPreviousTitle": {
+            "en": "Previous",
+            "ar": "السابق"
+          },
+          "clientsNextTitle": {
+            "en": "Next",
+            "ar": "التالي"
+          },
+          "processEyebrow": {
+            "en": "THE FUSION X.TECH APPROACH",
+            "ar": "منهجية Fusion X.tech"
+          },
+          "processTitle": {
+            "en": "Technology made useful.",
+            "ar": "تقنية عملية تصنع فرقًا."
+          },
+          "processIntro": {
+            "en": "Clear steps, thoughtful engineering and solutions built around your goals.",
+            "ar": "خطوات واضحة وحلول تقنية مدروسة ومبنية حول أهدافك."
+          },
+          "processStep1Title": {
+            "en": "Discover",
+            "ar": "نكتشف"
+          },
+          "processStep1Description": {
+            "en": "Understand your goals and requirements.",
+            "ar": "نفهم أهدافك ومتطلباتك."
+          },
+          "processStep2Title": {
+            "en": "Plan",
+            "ar": "نخطط"
+          },
+          "processStep2Description": {
+            "en": "Choose the right approach and priorities.",
+            "ar": "نحدد النهج والأولويات المناسبة."
+          },
+          "processStep3Title": {
+            "en": "Build",
+            "ar": "نطوّر"
+          },
+          "processStep3Description": {
+            "en": "Create and test the solution with care.",
+            "ar": "نبني الحل ونختبره بعناية."
+          },
+          "processStep4Title": {
+            "en": "Launch",
+            "ar": "نطلق"
+          },
+          "processStep4Description": {
+            "en": "Prepare your product for real users.",
+            "ar": "نجهز منتجك للمستخدمين."
+          },
+          "processStep5Title": {
+            "en": "Improve",
+            "ar": "نحسّن"
+          },
+          "processStep5Description": {
+            "en": "Keep learning and refining over time.",
+            "ar": "نواصل التعلم والتحسين."
+          },
+          "bannerAlt": {
+            "en": "Fusion X.tech software and digital solutions",
+            "ar": "حلول Fusion X.tech البرمجية والرقمية"
+          },
+          "bannerLabel": {
+            "en": "Fusion X.tech",
+            "ar": "Fusion X.tech"
+          },
+          "serviceImage": {
+            "en": "/src/assets/logo.png",
+            "ar": "/src/assets/logo.png"
+          }
+        },
+        "about": {
+          "seoTitle": {
+            "en": "About Fusion X.tech — Software & Digital Solutions",
+            "ar": "عن Fusion X.tech — البرمجيات والحلول الرقمية"
+          },
+          "seoDescription": {
+            "en": "Meet Fusion X.tech, a technology company building useful digital products and software.",
+            "ar": "تعرف على Fusion X.tech، شركة تقنية تطور منتجات رقمية وبرمجيات عملية."
+          },
+          "heroImage": {
+            "en": "/src/assets/logo.png",
+            "ar": "/src/assets/logo.png"
+          },
+          "heroEyebrow": {
+            "en": "ABOUT FUSION X.TECH",
+            "ar": "عن Fusion X.tech"
+          },
+          "heroTitle": {
+            "en": "Technology that",
+            "ar": "تقنية"
+          },
+          "heroTitleAccent": {
+            "en": "moves business forward.",
+            "ar": "تدفع أعمالك للأمام."
+          },
+          "heroDescription": {
+            "en": "We turn business needs into clear, useful digital products and software.",
+            "ar": "نحوّل احتياجات الأعمال إلى منتجات رقمية وبرمجيات واضحة وعملية."
+          },
+          "heroCta": {
+            "en": "Get to know us",
+            "ar": "اعرفنا أكتر"
+          },
+          "heroImageAlt": {
+            "en": "Fusion X.tech software solutions",
+            "ar": "حلول Fusion X.tech التقنية"
+          },
+          "heroCaption": {
+            "en": "Digital solutions built with purpose",
+            "ar": "حلول رقمية مصممة لهدف واضح"
+          },
+          "storyEyebrow": {
+            "en": "WHO WE ARE",
+            "ar": "مين إحنا"
+          },
+          "storyTitle": {
+            "en": "A technology partner for your next step.",
+            "ar": "شريك تقني لخطوتك القادمة."
+          },
+          "storyParagraph1": {
+            "en": "Fusion X.tech helps businesses plan and build digital tools that solve real problems. Our work spans websites, web applications, custom software and practical technology consulting.",
+            "ar": "تساعد Fusion X.tech الشركات على تخطيط وبناء أدوات رقمية تحل مشكلات حقيقية، من المواقع وتطبيقات الويب إلى البرمجيات المخصصة والاستشارات التقنية."
+          },
+          "storyParagraph2": {
+            "en": "We focus on understanding your goals first, then choosing a clear, maintainable solution that can grow with your business.",
+            "ar": "نبدأ بفهم أهدافك، ثم نختار حلًا واضحًا وقابلًا للتطوير ليستمر مع نمو أعمالك."
+          },
+          "storyCta": {
+            "en": "Tell us about your project",
+            "ar": "احكيلنا عن مشروعك"
+          },
+          "valuesEyebrow": {
+            "en": "HOW WE WORK",
+            "ar": "منهجية عملنا"
+          },
+          "valuesTitle": {
+            "en": "Built around real needs.",
+            "ar": "حلول تبدأ من احتياج حقيقي."
+          },
+          "valuesDescription": {
+            "en": "Good technology is useful, reliable and designed around the people who use it.",
+            "ar": "التقنية الجيدة عملية وموثوقة ومصممة لتناسب الأشخاص الذين يستخدمونها."
+          },
+          "value1Title": {
+            "en": "Understand first",
+            "ar": "نفهم احتياجك أولًا"
+          },
+          "value1Text": {
+            "en": "We learn about your goals and workflows before choosing a technical direction.",
+            "ar": "نتعرف على أهدافك وطريقة عملك قبل تحديد الاتجاه التقني المناسب."
+          },
+          "value2Title": {
+            "en": "Keep it practical",
+            "ar": "حلول عملية"
+          },
+          "value2Text": {
+            "en": "We focus on clear, maintainable software that makes work easier.",
+            "ar": "نركز على برمجيات واضحة وقابلة للصيانة لتسهيل العمل."
+          },
+          "value3Title": {
+            "en": "Build for growth",
+            "ar": "نبني للتطور"
+          },
+          "value3Text": {
+            "en": "We design solutions that can evolve as your business needs change.",
+            "ar": "نصمم حلولًا قابلة للتطور مع تغير احتياجات أعمالك."
+          },
+          "approachEyebrow": {
+            "en": "OUR APPROACH",
+            "ar": "منهجيتنا"
+          },
+          "approachTitle": {
+            "en": "Think clearly. Create boldly. Keep growing.",
+            "ar": "فكّر بوضوح. ابتكر بجرأة. واستمر في التطور."
+          },
+          "approachDescription": {
+            "en": "We work through a clear cycle: understand the opportunity, create and test ideas, learn from what happens, then build on what works.",
+            "ar": "بنتبع خطوات واضحة: نفهم الفرصة، نبتكر ونختبر الأفكار، نتعلم من النتائج، وبعدها نطوّر اللي أثبت نجاحه."
+          },
+          "ctaEyebrow": {
+            "en": "LET'S BUILD WHAT'S NEXT",
+            "ar": "يلا نبدأ خطوتك الجاية"
+          },
+          "ctaTitle": {
+            "en": "Have an idea in mind?",
+            "ar": "عندك فكرة في بالك؟"
+          },
+          "ctaDescription": {
+            "en": "Tell us what you are working toward. We would love to hear about it.",
+            "ar": "احكيلنا عن هدفك، ويسعدنا نسمع فكرتك."
+          },
+          "ctaButton": {
+            "en": "Start a conversation",
+            "ar": "ابدأ كلامنا"
+          },
+          "approachMarkFirst": {
+            "en": "IDEAS",
+            "ar": "أفكار"
+          },
+          "approachMarkSecond": {
+            "en": "IN MOTION",
+            "ar": "في حركة"
+          }
+        },
+        "services": {
+          "heroImage": {
+            "en": "/src/assets/logo.png",
+            "ar": "/src/assets/logo.png"
+          },
+          "seoTitle": {
+            "en": "Technology Services | Fusion X.tech",
+            "ar": "خدمات التقنية | Fusion X.tech"
+          },
+          "seoDescription": {
+            "en": "Explore web and app development, custom software and technology consulting from Fusion X.tech.",
+            "ar": "اكتشف خدمات تطوير المواقع والتطبيقات والبرمجيات المخصصة والاستشارات التقنية من Fusion X.tech."
+          },
+          "heroAlt": {
+            "en": "Fusion X.tech technology services",
+            "ar": "خدمات Fusion X.tech التقنية"
+          },
+          "heroEyebrow": {
+            "en": "TECHNOLOGY SERVICES",
+            "ar": "خدمات تقنية"
+          },
+          "heroTitle": {
+            "en": "Technology for",
+            "ar": "تقنية"
+          },
+          "heroTitleAccent": {
+            "en": "your next chapter.",
+            "ar": "لخطوتك القادمة."
+          },
+          "heroDescription": {
+            "en": "Web and app development, custom software and practical technology guidance.",
+            "ar": "تطوير المواقع والتطبيقات والبرمجيات المخصصة والاستشارات التقنية العملية."
+          },
+          "heroCta": {
+            "en": "Explore services",
+            "ar": "اكتشف خدماتنا"
+          },
+          "listEyebrow": {
+            "en": "HOW WE HELP",
+            "ar": "إزاي نساعدك"
+          },
+          "listHeading": {
+            "en": "What we build",
+            "ar": "ما الذي نطوره"
+          },
+          "listDescription": {
+            "en": "Digital products and software designed around your real needs.",
+            "ar": "منتجات رقمية وبرمجيات مصممة حول احتياجاتك الفعلية."
+          },
+          "listCount": {
+            "en": "SERVICES",
+            "ar": "خدمة"
+          },
+          "viewDetails": {
+            "en": "View details for",
+            "ar": "تفاصيل خدمة"
+          },
+          "viewService": {
+            "en": "View service",
+            "ar": "تفاصيل الخدمة"
+          }
+        },
+        "projects": {
+          "seoTitle": {
+            "en": "Projects | Fusion X.tech",
+            "ar": "المشروعات | Fusion X.tech"
+          },
+          "seoDescription": {
+            "en": "Explore digital products and software projects by Fusion X.tech.",
+            "ar": "اكتشف المنتجات الرقمية والمشروعات البرمجية من Fusion X.tech."
+          },
+          "heroEyebrow": {
+            "en": "OUR WORK",
+            "ar": "أعمالنا"
+          },
+          "heroTitle": {
+            "en": "Digital products",
+            "ar": "منتجات رقمية"
+          },
+          "heroDescription": {
+            "en": "Selected websites, applications and software solutions.",
+            "ar": "مجموعة من المواقع والتطبيقات والحلول البرمجية."
+          },
+          "featuredLabel": {
+            "en": "Featured projects",
+            "ar": "مشاريع مختارة"
+          },
+          "allFilter": {
+            "en": "All",
+            "ar": "الكل"
+          },
+          "openProject": {
+            "en": "View project",
+            "ar": "عرض المشروع"
+          },
+          "visitProject": {
+            "en": "Visit project",
+            "ar": "زيارة المشروع"
+          },
+          "galleryLabel": {
+            "en": "Project gallery",
+            "ar": "معرض المشاريع"
+          },
+          "filterLabel": {
+            "en": "Filter projects by category",
+            "ar": "تصفية المشاريع حسب الفئة"
+          },
+          "categoryAll": {
+            "en": "All",
+            "ar": "الكل"
+          },
+          "categorySocialMedia": {
+            "en": "Social media",
+            "ar": "السوشيال ميديا"
+          },
+          "categoryWebsites": {
+            "en": "Websites",
+            "ar": "المواقع"
+          },
+          "categoryMobileApps": {
+            "en": "Apps & platforms",
+            "ar": "التطبيقات والمنصات"
+          },
+          "categoryBranding": {
+            "en": "Branding & UI/UX",
+            "ar": "الهوية وتصميم UI/UX"
+          },
+          "empty": {
+            "en": "No projects in this category yet.",
+            "ar": "لا توجد مشاريع في هذا التصنيف بعد."
+          }
+        },
+        "contact": {
+          "heroImage": {
+            "en": "/src/assets/logo.png",
+            "ar": "/src/assets/logo.png"
+          },
+          "seoTitle": {
+            "en": "Contact Fusion X.tech",
+            "ar": "تواصل مع Fusion X.tech"
+          },
+          "seoDescription": {
+            "en": "Contact Fusion X.tech about a website, application or software project.",
+            "ar": "تواصل مع Fusion X.tech لمناقشة موقع أو تطبيق أو مشروع برمجي."
+          },
+          "heroAlt": {
+            "en": "Fusion X.tech logo",
+            "ar": "شعار Fusion X.tech"
+          },
+          "heroEyebrow": {
+            "en": "GET IN TOUCH",
+            "ar": "تواصل معنا"
+          },
+          "heroTitle": {
+            "en": "Let's talk",
+            "ar": "خلّينا"
+          },
+          "heroTitleAccent": {
+            "en": "about your next build.",
+            "ar": "نتكلم عن مشروعك القادم."
+          },
+          "heroDescription": {
+            "en": "Tell us what you need and our team will follow up with you.",
+            "ar": "احكيلنا عن احتياجك وفريقنا هيتواصل معاك."
+          },
+          "heroCta": {
+            "en": "Get in touch",
+            "ar": "تواصل معنا"
+          },
+          "mapEyebrow": {
+            "en": "LET'S CONNECT",
+            "ar": "نتواصل معًا"
+          },
+          "mapTitle": {
+            "en": "Your next idea starts here.",
+            "ar": "فكرتك القادمة تبدأ هنا."
+          },
+          "mapDescription": {
+            "en": "Tell us about the website, application or software you need.",
+            "ar": "احكيلنا عن الموقع أو التطبيق أو الحل البرمجي اللي محتاجه."
+          },
+          "mapCoordinate": {
+            "en": "FUSION X.TECH · SOFTWARE & DIGITAL SOLUTIONS",
+            "ar": "Fusion X.tech · حلول برمجية ورقمية"
+          },
+          "contactSectionLabel": {
+            "en": "Contact details",
+            "ar": "بيانات التواصل"
+          },
+          "connectFallback": {
+            "en": "Let's connect",
+            "ar": "خلّينا نتواصل"
+          },
+          "phoneFallback": {
+            "en": "01064621943",
+            "ar": "01064621943"
+          },
+          "whatsapp": {
+            "en": "WhatsApp",
+            "ar": "واتساب"
+          }
+        },
+        "serviceDetail": {
+          "notFound": {
+            "en": "Service not found",
+            "ar": "الخدمة غير موجودة"
+          },
+          "browse": {
+            "en": "Browse services",
+            "ar": "تصفح الخدمات"
+          },
+          "all": {
+            "en": "All services",
+            "ar": "كل الخدمات"
+          },
+          "eyebrow": {
+            "en": "FUSION X.TECH / SERVICE",
+            "ar": "Fusion X.tech / خدماتنا"
+          },
+          "cta": {
+            "en": "Start a project",
+            "ar": "ابدأ مشروعك"
+          },
+          "benefitsEyebrow": {
+            "en": "BUILT AROUND YOUR GOALS",
+            "ar": "مصممة حول أهدافك"
+          },
+          "benefitsTitle": {
+            "en": "Make technology work for you.",
+            "ar": "خلّي التقنية تخدمك."
+          },
+          "overviewTitle": {
+            "en": "How we help",
+            "ar": "كيف نساعدك"
+          },
+          "overviewDescription": {
+            "en": "We shape each solution around your goals, users and technical requirements, then build it to be clear, reliable and maintainable.",
+            "ar": "نصمم كل حل حول أهدافك ومستخدميك ومتطلباتك التقنية، ثم نطوره ليكون واضحًا وموثوقًا وقابلًا للصيانة."
+          },
+          "relatedEyebrow": {
+            "en": "MORE TECHNOLOGY SERVICES",
+            "ar": "خدمات تقنية أخرى"
+          },
+          "relatedTitle": {
+            "en": "Explore our services",
+            "ar": "اكتشف خدماتنا"
+          },
+          "contact": {
+            "en": "Talk to our team",
+            "ar": "اتكلم مع فريقنا"
+          }
+        },
+        "projectDetail": {
+          "notFound": {
+            "en": "Project not found",
+            "ar": "المشروع غير موجود"
+          },
+          "browse": {
+            "en": "Browse projects",
+            "ar": "تصفح الأعمال"
+          },
+          "all": {
+            "en": "All projects",
+            "ar": "كل المشاريع"
+          },
+          "selected": {
+            "en": "SELECTED WORK",
+            "ar": "أعمال مختارة"
+          },
+          "artwork": {
+            "en": "Project artwork",
+            "ar": "تصميم المشروع"
+          },
+          "enlargePost": {
+            "en": "Enlarge",
+            "ar": "تكبير"
+          },
+          "socialEyebrow": {
+            "en": "CONTENT THAT CONNECTS",
+            "ar": "محتوى يقرّب علامتك من جمهورها"
+          },
+          "socialTitle": {
+            "en": "Our social media creative",
+            "ar": "بصمتنا على السوشيال ميديا"
+          },
+          "metricsNote": {
+            "en": "Concept preview · sample metrics",
+            "ar": "معاينة تجريبية · أرقام افتراضية"
+          },
+          "campaignEyebrow": {
+            "en": "CAMPAIGN SNAPSHOT",
+            "ar": "ملخص أداء الحملة"
+          },
+          "campaignTitle": {
+            "en": "Creative work, measurable growth.",
+            "ar": "إبداع يصنع فرقًا قابلًا للقياس."
+          },
+          "campaignDescription": {
+            "en": "A sample view of reach and audience growth across the campaign.",
+            "ar": "نظرة تجريبية على الوصول ونمو الجمهور عبر الحملة."
+          },
+          "growthEyebrow": {
+            "en": "COMMUNITY GROWTH",
+            "ar": "نمو المجتمع"
+          },
+          "growthTitle": {
+            "en": "One idea. Every platform.",
+            "ar": "فكرة واحدة.. وحضور على كل منصة."
+          },
+          "filmEyebrow": {
+            "en": "CAMPAIGN FILM",
+            "ar": "فيديو الحملة"
+          },
+          "filmTitle": {
+            "en": "The story, in motion.",
+            "ar": "الحكاية وهي بتتحرك."
+          },
+          "galleryEyebrow": {
+            "en": "CAMPAIGN GALLERY",
+            "ar": "معرض الحملة"
+          },
+          "galleryLabel": {
+            "en": "Social media image gallery",
+            "ar": "معرض صور السوشيال ميديا"
+          },
+          "galleryTitle": {
+            "en": "Eight creative pieces. One visual identity.",
+            "ar": "8 تصميمات إبداعية.. بهوية واحدة."
+          },
+          "galleryDescription": {
+            "en": "Select any image to view it larger.",
+            "ar": "اضغط على أي صورة لمشاهدتها بحجم أكبر."
+          },
+          "campaignImage": {
+            "en": "Campaign image",
+            "ar": "صورة الحملة"
+          },
+          "campaignDesign": {
+            "en": "Campaign design",
+            "ar": "تصميم الحملة"
+          },
+          "campaignVideo": {
+            "en": "Campaign video",
+            "ar": "فيديو الحملة"
+          },
+          "expandedDialog": {
+            "en": "Expanded project image",
+            "ar": "الصورة المكبرة للمشروع"
+          },
+          "overviewEyebrow": {
+            "en": "PROJECT OVERVIEW",
+            "ar": "نبذة عن المشروع"
+          },
+          "ctaEyebrow": {
+            "en": "HAVE A PROJECT IN MIND?",
+            "ar": "عندك مشروع في بالك؟"
+          },
+          "ctaTitle": {
+            "en": "Let's create something worth remembering.",
+            "ar": "يلا نعمل حاجة تفضل في الذاكرة."
+          },
+          "cta": {
+            "en": "Start a project",
+            "ar": "ابدأ مشروعك"
+          },
+          "closeImage": {
+            "en": "Close image",
+            "ar": "إغلاق الصورة"
+          },
+          "expandedImage": {
+            "en": "Expanded project artwork",
+            "ar": "تصميم المشروع بحجم مكبر"
+          },
+          "platformCreative": {
+            "en": "Platform-specific creative",
+            "ar": "محتوى مناسب لكل منصة"
+          },
+          "visualIdentity": {
+            "en": "Consistent visual identity",
+            "ar": "هوية بصرية متناسقة"
+          },
+          "performanceOptimization": {
+            "en": "Performance-led optimization",
+            "ar": "تحسين مستمر حسب الأداء"
+          }
+        },
+        "showcaseSeedVersion": 1
       }
     }
   }

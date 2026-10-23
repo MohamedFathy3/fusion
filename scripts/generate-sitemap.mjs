@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const configuredOrigin =
   (process.env.PUBLIC_SITE_URL || process.env.VITE_PUBLIC_SITE_URL)?.trim() ||
-  "https://viralzoom.agency";
+  "https://fusionteck.online";
 
 let origin;
 try {
@@ -26,27 +26,10 @@ try {
 }
 
 const servicesSource = await readFile("src/lib/showcase-data.ts", "utf8");
-const projectsSource = await readFile("src/lib/projects.ts", "utf8");
-const starPlusSource = await readFile("src/lib/starplus-projects.ts", "utf8");
 const serviceSlugs = [...servicesSource.matchAll(/slug:\s*"([^"]+)"/g)].map(
   (match) => `/services/${match[1]}`,
 );
-const projectSlugs = [projectsSource, starPlusSource].flatMap((source) =>
-  [...source.matchAll(/slug:\s*"([^"]+)"/g)].map(
-    (match) => `/projects/${encodeURIComponent(match[1])}`,
-  ),
-);
-const paths = [
-  ...new Set([
-    "/",
-    "/about",
-    "/contact",
-    "/services",
-    "/projects",
-    ...serviceSlugs,
-    ...projectSlugs,
-  ]),
-];
+const paths = [...new Set(["/", "/about", "/contact", "/services", "/projects", ...serviceSlugs])];
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths
   .map((path) => `  <url><loc>${origin}${path}</loc></url>`)
   .join("\n")}\n</urlset>\n`;

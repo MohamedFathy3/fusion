@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ErpRouteImport } from './routes/erp'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as AboutIndexRouteImport } from './routes/about.index'
@@ -40,6 +41,11 @@ const AdminRoute = AdminRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ErpRoute = ErpRouteImport.update({
+  id: '/erp',
+  path: '/erp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsRoute = ProjectsRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRouteWithChildren
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRouteWithChildren
+  '/erp': typeof ErpRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/erp': typeof ErpRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/about': typeof AboutIndexRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRouteWithChildren
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRouteWithChildren
+  '/erp': typeof ErpRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/contact'
+    | '/erp'
     | '/projects'
     | '/services'
     | '/projects/$slug'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/erp'
     | '/projects/$slug'
     | '/services/$slug'
     | '/about'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/contact'
+    | '/erp'
     | '/projects'
     | '/services'
     | '/projects/$slug'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRouteWithChildren
   AdminRoute: typeof AdminRoute
   ContactRoute: typeof ContactRouteWithChildren
+  ErpRoute: typeof ErpRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRouteWithChildren
 }
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/erp': {
+      id: '/erp'
+      path: '/erp'
+      fullPath: '/erp'
+      preLoaderRoute: typeof ErpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects': {
@@ -315,6 +335,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRouteWithChildren,
   AdminRoute: AdminRoute,
   ContactRoute: ContactRouteWithChildren,
+  ErpRoute: ErpRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRouteWithChildren,
 }

@@ -7,7 +7,7 @@ import type { Language, SectionId } from "@/components/showcase/types";
 import { canonicalUrl } from "@/lib/seo";
 import { getPageCopy, useCMS } from "@/lib/cms";
 import { loadSiteConfig } from "@/lib/cms-loader";
-import serviceHeroImage from "@/assets/service.png";
+import serviceHeroImage from "@/assets/fusionxtech-services-section.webp";
 
 export const Route = createFileRoute("/services/")({
   component: ServicesPage,
@@ -57,8 +57,8 @@ function ServicesPage() {
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
-      setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
+      setDarkMode(localStorage.getItem("fusionxtech-theme") !== "light");
+      setLanguage(localStorage.getItem("fusionxtech-language") === "ar" ? "ar" : "en");
     } catch {
       // Keep the default language and dark mode when storage is unavailable.
     }
@@ -78,7 +78,7 @@ function ServicesPage() {
     const next = !darkMode;
     setDarkMode(next);
     try {
-      localStorage.setItem("viral-zoom-theme", next ? "dark" : "light");
+      localStorage.setItem("fusionxtech-theme", next ? "dark" : "light");
     } catch {
       // The switch still works without storage.
     }
@@ -109,7 +109,7 @@ function ServicesPage() {
           const next = ar ? "en" : "ar";
           setLanguage(next);
           try {
-            localStorage.setItem("viral-zoom-language", next);
+            localStorage.setItem("fusionxtech-language", next);
           } catch {
             // The switch still works without storage.
           }
@@ -117,11 +117,7 @@ function ServicesPage() {
       />
       <main>
         <section className="services-page-hero" aria-labelledby="services-page-title">
-          <img
-            className="services-page-hero-image"
-            src={serviceHeroImage}
-            alt={copy("heroAlt")}
-          />
+          <img className="services-page-hero-image" src={serviceHeroImage} alt={copy("heroAlt")} />
           <div className="services-page-hero-shade" />
           <div className="services-page-hero-content">
             <p className="services-page-hero-eyebrow">{copy("heroEyebrow")}</p>

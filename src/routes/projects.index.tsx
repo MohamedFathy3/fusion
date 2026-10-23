@@ -105,8 +105,8 @@ function ProjectsPage() {
 
   useEffect(() => {
     try {
-      setDarkMode(localStorage.getItem("viral-zoom-theme") !== "light");
-      setLanguage(localStorage.getItem("viral-zoom-language") === "ar" ? "ar" : "en");
+      setDarkMode(localStorage.getItem("fusionxtech-theme") !== "light");
+      setLanguage(localStorage.getItem("fusionxtech-language") === "ar" ? "ar" : "en");
     } catch {
       // Keep the default language and dark mode when storage is unavailable.
     }
@@ -126,7 +126,7 @@ function ProjectsPage() {
     const next = !darkMode;
     setDarkMode(next);
     try {
-      localStorage.setItem("viral-zoom-theme", next ? "dark" : "light");
+      localStorage.setItem("fusionxtech-theme", next ? "dark" : "light");
     } catch {
       // The switch still works without storage.
     }
@@ -140,7 +140,7 @@ function ProjectsPage() {
     const next = ar ? "en" : "ar";
     setLanguage(next);
     try {
-      localStorage.setItem("viral-zoom-language", next);
+      localStorage.setItem("fusionxtech-language", next);
     } catch {
       // The switch still works without storage.
     }
@@ -193,7 +193,7 @@ function ProjectsPage() {
                 </div>
               ))}
               <span className="projects-hero-stamp" aria-hidden="true">
-                VZ / WORKS
+                FUSION X.TECH / WORK
               </span>
             </div>
           </div>

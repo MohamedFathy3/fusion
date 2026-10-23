@@ -7,27 +7,17 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { services as baseServices } from "@/lib/showcase-data";
 import {
   projects as baseProjects,
   type Project,
   type ProjectCategoryId,
   type SocialMediaShowcase,
 } from "@/lib/projects";
-import c0 from "@/assets/client-0.jpg.asset.json";
-import c1 from "@/assets/client-1.jpg.asset.json";
-import c2 from "@/assets/client-2.jpg.asset.json";
-import c3 from "@/assets/client-3.jpg.asset.json";
-import c4 from "@/assets/client-4.jpg.asset.json";
-import c5 from "@/assets/client-5.jpg.asset.json";
-import c6 from "@/assets/client-6.jpg.asset.json";
-import c7 from "@/assets/client-7.jpg.asset.json";
-import c8 from "@/assets/client-8.jpg.asset.json";
-import c9 from "@/assets/client-9.jpg.asset.json";
-import hero from "@/assets/hero.mp4.asset.json";
-import logo from "@/assets/logo.png.asset.json";
-import whiteLogo from "@/assets/logo-white.png.asset.json";
-import website from "@/assets/website.jpg.asset.json";
+import viralzoomPortfolio from "@/assets/viralzoom-projects.asset.json";
+import websiteClientLogos from "@/assets/website-client-logos.asset.json";
+import fusionLogo from "@/assets/logo.png";
+import heroPoster from "@/assets/Websites & Applications Tech Workspace.png";
+import heroVideo from "@/assets/Software_company_hero_video_crea…_20261023184930.mp4?url";
 
 export type Bilingual = { en: string; ar: string };
 export type AboutValue = { title: Bilingual; text: Bilingual };
@@ -86,6 +76,7 @@ export type SiteContent = {
     projectsTitle: Bilingual;
     contactTitle: Bilingual;
   };
+  showcaseSeedVersion?: number;
   pages: PageContent;
 };
 export type EditableItem = {
@@ -118,15 +109,49 @@ export type SiteConfig = {
   content: SiteContent;
 };
 
-export const initialConfig: SiteConfig = {
-  brand: { name: "Viral Zoom", accent: "#69499e", logo: logo.url, whiteLogo: whiteLogo.url },
+function importedProjectCategory(category: string): ProjectCategoryId {
+  if (category === "websites" || category === "ui-ux") return category;
+  throw new Error(`Unsupported imported project category: ${category}`);
+}
+
+const importedPortfolio: EditableItem[] = viralzoomPortfolio.projects.map((project) => ({
+  id: project.id,
+  name: project.name,
+  description: project.description,
+  image: project.image.url,
+  link: project.url,
+  enabled: true,
+  projectCategory: importedProjectCategory(project.category),
+  projectKind: "external",
+  projectUrl: project.url,
+}));
+
+const importedClientLogos: EditableItem[] = websiteClientLogos.clients.map((client) => ({
+  id: `client-${client.id}`,
+  name: client.name,
+  description: {
+    en: "Website project client",
+    ar: "عميل من مشاريع المواقع",
+  },
+  image: client.image.url,
+  link: client.projectUrl,
+  enabled: true,
+}));
+
+const legacyConfig: SiteConfig = {
+  brand: {
+    name: "Fusion X.tech",
+    accent: "#08bdf3",
+    logo: fusionLogo,
+    whiteLogo: fusionLogo,
+  },
   hero: {
     title: { en: "Creative & Digital Marketing", ar: "الإبداع والتسويق الرقمي" },
     subtitle: {
       en: "Ideas that make your brand impossible to ignore.",
       ar: "أفكار تجعل علامتك التجارية مستحيلة التجاهل.",
     },
-    video: hero.url,
+    video: "",
     poster: "",
   },
   sections: {
@@ -137,14 +162,7 @@ export const initialConfig: SiteConfig = {
     banner: true,
     contact: true,
   },
-  services: baseServices.map((item) => ({
-    id: item.slug,
-    name: item.title,
-    description: item.description,
-    image: item.image,
-    link: `/services/${item.slug}`,
-    enabled: true,
-  })),
+  services: [],
   portfolio: baseProjects.map((item) => ({
     id: item.slug,
     name: { en: item.localizedName?.en ?? item.name, ar: item.localizedName?.ar ?? item.name },
@@ -163,15 +181,9 @@ export const initialConfig: SiteConfig = {
       ? { socialMediaShowcase: item.socialMediaShowcase }
       : {}),
   })),
-  clients: [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9].map((item, i) => ({
-    id: `client-${i + 1}`,
-    name: { en: `Client ${i + 1}`, ar: `عميل ${i + 1}` },
-    description: { en: "", ar: "" },
-    image: item.url,
-    enabled: true,
-  })),
+  clients: [],
   contact: {
-    email: "info@viralzoom.agency",
+    email: "info@fusionteck.online",
     phone: "01222291024",
     whatsapp: "",
     address: { en: "Cairo, Egypt", ar: "القاهرة، مصر" },
@@ -179,14 +191,14 @@ export const initialConfig: SiteConfig = {
   content: {
     about: {
       seoTitle: {
-        en: "About Viral Zoom — Creative & Digital Agency",
-        ar: "عن فايرال زوم — وكالة إبداعية ورقمية",
+        en: "About Fusion X.tech — Creative & Digital Agency",
+        ar: "عن Fusion X.tech — وكالة إبداعية ورقمية",
       },
       seoDescription: {
-        en: "Meet Viral Zoom, a creative and digital agency combining strategy, design and technology to help brands grow.",
-        ar: "تعرف على فايرال زوم، وكالة إبداعية ورقمية تجمع الاستراتيجية والتصميم والتكنولوجيا لتنمية العلامات التجارية.",
+        en: "Meet Fusion X.tech, a creative and digital agency combining strategy, design and technology to help brands grow.",
+        ar: "تعرف على Fusion X.tech، وكالة إبداعية ورقمية تجمع الاستراتيجية والتصميم والتكنولوجيا لتنمية العلامات التجارية.",
       },
-      heroEyebrow: { en: "ABOUT VIRAL ZOOM", ar: "عن فايرال زوم" },
+      heroEyebrow: { en: "ABOUT FUSION X.TECH", ar: "عن Fusion X.tech" },
       heroTitle: { en: "We turn bold ideas", ar: "نحوّل الأفكار" },
       heroTitleAccent: { en: "into real impact.", ar: "الجريئة لتأثير حقيقي." },
       heroDescription: {
@@ -195,8 +207,8 @@ export const initialConfig: SiteConfig = {
       },
       heroCta: { en: "Get to know us", ar: "اعرفنا أكتر" },
       heroImageAlt: {
-        en: "A creative digital project by Viral Zoom",
-        ar: "مشروع رقمي إبداعي من فايرال زوم",
+        en: "A creative digital project by Fusion X.tech",
+        ar: "مشروع رقمي إبداعي من Fusion X.tech",
       },
       heroCaption: { en: "Ideas made visible", ar: "أفكار تتحول لواقع" },
       storyEyebrow: { en: "WHO WE ARE", ar: "مين إحنا" },
@@ -206,8 +218,8 @@ export const initialConfig: SiteConfig = {
       },
       storyParagraphs: [
         {
-          en: "At Viral Zoom, we bring creative services and digital solutions together under one roof. From brand identity and content to websites, campaigns and production, we help shape consistent experiences that connect with people.",
-          ar: "في فايرال زوم، بنجمع الخدمات الإبداعية والحلول الرقمية في مكان واحد. من الهوية والمحتوى للمواقع والحملات والإنتاج، بنساعد في بناء تجارب متناسقة تقرّب علامتك من جمهورها.",
+          en: "At Fusion X.tech, we bring creative services and digital solutions together under one roof. From brand identity and content to websites, campaigns and production, we help shape consistent experiences that connect with people.",
+          ar: "في Fusion X.tech، بنجمع الخدمات الإبداعية والحلول الرقمية في مكان واحد. من الهوية والمحتوى للمواقع والحملات والإنتاج، بنساعد في بناء تجارب متناسقة تقرّب علامتك من جمهورها.",
         },
         {
           en: "Every project starts with understanding what makes your business different. Then we turn that understanding into clear ideas, thoughtful design and work made to support your next step.",
@@ -262,7 +274,7 @@ export const initialConfig: SiteConfig = {
       ctaButton: { en: "Start a conversation", ar: "ابدأ كلامنا" },
     },
     process: {
-      eyebrow: { en: "THE VIRAL ZOOM METHOD", ar: "منهجية فايرال زوم" },
+      eyebrow: { en: "THE FUSION X.TECH METHOD", ar: "منهجية Fusion X.tech" },
       title: {
         en: "Measure. Ideate. Experiment. Read. Scale.",
         ar: "حلّل. ابتكر. جرّب. قيّم. وسّع.",
@@ -295,22 +307,22 @@ export const initialConfig: SiteConfig = {
       ],
     },
     seo: {
-      siteTitle: { en: "ViralZoom", ar: "ViralZoom" },
+      siteTitle: { en: "Fusion X.tech", ar: "Fusion X.tech" },
       siteDescription: {
         en: "Creative and digital marketing agency.",
         ar: "وكالة إبداعية ورقمية للتسويق والتصميم.",
       },
       homeTitle: {
-        en: "ViralZoom",
-        ar: "ViralZoom",
+        en: "Fusion X.tech",
+        ar: "Fusion X.tech",
       },
       homeDescription: {
         en: "Ideas that make your brand impossible to ignore.",
         ar: "أفكار تجعل علامتك التجارية مستحيلة التجاهل.",
       },
-      servicesTitle: { en: "Our Services | Viral Zoom", ar: "خدماتنا | فايرال زوم" },
-      projectsTitle: { en: "Our Projects | Viral Zoom", ar: "أعمالنا | فايرال زوم" },
-      contactTitle: { en: "Contact Viral Zoom", ar: "تواصل مع فايرال زوم" },
+      servicesTitle: { en: "Our Services | Fusion X.tech", ar: "خدماتنا | Fusion X.tech" },
+      projectsTitle: { en: "Our Projects | Fusion X.tech", ar: "أعمالنا | Fusion X.tech" },
+      contactTitle: { en: "Contact Fusion X.tech", ar: "تواصل مع Fusion X.tech" },
     },
     pages: {
       common: {
@@ -337,7 +349,10 @@ export const initialConfig: SiteConfig = {
           ar: "ابعتلنا رسالتك وهنرد عليك في أقرب وقت.",
         },
         contactFormSending: { en: "Sending your message…", ar: "جارٍ إرسال رسالتك…" },
-        contactFormSuccess: { en: "Your message was sent successfully.", ar: "تم إرسال رسالتك بنجاح." },
+        contactFormSuccess: {
+          en: "Your message was sent successfully.",
+          ar: "تم إرسال رسالتك بنجاح.",
+        },
         contactFormError: {
           en: "We couldn’t send your message. Please try again or email us directly.",
           ar: "ما قدرناش نبعت رسالتك. حاول تاني أو ابعتلنا على الإيميل مباشرة.",
@@ -350,14 +365,14 @@ export const initialConfig: SiteConfig = {
       },
       home: {
         seoTitle: {
-          en: "ViralZoom",
-          ar: "ViralZoom",
+          en: "Fusion X.tech",
+          ar: "Fusion X.tech",
         },
         seoDescription: {
           en: "Ideas that make your brand impossible to ignore.",
           ar: "أفكار تجعل علامتك التجارية مستحيلة التجاهل.",
         },
-        heroLabel: { en: "Viral Zoom showreel", ar: "فيديو فايرال زوم" },
+        heroLabel: { en: "Fusion X.tech showreel", ar: "فيديو Fusion X.tech" },
         serviceIntroEyebrow: {
           en: "Creative services, made for growth",
           ar: "خدمات إبداعية تنمّي شغلك",
@@ -371,8 +386,8 @@ export const initialConfig: SiteConfig = {
         serviceIntroCta: { en: "Explore our services", ar: "اكتشف خدماتنا" },
         serviceIntroCount: { en: "ways to grow your brand", ar: "خدمات لتنمية علامتك" },
         serviceImageAlt: {
-          en: "Creative digital experience designed by Viral Zoom",
-          ar: "تجربة رقمية إبداعية من فايرال زوم",
+          en: "Creative digital experience designed by Fusion X.tech",
+          ar: "تجربة رقمية إبداعية من Fusion X.tech",
         },
         serviceImageCaption: { en: "Strategy meets creativity", ar: "الاستراتيجية تلتقي بالإبداع" },
         serviceAll: { en: "View all services", ar: "شوف كل خدماتنا" },
@@ -393,7 +408,7 @@ export const initialConfig: SiteConfig = {
         clientsNext: { en: "Clients next", ar: "العملاء التاليون" },
         clientsPreviousTitle: { en: "Previous", ar: "السابق" },
         clientsNextTitle: { en: "Next", ar: "التالي" },
-        processEyebrow: { en: "THE VIRAL ZOOM METHOD", ar: "منهجية فايرال زوم" },
+        processEyebrow: { en: "THE FUSION X.TECH METHOD", ar: "منهجية Fusion X.tech" },
         processTitle: {
           en: "Measure. Ideate. Experiment. Read. Scale.",
           ar: "حلّل. ابتكر. جرّب. قيّم. وسّع.",
@@ -413,23 +428,23 @@ export const initialConfig: SiteConfig = {
         processStep5Title: { en: "Scale", ar: "وسّع" },
         processStep5Description: { en: "Do more of what works.", ar: "نوسّع أثر ما ينجح." },
         bannerAlt: {
-          en: "Viral Zoom: creative ideas, powerful results, your brand amplified.",
-          ar: "فايرال زوم: أفكار إبداعية ونتائج قوية تعزز علامتك التجارية.",
+          en: "Fusion X.tech: creative ideas, powerful results, your brand amplified.",
+          ar: "Fusion X.tech: أفكار إبداعية ونتائج قوية تعزز علامتك التجارية.",
         },
-        bannerLabel: { en: "Viral Zoom creative agency", ar: "وكالة فايرال زوم الإبداعية" },
-        serviceImage: { en: website.url, ar: website.url },
+        bannerLabel: { en: "Fusion X.tech creative agency", ar: "وكالة Fusion X.tech الإبداعية" },
+        serviceImage: { en: fusionLogo, ar: fusionLogo },
       },
       about: {
         seoTitle: {
-          en: "About Viral Zoom — Creative & Digital Agency",
-          ar: "عن فايرال زوم — وكالة إبداعية ورقمية",
+          en: "About Fusion X.tech — Creative & Digital Agency",
+          ar: "عن Fusion X.tech — وكالة إبداعية ورقمية",
         },
         seoDescription: {
-          en: "Meet Viral Zoom, a creative and digital agency combining strategy, design and technology to help brands grow.",
-          ar: "تعرف على فايرال زوم، وكالة إبداعية ورقمية تجمع الاستراتيجية والتصميم والتكنولوجيا لتنمية العلامات التجارية.",
+          en: "Meet Fusion X.tech, a creative and digital agency combining strategy, design and technology to help brands grow.",
+          ar: "تعرف على Fusion X.tech، وكالة إبداعية ورقمية تجمع الاستراتيجية والتصميم والتكنولوجيا لتنمية العلامات التجارية.",
         },
-        heroImage: { en: website.url, ar: website.url },
-        heroEyebrow: { en: "ABOUT VIRAL ZOOM", ar: "عن فايرال زوم" },
+        heroImage: { en: fusionLogo, ar: fusionLogo },
+        heroEyebrow: { en: "ABOUT FUSION X.TECH", ar: "عن Fusion X.tech" },
         heroTitle: { en: "We turn bold ideas", ar: "نحوّل الأفكار" },
         heroTitleAccent: { en: "into real impact.", ar: "الجريئة لتأثير حقيقي." },
         heroDescription: {
@@ -438,8 +453,8 @@ export const initialConfig: SiteConfig = {
         },
         heroCta: { en: "Get to know us", ar: "اعرفنا أكتر" },
         heroImageAlt: {
-          en: "A creative digital project by Viral Zoom",
-          ar: "مشروع رقمي إبداعي من فايرال زوم",
+          en: "A creative digital project by Fusion X.tech",
+          ar: "مشروع رقمي إبداعي من Fusion X.tech",
         },
         heroCaption: { en: "Ideas made visible", ar: "أفكار تتحول لواقع" },
         storyEyebrow: { en: "WHO WE ARE", ar: "مين إحنا" },
@@ -448,8 +463,8 @@ export const initialConfig: SiteConfig = {
           ar: "شريك إبداعي للعلامات اللي مستعدة تكبر.",
         },
         storyParagraph1: {
-          en: "At Viral Zoom, we bring creative services and digital solutions together under one roof. From brand identity and content to websites, campaigns and production, we help shape consistent experiences that connect with people.",
-          ar: "في فايرال زوم، بنجمع الخدمات الإبداعية والحلول الرقمية في مكان واحد. من الهوية والمحتوى للمواقع والحملات والإنتاج، بنساعد في بناء تجارب متناسقة تقرّب علامتك من جمهورها.",
+          en: "At Fusion X.tech, we bring creative services and digital solutions together under one roof. From brand identity and content to websites, campaigns and production, we help shape consistent experiences that connect with people.",
+          ar: "في Fusion X.tech، بنجمع الخدمات الإبداعية والحلول الرقمية في مكان واحد. من الهوية والمحتوى للمواقع والحملات والإنتاج، بنساعد في بناء تجارب متناسقة تقرّب علامتك من جمهورها.",
         },
         storyParagraph2: {
           en: "Every project starts with understanding what makes your business different. Then we turn that understanding into clear ideas, thoughtful design and work made to support your next step.",
@@ -497,15 +512,15 @@ export const initialConfig: SiteConfig = {
         approachMarkSecond: { en: "IN MOTION", ar: "في حركة" },
       },
       services: {
-        heroImage: { en: website.url, ar: website.url },
-        seoTitle: { en: "Our Services | Viral Zoom", ar: "خدماتنا | فايرال زوم" },
+        heroImage: { en: fusionLogo, ar: fusionLogo },
+        seoTitle: { en: "Our Services | Fusion X.tech", ar: "خدماتنا | Fusion X.tech" },
         seoDescription: {
-          en: "Discover creative and digital services from Viral Zoom.",
-          ar: "اكتشف الخدمات الإبداعية والرقمية من فايرال زوم.",
+          en: "Discover creative and digital services from Fusion X.tech.",
+          ar: "اكتشف الخدمات الإبداعية والرقمية من Fusion X.tech.",
         },
         heroAlt: {
-          en: "A creative digital project by Viral Zoom",
-          ar: "مشروع رقمي إبداعي من فايرال زوم",
+          en: "A creative digital project by Fusion X.tech",
+          ar: "مشروع رقمي إبداعي من Fusion X.tech",
         },
         heroEyebrow: { en: "IDEAS INTO IMPACT", ar: "من الفكرة للتأثير" },
         heroTitle: { en: "Services that", ar: "خدمات" },
@@ -526,10 +541,10 @@ export const initialConfig: SiteConfig = {
         viewService: { en: "View service", ar: "تفاصيل الخدمة" },
       },
       projects: {
-        seoTitle: { en: "Our Projects | Viral Zoom", ar: "أعمالنا | فايرال زوم" },
+        seoTitle: { en: "Our Projects | Fusion X.tech", ar: "أعمالنا | Fusion X.tech" },
         seoDescription: {
-          en: "Explore creative projects by Viral Zoom.",
-          ar: "اكتشف المشاريع الإبداعية من فايرال زوم.",
+          en: "Explore creative projects by Fusion X.tech.",
+          ar: "اكتشف المشاريع الإبداعية من Fusion X.tech.",
         },
         heroEyebrow: { en: "SELECTED WORK", ar: "أعمال مختارة" },
         heroTitle: {
@@ -537,8 +552,8 @@ export const initialConfig: SiteConfig = {
           ar: "كل مشروع في محفظتنا الإبداعية.",
         },
         heroDescription: {
-          en: "A selection of brands and ideas brought to life by Viral Zoom.",
-          ar: "مجموعة من العلامات والأفكار اللي حولناها لتجارب إبداعية في فايرال زوم.",
+          en: "A selection of brands and ideas brought to life by Fusion X.tech.",
+          ar: "مجموعة من العلامات والأفكار اللي حولناها لتجارب إبداعية في Fusion X.tech.",
         },
         featuredLabel: { en: "Featured projects", ar: "مشاريع مختارة" },
         allFilter: { en: "All", ar: "الكل" },
@@ -557,15 +572,15 @@ export const initialConfig: SiteConfig = {
         },
       },
       contact: {
-        heroImage: { en: website.url, ar: website.url },
-        seoTitle: { en: "Contact Viral Zoom", ar: "تواصل مع فايرال زوم" },
+        heroImage: { en: fusionLogo, ar: fusionLogo },
+        seoTitle: { en: "Contact Fusion X.tech", ar: "تواصل مع Fusion X.tech" },
         seoDescription: {
           en: "Tell us what you are looking to create and let's start a conversation.",
           ar: "احكيلنا عن فكرتك ويلا نبدأ نتكلم.",
         },
         heroAlt: {
-          en: "Creative digital work by Viral Zoom",
-          ar: "أعمال رقمية إبداعية من فايرال زوم",
+          en: "Creative digital work by Fusion X.tech",
+          ar: "أعمال رقمية إبداعية من Fusion X.tech",
         },
         heroEyebrow: { en: "LET'S MAKE SOMETHING GREAT", ar: "يلا نعمل حاجة مميزة" },
         heroTitle: { en: "Let's talk", ar: "خلّينا" },
@@ -591,7 +606,7 @@ export const initialConfig: SiteConfig = {
         notFound: { en: "Service not found", ar: "الخدمة غير موجودة" },
         browse: { en: "Browse services", ar: "تصفح الخدمات" },
         all: { en: "All services", ar: "كل الخدمات" },
-        eyebrow: { en: "VIRAL ZOOM / SERVICE", ar: "فايرال زوم / خدماتنا" },
+        eyebrow: { en: "FUSION X.TECH / SERVICE", ar: "Fusion X.tech / خدماتنا" },
         cta: { en: "Start a project", ar: "ابدأ مشروعك" },
         benefitsEyebrow: { en: "THE RIGHT MOVE FOR YOUR BRAND", ar: "الخطوة الصح لعلامتك" },
         benefitsTitle: { en: "Make your next move count.", ar: "خلّي خطوتك الجاية تفرق." },
@@ -659,6 +674,425 @@ export const initialConfig: SiteConfig = {
           en: "Performance-led optimization",
           ar: "تحسين مستمر حسب الأداء",
         },
+      },
+      showcaseSeedVersion: 1,
+    },
+  },
+};
+
+const fusionTechServices: EditableItem[] = [
+  {
+    id: "web-app-development",
+    name: { en: "Websites & Applications", ar: "المواقع والتطبيقات" },
+    description: {
+      en: "We design and build fast, responsive websites and web applications around your customers and business workflows.",
+      ar: "نصمم ونطور مواقع وتطبيقات ويب سريعة ومتوافقة مع كل الأجهزة، حسب احتياجات عملك وعملائك.",
+    },
+    image: fusionLogo,
+    link: "/services/web-app-development",
+    enabled: true,
+  },
+  {
+    id: "software-solutions",
+    name: { en: "Custom Software Solutions", ar: "حلول برمجية مخصصة" },
+    description: {
+      en: "From internal tools to customer-facing platforms, we build software that makes everyday business operations simpler.",
+      ar: "من أدوات إدارة العمل إلى المنصات الرقمية، نبني برمجيات تسهّل العمليات اليومية وتخدم أهداف شركتك.",
+    },
+    image: fusionLogo,
+    link: "/services/software-solutions",
+    enabled: true,
+  },
+  {
+    id: "technology-consulting",
+    name: { en: "Technology Consulting", ar: "الاستشارات التقنية" },
+    description: {
+      en: "Get practical technical guidance to choose the right tools, plan integrations and move your digital projects forward.",
+      ar: "نساعدك في اختيار الأدوات المناسبة وتخطيط التكاملات واتخاذ قرارات تقنية عملية لتطوير مشروعاتك الرقمية.",
+    },
+    image: fusionLogo,
+    link: "/services/technology-consulting",
+    enabled: true,
+  },
+];
+
+export const initialConfig: SiteConfig = {
+  ...legacyConfig,
+  brand: {
+    name: "Fusion X.tech",
+    accent: "#08bdf3",
+    logo: fusionLogo,
+    whiteLogo: fusionLogo,
+  },
+  hero: {
+    title: { en: "Software & Digital Solutions", ar: "البرمجيات والحلول الرقمية" },
+    subtitle: {
+      en: "We build practical technology for ambitious businesses.",
+      ar: "نبني حلولًا تقنية عملية للشركات الطموحة.",
+    },
+    video: heroVideo,
+    poster: heroPoster,
+  },
+  sections: {
+    services: true,
+    portfolio: true,
+    clients: true,
+    process: true,
+    banner: false,
+    contact: true,
+  },
+  services: fusionTechServices,
+  portfolio: importedPortfolio,
+  clients: importedClientLogos,
+  contact: {
+    email: "",
+    phone: "01064621943",
+    whatsapp: "",
+    address: { en: "", ar: "" },
+  },
+  content: {
+    ...legacyConfig.content,
+    about: {
+      ...legacyConfig.content.about,
+      seoTitle: {
+        en: "About Fusion X.tech — Software & Digital Solutions",
+        ar: "عن Fusion X.tech — البرمجيات والحلول الرقمية",
+      },
+      seoDescription: {
+        en: "Fusion X.tech builds websites, applications and custom software for ambitious businesses.",
+        ar: "تطور Fusion X.tech المواقع والتطبيقات والحلول البرمجية المخصصة للشركات الطموحة.",
+      },
+      heroEyebrow: { en: "ABOUT FUSION X.TECH", ar: "عن Fusion X.tech" },
+      heroTitle: { en: "Technology that", ar: "تقنية" },
+      heroTitleAccent: { en: "moves business forward.", ar: "تدفع أعمالك للأمام." },
+      heroDescription: {
+        en: "We turn business needs into clear, useful digital products and software.",
+        ar: "نحوّل احتياجات الأعمال إلى منتجات رقمية وبرمجيات واضحة وعملية.",
+      },
+      heroImageAlt: { en: "Fusion X.tech logo", ar: "شعار Fusion X.tech" },
+      storyTitle: {
+        en: "A technology partner for your next step.",
+        ar: "شريك تقني لخطوتك القادمة.",
+      },
+      storyParagraphs: [
+        {
+          en: "Fusion X.tech helps businesses plan and build digital tools that solve real problems. Our work spans websites, web applications, custom software and practical technology consulting.",
+          ar: "تساعد Fusion X.tech الشركات على تخطيط وبناء أدوات رقمية تحل مشكلات حقيقية، من المواقع وتطبيقات الويب إلى البرمجيات المخصصة والاستشارات التقنية.",
+        },
+        {
+          en: "We focus on understanding your goals first, then choosing a clear, maintainable solution that can grow with your business.",
+          ar: "نبدأ بفهم أهدافك، ثم نختار حلًا واضحًا وقابلًا للتطوير ليستمر مع نمو أعمالك.",
+        },
+      ],
+      valuesEyebrow: { en: "HOW WE WORK", ar: "منهجية عملنا" },
+      valuesTitle: { en: "Built around real needs.", ar: "حلول تبدأ من احتياج حقيقي." },
+      valuesDescription: {
+        en: "Good technology is useful, reliable and designed around the people who use it.",
+        ar: "التقنية الجيدة عملية وموثوقة ومصممة لتناسب الأشخاص الذين يستخدمونها.",
+      },
+      approachTitle: {
+        en: "Understand. Design. Build. Improve.",
+        ar: "نفهم. نصمم. نطور. ونحسّن.",
+      },
+      approachDescription: {
+        en: "We work in clear steps: understand the challenge, shape the solution, build and test it, then improve based on what you need.",
+        ar: "نعمل بخطوات واضحة: نفهم التحدي، ونصمم الحل، ثم نطوره ونختبره ونحسّنه وفق احتياجاتك.",
+      },
+      ctaEyebrow: { en: "LET'S BUILD WHAT'S NEXT", ar: "لنبدأ خطوتك القادمة" },
+    },
+    process: {
+      ...legacyConfig.content.process,
+      eyebrow: { en: "HOW WE BUILD", ar: "كيف نطوّر حلولك" },
+      title: { en: "From challenge to working solution.", ar: "من التحدي إلى حل فعّال." },
+      intro: {
+        en: "A practical process keeps your project clear, focused and ready to grow.",
+        ar: "منهج عملي يجعل مشروعك واضحًا ومركزًا وقابلًا للتطور.",
+      },
+      steps: [
+        {
+          name: { en: "Discover", ar: "نكتشف" },
+          description: {
+            en: "Understand your goals and requirements.",
+            ar: "نفهم أهدافك ومتطلباتك.",
+          },
+        },
+        {
+          name: { en: "Plan", ar: "نخطط" },
+          description: {
+            en: "Choose the right approach and priorities.",
+            ar: "نحدد النهج والأولويات المناسبة.",
+          },
+        },
+        {
+          name: { en: "Build", ar: "نطوّر" },
+          description: {
+            en: "Create and test the solution with care.",
+            ar: "نبني الحل ونختبره بعناية.",
+          },
+        },
+        {
+          name: { en: "Launch", ar: "نطلق" },
+          description: { en: "Prepare your product for real users.", ar: "نجهز منتجك للمستخدمين." },
+        },
+        {
+          name: { en: "Improve", ar: "نحسّن" },
+          description: {
+            en: "Keep learning and refining over time.",
+            ar: "نواصل التعلم والتحسين.",
+          },
+        },
+      ],
+    },
+    seo: {
+      ...legacyConfig.content.seo,
+      siteTitle: { en: "Fusion X.tech", ar: "Fusion X.tech" },
+      siteDescription: {
+        en: "Websites, applications, custom software and technology consulting.",
+        ar: "مواقع وتطبيقات وبرمجيات مخصصة واستشارات تقنية.",
+      },
+      homeTitle: { en: "Fusion X.tech", ar: "Fusion X.tech" },
+      homeDescription: {
+        en: "We build practical websites, applications and software solutions for ambitious businesses.",
+        ar: "نبني مواقع وتطبيقات وحلولًا برمجية عملية للشركات الطموحة.",
+      },
+      servicesTitle: {
+        en: "Technology Services | Fusion X.tech",
+        ar: "خدمات التقنية | Fusion X.tech",
+      },
+      projectsTitle: { en: "Projects | Fusion X.tech", ar: "المشروعات | Fusion X.tech" },
+      contactTitle: { en: "Contact Fusion X.tech", ar: "تواصل مع Fusion X.tech" },
+    },
+    pages: {
+      ...legacyConfig.content.pages,
+      common: {
+        ...legacyConfig.content.pages.common,
+        contactIntro: {
+          en: "Tell us what you are looking to build. Your message will appear in our dashboard inbox.",
+          ar: "احكيلنا عن الحل اللي محتاجه. رسالتك هتوصل مباشرة إلى صندوق الرسائل في لوحة التحكم.",
+        },
+        contactFallback: {
+          en: "Use the form to send us a message.",
+          ar: "استخدم النموذج لإرسال رسالة لفريقنا.",
+        },
+        contactFormNote: {
+          en: "Your message is delivered securely to our dashboard inbox.",
+          ar: "رسالتك بتوصل بأمان إلى صندوق الرسائل في لوحة التحكم.",
+        },
+        contactFormSuccess: {
+          en: "Your message was received. We’ll be in touch soon.",
+          ar: "وصلتنا رسالتك، وهنكون على تواصل معاك قريبًا.",
+        },
+        contactFormError: {
+          en: "We couldn’t save your message. Please try again.",
+          ar: "ما قدرناش نحفظ رسالتك. حاول مرة تانية.",
+        },
+      },
+      home: {
+        ...legacyConfig.content.pages.home,
+        seoTitle: { en: "Fusion X.tech", ar: "Fusion X.tech" },
+        seoDescription: {
+          en: "We build practical websites, applications and software solutions for ambitious businesses.",
+          ar: "نبني مواقع وتطبيقات وحلولًا برمجية عملية للشركات الطموحة.",
+        },
+        heroLabel: { en: "Fusion X.tech software solutions", ar: "حلول Fusion X.tech التقنية" },
+        processStep1Title: { en: "Discover", ar: "نكتشف" },
+        processStep1Description: {
+          en: "Understand your goals and requirements.",
+          ar: "نفهم أهدافك ومتطلباتك.",
+        },
+        processStep2Title: { en: "Plan", ar: "نخطط" },
+        processStep2Description: {
+          en: "Choose the right approach and priorities.",
+          ar: "نحدد النهج والأولويات المناسبة.",
+        },
+        processStep3Title: { en: "Build", ar: "نطوّر" },
+        processStep3Description: {
+          en: "Create and test the solution with care.",
+          ar: "نبني الحل ونختبره بعناية.",
+        },
+        processStep4Title: { en: "Launch", ar: "نطلق" },
+        processStep4Description: {
+          en: "Prepare your product for real users.",
+          ar: "نجهز منتجك للمستخدمين.",
+        },
+        processStep5Title: { en: "Improve", ar: "نحسّن" },
+        processStep5Description: {
+          en: "Keep learning and refining over time.",
+          ar: "نواصل التعلم والتحسين.",
+        },
+        serviceImageAlt: {
+          en: "Fusion X.tech software solutions",
+          ar: "حلول Fusion X.tech التقنية",
+        },
+        serviceImageCaption: {
+          en: "Technology made practical",
+          ar: "تقنية عملية تناسب أعمالك",
+        },
+        bannerAlt: {
+          en: "Fusion X.tech software and digital solutions",
+          ar: "حلول Fusion X.tech البرمجية والرقمية",
+        },
+        bannerLabel: { en: "Fusion X.tech", ar: "Fusion X.tech" },
+        serviceIntroEyebrow: {
+          en: "Technology built for real work",
+          ar: "تقنية تخدم احتياجاتك",
+        },
+        serviceIntroTitle: { en: "Build smarter.", ar: "ابنِ بشكل أذكى." },
+        serviceIntroAccent: { en: "Move forward.", ar: "وتقدّم بثقة." },
+        serviceIntroDescription: {
+          en: "From websites and applications to tailored software, we turn business needs into dependable digital solutions.",
+          ar: "من المواقع والتطبيقات إلى البرمجيات المخصصة، نحوّل احتياجات أعمالك إلى حلول رقمية موثوقة.",
+        },
+        serviceIntroCount: { en: "technology services", ar: "خدمات تقنية" },
+        processEyebrow: { en: "THE FUSION X.TECH APPROACH", ar: "منهجية Fusion X.tech" },
+        processTitle: {
+          en: "Technology made useful.",
+          ar: "تقنية عملية تصنع فرقًا.",
+        },
+        processIntro: {
+          en: "Clear steps, thoughtful engineering and solutions built around your goals.",
+          ar: "خطوات واضحة وحلول تقنية مدروسة ومبنية حول أهدافك.",
+        },
+      },
+      about: {
+        ...legacyConfig.content.pages.about,
+        heroImage: { en: fusionLogo, ar: fusionLogo },
+        seoTitle: {
+          en: "About Fusion X.tech — Software & Digital Solutions",
+          ar: "عن Fusion X.tech — البرمجيات والحلول الرقمية",
+        },
+        seoDescription: {
+          en: "Meet Fusion X.tech, a technology company building useful digital products and software.",
+          ar: "تعرف على Fusion X.tech، شركة تقنية تطور منتجات رقمية وبرمجيات عملية.",
+        },
+        heroEyebrow: { en: "ABOUT FUSION X.TECH", ar: "عن Fusion X.tech" },
+        heroTitle: { en: "Technology that", ar: "تقنية" },
+        heroTitleAccent: { en: "moves business forward.", ar: "تدفع أعمالك للأمام." },
+        heroDescription: {
+          en: "We turn business needs into clear, useful digital products and software.",
+          ar: "نحوّل احتياجات الأعمال إلى منتجات رقمية وبرمجيات واضحة وعملية.",
+        },
+        heroImageAlt: { en: "Fusion X.tech software solutions", ar: "حلول Fusion X.tech التقنية" },
+        heroCaption: {
+          en: "Digital solutions built with purpose",
+          ar: "حلول رقمية مصممة لهدف واضح",
+        },
+        storyTitle: {
+          en: "A technology partner for your next step.",
+          ar: "شريك تقني لخطوتك القادمة.",
+        },
+        storyParagraph1: {
+          en: "Fusion X.tech helps businesses plan and build digital tools that solve real problems. Our work spans websites, web applications, custom software and practical technology consulting.",
+          ar: "تساعد Fusion X.tech الشركات على تخطيط وبناء أدوات رقمية تحل مشكلات حقيقية، من المواقع وتطبيقات الويب إلى البرمجيات المخصصة والاستشارات التقنية.",
+        },
+        storyParagraph2: {
+          en: "We focus on understanding your goals first, then choosing a clear, maintainable solution that can grow with your business.",
+          ar: "نبدأ بفهم أهدافك، ثم نختار حلًا واضحًا وقابلًا للتطوير ليستمر مع نمو أعمالك.",
+        },
+        storyCta: { en: "Tell us about your project", ar: "احكيلنا عن مشروعك" },
+        valuesEyebrow: { en: "HOW WE WORK", ar: "منهجية عملنا" },
+        valuesTitle: { en: "Built around real needs.", ar: "حلول تبدأ من احتياج حقيقي." },
+        valuesDescription: {
+          en: "Good technology is useful, reliable and designed around the people who use it.",
+          ar: "التقنية الجيدة عملية وموثوقة ومصممة لتناسب الأشخاص الذين يستخدمونها.",
+        },
+        value1Title: { en: "Understand first", ar: "نفهم احتياجك أولًا" },
+        value1Text: {
+          en: "We learn about your goals and workflows before choosing a technical direction.",
+          ar: "نتعرف على أهدافك وطريقة عملك قبل تحديد الاتجاه التقني المناسب.",
+        },
+        value2Title: { en: "Keep it practical", ar: "حلول عملية" },
+        value2Text: {
+          en: "We focus on clear, maintainable software that makes work easier.",
+          ar: "نركز على برمجيات واضحة وقابلة للصيانة لتسهيل العمل.",
+        },
+        value3Title: { en: "Build for growth", ar: "نبني للتطور" },
+        value3Text: {
+          en: "We design solutions that can evolve as your business needs change.",
+          ar: "نصمم حلولًا قابلة للتطور مع تغير احتياجات أعمالك.",
+        },
+      },
+      services: {
+        ...legacyConfig.content.pages.services,
+        heroImage: { en: fusionLogo, ar: fusionLogo },
+        seoTitle: {
+          en: "Technology Services | Fusion X.tech",
+          ar: "خدمات التقنية | Fusion X.tech",
+        },
+        seoDescription: {
+          en: "Explore web and app development, custom software and technology consulting from Fusion X.tech.",
+          ar: "اكتشف خدمات تطوير المواقع والتطبيقات والبرمجيات المخصصة والاستشارات التقنية من Fusion X.tech.",
+        },
+        heroAlt: {
+          en: "Fusion X.tech technology services",
+          ar: "خدمات Fusion X.tech التقنية",
+        },
+        heroEyebrow: { en: "TECHNOLOGY SERVICES", ar: "خدمات تقنية" },
+        heroTitle: { en: "Technology for", ar: "تقنية" },
+        heroTitleAccent: { en: "your next chapter.", ar: "لخطوتك القادمة." },
+        heroDescription: {
+          en: "Web and app development, custom software and practical technology guidance.",
+          ar: "تطوير المواقع والتطبيقات والبرمجيات المخصصة والاستشارات التقنية العملية.",
+        },
+        listHeading: { en: "What we build", ar: "ما الذي نطوره" },
+        listDescription: {
+          en: "Digital products and software designed around your real needs.",
+          ar: "منتجات رقمية وبرمجيات مصممة حول احتياجاتك الفعلية.",
+        },
+      },
+      projects: {
+        ...legacyConfig.content.pages.projects,
+        seoTitle: { en: "Projects | Fusion X.tech", ar: "المشروعات | Fusion X.tech" },
+        seoDescription: {
+          en: "Explore digital products and software projects by Fusion X.tech.",
+          ar: "اكتشف المنتجات الرقمية والمشروعات البرمجية من Fusion X.tech.",
+        },
+        heroEyebrow: { en: "OUR WORK", ar: "أعمالنا" },
+        heroTitle: { en: "Digital products", ar: "منتجات رقمية" },
+        heroDescription: {
+          en: "Selected websites, applications and software solutions.",
+          ar: "مجموعة من المواقع والتطبيقات والحلول البرمجية.",
+        },
+      },
+      serviceDetail: {
+        ...legacyConfig.content.pages.serviceDetail,
+        eyebrow: { en: "FUSION X.TECH / SERVICE", ar: "Fusion X.tech / خدماتنا" },
+        benefitsEyebrow: { en: "BUILT AROUND YOUR GOALS", ar: "مصممة حول أهدافك" },
+        benefitsTitle: { en: "Make technology work for you.", ar: "خلّي التقنية تخدمك." },
+        overviewTitle: { en: "How we help", ar: "كيف نساعدك" },
+        relatedEyebrow: { en: "MORE TECHNOLOGY SERVICES", ar: "خدمات تقنية أخرى" },
+        overviewDescription: {
+          en: "We shape each solution around your goals, users and technical requirements, then build it to be clear, reliable and maintainable.",
+          ar: "نصمم كل حل حول أهدافك ومستخدميك ومتطلباتك التقنية، ثم نطوره ليكون واضحًا وموثوقًا وقابلًا للصيانة.",
+        },
+      },
+      contact: {
+        ...legacyConfig.content.pages.contact,
+        heroImage: { en: fusionLogo, ar: fusionLogo },
+        seoTitle: { en: "Contact Fusion X.tech", ar: "تواصل مع Fusion X.tech" },
+        seoDescription: {
+          en: "Contact Fusion X.tech about a website, application or software project.",
+          ar: "تواصل مع Fusion X.tech لمناقشة موقع أو تطبيق أو مشروع برمجي.",
+        },
+        heroAlt: { en: "Fusion X.tech logo", ar: "شعار Fusion X.tech" },
+        heroEyebrow: { en: "GET IN TOUCH", ar: "تواصل معنا" },
+        heroTitle: { en: "Let's talk", ar: "خلّينا" },
+        heroTitleAccent: { en: "about your next build.", ar: "نتكلم عن مشروعك القادم." },
+        heroDescription: {
+          en: "Tell us what you need and our team will follow up with you.",
+          ar: "احكيلنا عن احتياجك وفريقنا هيتواصل معاك.",
+        },
+        mapEyebrow: { en: "LET'S CONNECT", ar: "نتواصل معًا" },
+        mapTitle: { en: "Your next idea starts here.", ar: "فكرتك القادمة تبدأ هنا." },
+        mapDescription: {
+          en: "Tell us about the website, application or software you need.",
+          ar: "احكيلنا عن الموقع أو التطبيق أو الحل البرمجي اللي محتاجه.",
+        },
+        mapCoordinate: {
+          en: "FUSION X.TECH · SOFTWARE & DIGITAL SOLUTIONS",
+          ar: "Fusion X.tech · حلول برمجية ورقمية",
+        },
+        phoneFallback: { en: "01064621943", ar: "01064621943" },
       },
     },
   },
@@ -774,6 +1208,8 @@ export function mergeSiteConfig(saved: SiteConfig): SiteConfig {
       ...saved.hero,
       title: { ...initialConfig.hero.title, ...saved.hero?.title },
       subtitle: { ...initialConfig.hero.subtitle, ...saved.hero?.subtitle },
+      video: saved.hero?.video || initialConfig.hero.video,
+      poster: saved.hero?.poster || initialConfig.hero.poster,
     },
     sections: { ...initialConfig.sections, ...saved.sections },
     contact: {
@@ -868,7 +1304,7 @@ export function CMSProvider({
   }, [refresh, serverConfig]);
   useEffect(() => {
     const syncPublishedContent = (event: StorageEvent) => {
-      if (event.key !== "viral-zoom-cms-revision") return;
+      if (event.key !== "fusionxtech-cms-revision") return;
       void refresh().catch((error) => console.error("Could not sync published content.", error));
     };
     window.addEventListener("storage", syncPublishedContent);
@@ -889,7 +1325,7 @@ export function CMSProvider({
         setLoadError(null);
         setReady(true);
         try {
-          localStorage.setItem("viral-zoom-cms-revision", String(Date.now()));
+          localStorage.setItem("fusionxtech-cms-revision", String(Date.now()));
         } catch {
           // Cross-tab refresh is optional when browser storage is unavailable.
         }
@@ -900,7 +1336,7 @@ export function CMSProvider({
         setLoadError(null);
         setReady(true);
         try {
-          localStorage.setItem("viral-zoom-cms-revision", String(Date.now()));
+          localStorage.setItem("fusionxtech-cms-revision", String(Date.now()));
         } catch {
           // Cross-tab refresh is optional when browser storage is unavailable.
         }
